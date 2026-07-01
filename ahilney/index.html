@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahilney Care - Gateway Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-hover: #0f766e;
+      --primary-light: #f0fdfa;
+      --dark: #0f172a;
+      --dark-card: #1e293b;
+      --text: #334155;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --bg: #0f172a;
+      --font: 'Outfit', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font);
+    }
+
+    body {
+      background: var(--bg);
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient background blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--primary);
+      top: -100px;
+      left: -100px;
+    }
+    .blob-2 {
+      width: 500px;
+      height: 500px;
+      background: #3b82f6;
+      bottom: -150px;
+      right: -150px;
+    }
+
+    /* Password Lock Screen Overlay */
+    #lock-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .lock-card {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 400px;
+      padding: 40px 30px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      position: relative;
+      z-index: 1010;
+      transform: translateY(0);
+      transition: all 0.4s ease;
+    }
+
+    .lock-logo {
+      width: 64px;
+      height: 64px;
+      background: rgba(13, 148, 136, 0.1);
+      border: 2px solid var(--primary);
+      border-radius: 18px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+
+    .lock-logo svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .lock-card h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .lock-card p {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+
+    .lock-input-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .lock-input {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: #fff;
+      outline: none;
+      transition: all 0.3s;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    .lock-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
+    }
+
+    .lock-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+    }
+
+    .lock-btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .lock-btn:active {
+      transform: translateY(0);
+    }
+
+    .hint {
+      margin-top: 15px;
+      font-size: 11px;
+      color: var(--primary);
+      background: rgba(13, 148, 136, 0.08);
+      padding: 8px;
+      border-radius: 8px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .error-msg {
+      color: #f87171;
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+      font-weight: 500;
+    }
+
+    /* Main Dashboard Layout */
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      z-index: 10;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      display: none;
+      padding: 20px 0;
+    }
+
+    .container.active {
+      display: block;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(13, 148, 136, 0.1);
+      border: 2px solid var(--primary);
+      border-radius: 16px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+
+    header h1 {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    header p {
+      font-size: 16px;
+      color: #94a3b8;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Portal Grid */
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .portal-card {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      transition: all 0.3s;
+    }
+
+    /* Accent top borders */
+    .card-admin::before { background: linear-gradient(90deg, #ec4899, #f43f5e); }
+    .card-provider::before { background: linear-gradient(90deg, #10b981, #059669); }
+    .card-patient::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
+
+    .portal-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.12);
+      background: #243049;
+    }
+
+    .icon-wrapper {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .card-admin .icon-wrapper { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+    .card-provider .icon-wrapper { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .card-patient .icon-wrapper { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
+
+    .portal-card:hover .icon-wrapper {
+      transform: scale(1.1);
+    }
+
+    .portal-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .portal-card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #94a3b8;
+      margin-bottom: auto;
+    }
+
+    .action-badge {
+      margin-top: 24px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s;
+    }
+
+    .card-admin .action-badge { color: #ec4899; }
+    .card-provider .action-badge { color: #10b981; }
+    .card-patient .action-badge { color: #06b6d4; }
+
+    .portal-card:hover .action-badge {
+      gap: 10px;
+    }
+
+    /* Footer Lock Controls */
+    .controls-footer {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .btn-lock {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94a3b8;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s;
+    }
+
+    .btn-lock:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    @media (max-width: 640px) {
+      header h1 {
+        font-size: 28px;
+      }
+      .portal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- Password Screen -->
+  <div id="lock-screen">
+    <div class="lock-card" id="lock-card-box">
+      <div class="lock-logo">
+        <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+      </div>
+      <h2>Ahilney Portal Gate</h2>
+      <p>Please enter the access code to unlock the prototype dashboard</p>
+      
+      <form onsubmit="verifyPassword(event)">
+        <div class="lock-input-group">
+          <input type="password" id="lock-pass" class="lock-input" placeholder="••••••••" required autofocus>
+        </div>
+        <button type="submit" class="lock-btn">Unlock Prototype</button>
+      </form>
+      
+      <div class="error-msg" id="error-message">Invalid access code. Please try again.</div>
+      <div>
+        <span class="hint">🔑 Hint: <strong>ahilney</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Unified Gateway -->
+  <div class="container" id="main-container">
+    <header>
+      <div class="brand-icon">
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      </div>
+      <h1>Ahilney Prototype Gateway</h1>
+      <p>Access the different operational layers of the Ahilney home physical therapy and consulting network.</p>
+    </header>
+
+    <div class="portal-grid">
+      <!-- Admin Card -->
+      <a href="admin.html" class="portal-card card-admin">
+        <div class="icon-wrapper">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+        </div>
+        <h3>Admin Portal</h3>
+        <p>Review medical records, audit doctor diagnosis summaries, approve practitioner verification workflows, and manage manual payouts details.</p>
+        <span class="action-badge">
+          Open Admin Dashboard
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </span>
+      </a>
+
+      <!-- Provider Card -->
+      <a href="provider.html" class="portal-card card-provider">
+        <div class="icon-wrapper">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h3>Practitioner App</h3>
+        <p>Interactive platform for Doctors and Rehabilitation Specialists. Build multi-shift time slots, edit consultation session fees, and withdraw digital wallet funds.</p>
+        <span class="action-badge">
+          Open Provider App
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </span>
+      </a>
+
+      <!-- Patient Card -->
+      <a href="patient.html" class="portal-card card-patient">
+        <div class="icon-wrapper">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          </svg>
+        </div>
+        <h3>Patient App</h3>
+        <p>Mobile interface for clinic clients. Schedule telehealth video sessions, purchase therapy packages, select regional specialists, and track booking limits.</p>
+        <span class="action-badge">
+          Open Patient App
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </span>
+      </a>
+    </div>
+
+    <div class="controls-footer">
+      <button class="btn-lock" onclick="lockPortal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        Lock Dashboard
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Check local session state
+    document.addEventListener("DOMContentLoaded", () => {
+      const isUnlocked = sessionStorage.getItem("ahilney_unlocked");
+      if (isUnlocked === "true") {
+        showPortalDirectly();
+      }
+    });
+
+    function verifyPassword(e) {
+      e.preventDefault();
+      const code = document.getElementById('lock-pass').value;
+      const errorEl = document.getElementById('error-message');
+      
+      if (code === 'ahilney') {
+        errorEl.style.display = 'none';
+        sessionStorage.setItem("ahilney_unlocked", "true");
+        unlockPortalAnimation();
+      } else {
+        errorEl.style.display = 'block';
+        shakeCard();
+      }
+    }
+
+    function showPortalDirectly() {
+      const lockScreen = document.getElementById('lock-screen');
+      const container = document.getElementById('main-container');
+      lockScreen.style.display = 'none';
+      container.style.display = 'block';
+      container.classList.add('active');
+    }
+
+    function unlockPortalAnimation() {
+      const lockScreen = document.getElementById('lock-screen');
+      const container = document.getElementById('main-container');
+      
+      // Animate out lock screen
+      lockScreen.style.opacity = '0';
+      lockScreen.style.pointerEvents = 'none';
+      
+      // Set display main container
+      container.style.display = 'block';
+      setTimeout(() => {
+        container.classList.add('active');
+        lockScreen.style.display = 'none';
+      }, 300);
+    }
+
+    function lockPortal() {
+      sessionStorage.removeItem("ahilney_unlocked");
+      location.reload();
+    }
+
+    function shakeCard() {
+      const card = document.getElementById('lock-card-box');
+      card.style.transform = 'translateX(-10px)';
+      setTimeout(() => card.style.transform = 'translateX(10px)', 80);
+      setTimeout(() => card.style.transform = 'translateX(-8px)', 160);
+      setTimeout(() => card.style.transform = 'translateX(8px)', 240);
+      setTimeout(() => card.style.transform = 'translateX(0)', 320);
+    }
+  </script>
+</body>
+</html>
