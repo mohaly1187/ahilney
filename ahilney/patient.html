@@ -419,7 +419,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
-          <span>Clinic Hub</span>
+          <span>Rehab Centers</span>
           <span style="font-size: 8px; color: var(--warning); font-weight: 700; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 4px; padding: 1px 4px;">Coming Soon</span>
         </div>
         <div class="service-btn" onclick="openServiceFlow('homecare')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
@@ -470,7 +470,7 @@
             <div style="background:var(--primary-light); color:var(--primary); width:64px; height:64px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px;">
               <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
             </div>
-            <h3 style="font-size:20px; font-weight:800; color:var(--dark); margin:0 0 8px 0;">Clinic Hub: Coming Soon</h3>
+            <h3 style="font-size:20px; font-weight:800; color:var(--dark); margin:0 0 8px 0;">Rehab Centers: Coming Soon</h3>
             <p style="font-size:13px; color:var(--text-light); line-height:1.5; margin-bottom:20px;">We are establishing physical clinical rehabilitation hubs across Egypt. Remote consultation and home visit services remain fully active!</p>
             <button class="btn btn-secondary" onclick="document.getElementById('patient-details-panel').style.display='none'" style="width:100%; border-radius:10px;">Close</button>
           </div>
@@ -1234,12 +1234,35 @@
         </div>
 
         <h4 style="font-weight:800; font-size:13px; color:var(--dark); margin-bottom:12px;">Update Case Records</h4>
-        <form id="form-case-records" onsubmit="submitCaseRecordsForm(event)" style="display:flex; flex-direction:column; gap:10px;">
+        
+<!-- NEW V1 SCOPE: 3-Section Medical Records -->
+<div class="medical-records-v1">
+    <div style="background:var(--white); padding:12px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border);">
+        <h4 style="font-size:14px; margin-bottom:8px; color:var(--primary);">Section A: Patient Information</h4>
+        <p style="font-size:11px; color:var(--text-light); margin-bottom:8px;">Describe your condition and symptoms.</p>
+        <form id="form-case-records"
+ onsubmit="submitCaseRecordsForm(event)" style="display:flex; flex-direction:column; gap:10px;">
           <div class="form-group">
             <label class="form-label" style="font-size:11px;">Chief Medical Complaint</label>
             <textarea class="form-control" id="case-history" required rows="3" style="resize:none; padding:8px; font-size:12px;"></textarea>
           </div>
           <button type="submit" class="btn btn-primary btn-sm" style="width:100%;">Update Records</button>
+    </div>
+    
+    <div style="background:var(--white); padding:12px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border);">
+        <h4 style="font-size:14px; margin-bottom:8px; color:var(--primary);">Section B: Medical Documents</h4>
+        <p style="font-size:11px; color:var(--text-light); margin-bottom:8px;">Upload medical reports, radiology, lab results. Must be approved by Ahilney Operations.</p>
+        <input type="file" class="form-control" style="font-size:12px; margin-bottom:8px;">
+        <button class="btn btn-secondary" style="width:100%; font-size:12px;">Upload Document</button>
+        <div style="margin-top:8px; font-size:11px; color:#b45309; background:#fef3c7; padding:4px; border-radius:4px; text-align:center;">Status: Pending Review</div>
+    </div>
+    
+    <div style="background:var(--white); padding:12px; border-radius:8px; border:1px solid var(--border);">
+        <h4 style="font-size:14px; margin-bottom:8px; color:var(--primary);">Section C: Clinical Progress Notes</h4>
+        <p style="font-size:11px; color:var(--text-light); margin-bottom:8px;">Read-only section updated by your rehabilitation provider.</p>
+        <div style="background:#f8fafc; padding:8px; border-radius:4px; font-size:11px; color:var(--text-light);">No progress notes available yet.</div>
+    </div>
+</div>
         </form>
       `;
       appBody.appendChild(container);
