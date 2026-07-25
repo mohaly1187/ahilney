@@ -1,48 +1,91 @@
-# Ahilney Prototype
+# Ahilney Platform
 
-A static frontend prototype for **Ahilney** — a home physical therapy and telehealth consulting platform based in Egypt.
+A home physical therapy and telehealth consulting platform for Egypt — three apps sharing a real PostgreSQL backend.
 
-## Stack
+## Architecture
 
-- Pure HTML / CSS / JavaScript (no build step)
-- State managed entirely via `localStorage` and `sessionStorage`
-- No backend, no external services, no secrets required
+| Layer | Stack | Port |
+|---|---|---|
+| **Backend API** | Node.js + Express + PostgreSQL | 3000 |
+| **Prototype / Admin (HTML)** | Static HTML/JS served by Python | 5000 |
 
 ## Running
 
-The app is served by Python's built-in HTTP server from the `ahilney-prototype/` directory on port 5000.
+Both workflows start automatically:
+- **"Start application"** — serves the prototype HTML files on port 5000
+- **"Ahilney API"** — runs the real Express API on port 3000
+
+## API
+
+Base URL: `http://localhost:3000/api/v1`
+
+Route manifest: `GET /api/v1`  
+Health check: `GET /health`
+
+### Auth endpoints
+| Method | Path | Who |
+|---|---|---|
+| POST | `/auth/send-otp` | Patient — phone OTP (console-logged in dev) |
+| POST | `/auth/verify-otp` | Patient — returns JWT |
+| POST | `/auth/provider/login` | Provider — email + password |
+| POST | `/auth/admin/login` | Admin — email + password |
+
+### Seed credentials (dev)
+| Role | Email | Password |
+|---|---|---|
+| Admin | `sherif@ahilney.com` | `admin123` |
+| Doctor | `sarah.j@ahilney.com` | `password` |
+| Doctor | `marcus.v@ahilney.com` | `password` |
+| RS | `amira.k@ahilney.com` | `password` |
+| RS | `karim.a@ahilney.com` | `password` |
+| RS | `hassan.s@ahilney.com` | `password` |
+| Patient (OTP) | phone: `+201211098465` | any 6-digit code logged to console |
+
+## Database
+
+Replit built-in PostgreSQL. Tables: `users`, `patients`, `patient_prescriptions`, `patient_treatment_plans`, `providers`, `provider_documents`, `provider_regions`, `shifts`, `admins`, `appointments`, `summaries`, `transactions`, `notifications`, `otp_requests`, `promo_codes`, `regions`, `subregions`.
+
+Re-run migrations (safe — uses IF NOT EXISTS):
+```
+node api/migrate.js
+```
+
+Re-seed dev data:
+```
+node api/seed.js
+```
+
+## Business Logic
+
+- **Commission**: 15% platform / 85% provider
+- **Payout trigger**: admin approves session summary → payout transaction written + provider wallet credited
+- **Appointment state machine**: `Pending RS Acceptance` → `Confirmed` → `Finished` (provider submits summary) → admin audits
+- **OTP**: SMS adapter in `api/src/sms.js` — console-logs in dev, swap to Twilio/Unifonic by setting `SMS_PROVIDER=twilio` and adding credentials (owner must approve before wiring)
+- **Hetzner-portable**: only `DATABASE_URL` and `JWT_SECRET` env vars need changing to deploy elsewhere
+
+## API source layout
 
 ```
-python3 -m http.server 5000 --directory ahilney-prototype
+api/
+├── migrate.js          # Schema migrations (run once)
+├── seed.js             # Dev seed data
+└── src/
+    ├── index.js        # Express entry point
+    ├── db.js           # pg Pool
+    ├── sms.js          # SMS adapter (pluggable)
+    ├── middleware/
+    │   └── auth.js     # JWT verify + requireRole helpers
+    └── routes/
+        ├── auth.js     # OTP + login endpoints
+        ├── patients.js # Patient endpoints
+        ├── providers.js# Provider endpoints
+        ├── admin.js    # Admin endpoints
+        └── shared.js   # Public: providers list, regions, services, promos
 ```
 
-The **"Start application"** workflow handles this automatically.
+## Prototype (legacy reference)
 
-## Access
-
-- **URL**: open the preview pane
-- **Gateway password**: `ahilney`
-
-## Portals
-
-| Portal | File | Who it's for | Design |
-|---|---|---|---|
-| Gateway | `ahilney-prototype/index.html` | Entry point / login | Dark landing page |
-| **Patient App** | `ahilney-prototype/patient.html` | Patients booking homecare sessions | ✅ Mobile-first redesign |
-| Provider App | `ahilney-prototype/provider.html` | Doctors & rehab specialists | In progress (Task #5) |
-| Admin Dashboard | `ahilney-prototype/admin.html` | Operations & oversight | In progress (Task #6) |
-| Center Admin | `ahilney-prototype/center_admin.html` | Rehab center management | Out of scope |
-
-Shared state and mock data live in `ahilney-prototype/app.js`.
-
-## Patient App – Key flows (Task #4 complete)
-
-- **OTP login**: switch patients via the simulator dropdown → any 4-digit code logs in
-- **Home tab**: wallet balance card, service tiles, recent activity, promo banners
-- **Book tab**: district filter → filtered RS provider cards → profile sheet → 4-step booking modal (prescription · date/slot · package · payment)
-- **Appointments tab**: filterable list with status badges; Rate & Review for finished sessions; Book Again for rejected ones
-- **Wallet tab**: balance, top-up (mock), transaction history, pending cash visits
-- **Profile tab**: patient info, medical history, prescription, treatment plans
+The original localStorage prototype lives in `ahilney-prototype/`. It is kept as a design reference for the three real apps being built (Tasks #11, #12, #13).
 
 ## User preferences
 

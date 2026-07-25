@@ -1,0 +1,1 @@
+- [Backend API decisions](backend-api.md) — stack, auth model, commission logic, SMS adapter pattern, Hetzner-portability constraint
