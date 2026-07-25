@@ -26,6 +26,10 @@ args = "Ahilney API"
 task = "workflow.run"
 args = "Admin Dashboard"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Provider App"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -35,7 +39,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python3 -m http.server 5000 --directory ahilney-prototype"
+args = "cd patient-app && CI=1 npx expo start --web --port 5000"
 waitForPort = 5000
 
 [[workflows.workflow]]
@@ -62,6 +66,18 @@ task = "shell.exec"
 args = "cd admin-app && npm run dev"
 waitForPort = 5173
 
+[[workflows.workflow]]
+name = "Provider App"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd provider-app && CI=1 npx expo start --web --port 8000"
+waitForPort = 8000
+
 [[ports]]
 localPort = 3000
 externalPort = 3000
@@ -73,6 +89,10 @@ externalPort = 80
 [[ports]]
 localPort = 5173
 externalPort = 5173
+
+[[ports]]
+localPort = 8000
+externalPort = 8000
 
 [userenv]
 

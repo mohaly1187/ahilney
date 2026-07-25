@@ -1,16 +1,20 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 const TOKEN_KEY = 'ahilney_provider_token';
 
-// ─── Token helpers ────────────────────────────────────────────────────────────
+// ─── Token helpers (web falls back to localStorage) ───────────────────────────
 export async function getToken() {
+  if (Platform.OS === 'web') return localStorage.getItem(TOKEN_KEY);
   return SecureStore.getItemAsync(TOKEN_KEY);
 }
 export async function setToken(token) {
+  if (Platform.OS === 'web') { localStorage.setItem(TOKEN_KEY, token); return; }
   return SecureStore.setItemAsync(TOKEN_KEY, token);
 }
 export async function clearToken() {
+  if (Platform.OS === 'web') { localStorage.removeItem(TOKEN_KEY); return; }
   return SecureStore.deleteItemAsync(TOKEN_KEY);
 }
 
