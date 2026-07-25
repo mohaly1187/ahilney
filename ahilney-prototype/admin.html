@@ -3,2341 +3,1425 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ahilney Back-Office Admin Dashboard</title>
+  <title>Ahilney – Admin Dashboard</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ═══════════════════════════════════════
+       ADMIN SHELL
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: var(--font); background: #f1f5f9; }
+
+    .admin-shell { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .adm-sidebar { width: 228px; min-width: 228px; background: #0f172a; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
+    .adm-logo { padding: 20px 18px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .adm-logo-icon { width: 34px; height: 34px; border-radius: 10px; background: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .adm-logo-text { font-size: 15px; font-weight: 800; color: #fff; }
+    .adm-logo-sub  { font-size: 9px; color: rgba(255,255,255,0.4); font-weight: 600; margin-top: -1px; }
+    .sidebar-section-label { font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; padding: 16px 18px 6px; }
+    .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 18px; cursor: pointer; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); border-radius: 0; transition: all 0.15s; position: relative; text-decoration: none; border: none; background: none; width: 100%; text-align: left; }
+    .sidebar-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    .sidebar-item.active { color: #fff; background: rgba(13,148,136,0.2); border-right: 3px solid var(--primary); }
+    .sidebar-item svg { flex-shrink: 0; opacity: 0.7; }
+    .sidebar-item.active svg { opacity: 1; color: var(--primary); }
+    .sidebar-badge { background: #ef4444; color: #fff; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 10px; margin-left: auto; }
+
+    /* ── Main area ── */
+    .adm-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .adm-topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .adm-topbar-title { font-size: 17px; font-weight: 800; color: var(--dark); }
+    .adm-topbar-right { display: flex; align-items: center; gap: 16px; }
+    .notif-btn { position: relative; width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: var(--white); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); }
+    .notif-btn:hover { background: var(--light); }
+    .notif-count { position: absolute; top: -5px; right: -5px; background: #ef4444; color: #fff; font-size: 9px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .admin-avatar-group { display: flex; align-items: center; gap: 10px; }
+    .admin-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; }
+    .admin-name { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .admin-role { font-size: 10px; color: var(--text-light); }
+
+    .adm-body { flex: 1; overflow-y: auto; padding: 28px; }
+
+    /* ── Panels ── */
+    .adm-panel { display: none; }
+    .adm-panel.active { display: block; }
+
+    /* ── Stat cards ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: #fff; border-radius: 14px; padding: 18px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+    .stat-card-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.4px; }
+    .stat-card-value { font-size: 28px; font-weight: 800; color: var(--dark); line-height: 1.1; }
+    .stat-card-sub { font-size: 11px; color: var(--text-light); }
+    .stat-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+
+    /* ── Table card ── */
+    .tbl-card { background: #fff; border-radius: 14px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 20px; }
+    .tbl-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .tbl-title { font-size: 15px; font-weight: 700; color: var(--dark); }
+    .tbl-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+    table.adm-table { width: 100%; border-collapse: collapse; }
+    table.adm-table th { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.4px; padding: 10px 14px; background: var(--light); border-bottom: 1px solid var(--border); white-space: nowrap; text-align: left; }
+    table.adm-table td { font-size: 13px; color: var(--dark); padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    table.adm-table tr:last-child td { border-bottom: none; }
+    table.adm-table tr:hover td { background: #fafafa; }
+
+    /* ── Status badges ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .badge-pending  { background: #fef3c7; color: #d97706; }
+    .badge-review   { background: #dbeafe; color: #1d4ed8; }
+    .badge-interview{ background: #f3e8ff; color: #6d28d9; }
+    .badge-contract { background: #ffedd5; color: #c2410c; }
+    .badge-active   { background: #dcfce7; color: #15803d; }
+    .badge-rejected { background: #fee2e2; color: #b91c1c; }
+    .badge-finished { background: #dbeafe; color: #1e40af; }
+    .badge-approved { background: #dcfce7; color: #15803d; }
+    .badge-info     { background: #f0fdf4; color: #15803d; }
+    .badge-gray     { background: #f1f5f9; color: #64748b; }
+
+    /* ── Buttons ── */
+    .btn-sm { padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border); background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font); color: var(--dark); transition: all 0.15s; }
+    .btn-sm:hover { background: var(--light); }
+    .btn-sm.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-sm.primary:hover { background: var(--primary-hover); }
+    .btn-sm.danger  { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+    .btn-sm.danger:hover { background: #fecaca; }
+    .btn-sm.success { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+    .btn-sm.success:hover { background: #bbf7d0; }
+    .btn-primary-full { width: 100%; padding: 10px; border-radius: 10px; border: none; background: var(--primary); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.2s; }
+    .btn-primary-full:hover { background: var(--primary-hover); }
+
+    /* ── Tab pills ── */
+    .tab-pills { display: flex; gap: 6px; margin-bottom: 16px; }
+    .tab-pill { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text); transition: all 0.15s; }
+    .tab-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* ── Audit cards ── */
+    .audit-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 14px; border-left: 4px solid #f59e0b; }
+    .audit-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+    .audit-card-id { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; }
+    .audit-parties { display: flex; gap: 24px; margin-bottom: 12px; }
+    .audit-party-label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 2px; }
+    .audit-party-name  { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .audit-party-sub   { font-size: 11px; color: var(--text-light); }
+    .audit-clinical { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; background: var(--light); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    .audit-field-label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; }
+    .audit-field-value { font-size: 12px; color: var(--dark); line-height: 1.5; }
+    .audit-actions { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+    /* ── Provider modal ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 1000; display: none; align-items: flex-start; justify-content: center; padding: 32px 16px; overflow-y: auto; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: #fff; border-radius: 18px; width: 100%; max-width: 680px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .modal-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .modal-title { font-size: 16px; font-weight: 800; color: var(--dark); }
+    .modal-close { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: var(--light); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text); flex-shrink: 0; }
+    .modal-close:hover { background: var(--border); }
+    .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+
+    /* ── Info blocks in modal ── */
+    .info-block { background: var(--light); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .info-block h4 { font-size: 11px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .info-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+    .info-row:last-child { border-bottom: none; }
+    .info-row span:first-child { color: var(--text-light); }
+    .info-row span:last-child  { font-weight: 600; color: var(--dark); }
+    .doc-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .doc-row:last-child { border-bottom: none; }
+    .doc-name { font-size: 13px; color: var(--dark); }
+
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 48px 20px; color: var(--text-light); }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty p { font-size: 14px; }
+
+    /* ── Financials revenue bar ── */
+    .revenue-bar { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+    .revenue-item { text-align: center; }
+    .revenue-label { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; }
+    .revenue-value { font-size: 26px; font-weight: 800; color: var(--dark); }
+    .revenue-value.green { color: #15803d; }
+    .revenue-value.teal  { color: var(--primary); }
+
+    /* ── Activity feed ── */
+    .activity-feed { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; }
+    .activity-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-top: 5px; flex-shrink: 0; }
+    .activity-text { font-size: 13px; color: var(--dark); flex: 1; }
+    .activity-time { font-size: 11px; color: var(--text-light); white-space: nowrap; }
+
+    /* ── Quick actions ── */
+    .quick-actions { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .quick-action { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.15s; font-family: var(--font); }
+    .quick-action:hover { border-color: var(--primary); background: var(--primary-light); }
+    .quick-action-label { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .quick-action-sub { font-size: 11px; color: var(--text-light); }
+
+    /* ── Reject modal ── */
+    .reject-modal { max-width: 440px; }
+    .reject-modal .modal-body textarea { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: var(--font); font-size: 13px; resize: vertical; min-height: 90px; }
+    .reject-modal .modal-body textarea:focus { outline: none; border-color: var(--primary); }
+
+    /* ── Promo form ── */
+    .adm-form { display: grid; gap: 12px; }
+    .adm-form label { font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px; }
+    .adm-form input, .adm-form select { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 13px; font-family: var(--font); color: var(--dark); }
+    .adm-form input:focus, .adm-form select:focus { outline: none; border-color: var(--primary); }
+
+    /* ── Toast ── */
+    #adm-toast { position: fixed; bottom: 28px; right: 28px; background: #0f172a; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 9999; transform: translateY(20px); opacity: 0; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px; }
+    #adm-toast.show { transform: translateY(0); opacity: 1; }
+    #adm-toast.success { background: #15803d; }
+    #adm-toast.error   { background: #dc2626; }
+
+    /* ── Divider ── */
+    .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 900px) { .section-grid { grid-template-columns: 1fr; } }
+
+    /* ── Select ── */
+    .adm-select { border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-family: var(--font); color: var(--dark); background: #fff; cursor: pointer; }
+    .adm-select:focus { outline: none; border-color: var(--primary); }
+
+    /* ── Search input ── */
+    .adm-search { border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-family: var(--font); color: var(--dark); width: 220px; }
+    .adm-search:focus { outline: none; border-color: var(--primary); }
+  </style>
 </head>
 <body>
-  <div class="admin-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="logo-container">
-        <div class="logo-icon">
-          <!-- Person shape representing rehabilitation -->
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
-            <circle cx="50" cy="30" r="15" fill="#0F7029"/>
-            <path d="M25 70C25 55 35 48 50 48C65 48 75 55 75 70V80H25V70Z" fill="#0F7029"/>
-          </svg>
-        </div>
-        <span class="logo-text">Ahilney Admin</span>
+<div class="admin-shell">
+
+  <!-- ══════ SIDEBAR ══════ -->
+  <aside class="adm-sidebar">
+    <div class="adm-logo">
+      <div class="adm-logo-icon">
+        <svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
       </div>
-      <nav>
-        <ul class="sidebar-menu">
-          <li>
-            <a href="#" class="menu-item active" onclick="switchTab('dashboard')">
-              <svg viewBox="0 0 24 24"><path d="M10 20H5a1 1 0 0 1-1-1v-6.586l8-8 8 8V19a1 1 0 0 1-1 1h-5v-6H10v6zm2-14.414l-6 6V18h3v-6h6v6h3v-6.414l-6-6z"/></svg>
-              <span>Overview</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('verification')">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/></svg>
-              <span>Verification Pipeline</span>
-            </a>
-          </li>
+      <div>
+        <div class="adm-logo-text">Ahilney</div>
+        <div class="adm-logo-sub">Operations Dashboard</div>
+      </div>
+    </div>
 
-          <!-- CLIENTS SECTION -->
-          <li style="margin: 16px 0 6px 12px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px;">Clients & Network</li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('patients')">
-              <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 2.01 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-              <span>Patients</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('doctors')">
-              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.89 2 1.99 2H19c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>
-              <span>Doctors</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('rs_specialists')">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-              <span>Rehab Specialists (RS)</span>
-            </a>
-          </li>
+    <div style="padding: 8px 0; flex:1;">
+      <button class="sidebar-item active" id="nav-dashboard" onclick="switchPanel('dashboard')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
 
-          <!-- SYSTEM & OPERATIONS SECTION -->
-          <li style="margin: 16px 0 6px 12px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px;">System & Operations</li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('regions')">
-              <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-              <span>Regions</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('transactions')">
-              <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-              <span>Payments & Payouts</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('promocodes')">
-              <svg viewBox="0 0 24 24"><path d="M12.79 21L3 11.21V3h8.21L21 12.79V21h-8.21zM5 5v2h2V5H5z"/></svg>
-              <span>Promo Codes</span>
-            </a>
-          </li>
-          
-          <!-- REPORTS SECTION -->
-          <li style="margin: 16px 0 6px 12px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px;">Reports & Audit Logs</li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('summaries')">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-              <span>Full Audit Log</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('report_doctors')">
-              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-              <span>Doctors</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('report_rs')">
-              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-              <span>RS</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="menu-item" onclick="switchTab('report_patients')">
-              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-              <span>Patients</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+      <div class="sidebar-section-label">Clinical Ops</div>
 
-    <!-- Main Workspace -->
-    <main class="main-content">
-      <!-- Top Bar -->
-      <header class="top-bar">
-        <h1 class="page-title" id="page-title-text">Dashboard Overview</h1>
-        <div class="user-profile-menu">
-          <div class="notification-badge" onclick="switchTab('verification')">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <div class="notification-dot" id="admin-notif-dot"></div>
-          </div>
-          <div class="user-info">
-            <div class="avatar">SA</div>
-            <div>
-              <p style="font-weight: 700; font-size: 14px; color: var(--dark);">Sherif Amer</p>
-              <p style="font-size: 11px; color: var(--text-light);">Super Admin</p>
-            </div>
+      <button class="sidebar-item" id="nav-audit" onclick="switchPanel('audit')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Session Audit
+        <span class="sidebar-badge" id="audit-nav-badge" style="display:none;">0</span>
+      </button>
+
+      <div class="sidebar-section-label">Network</div>
+
+      <button class="sidebar-item" id="nav-providers" onclick="switchPanel('providers')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        Providers
+      </button>
+
+      <button class="sidebar-item" id="nav-patients" onclick="switchPanel('patients')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Patients
+      </button>
+
+      <div class="sidebar-section-label">Finance</div>
+
+      <button class="sidebar-item" id="nav-financials" onclick="switchPanel('financials')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        Financials
+      </button>
+
+      <div class="sidebar-section-label">Config</div>
+
+      <button class="sidebar-item" id="nav-promotions" onclick="switchPanel('promotions')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        Promotions
+      </button>
+
+      <button class="sidebar-item" id="nav-regions" onclick="switchPanel('regions')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Regions
+      </button>
+
+      <div style="margin-top: auto; padding: 16px 18px 20px; border-top: 1px solid rgba(255,255,255,0.07);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="admin-avatar" style="width:32px;height:32px;font-size:12px;">SA</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#fff;">Sherif Amer</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.4);">Super Admin</div>
           </div>
         </div>
-      </header>
+      </div>
+    </div>
+  </aside>
 
-      <!-- Content Body -->
-      <div class="content-body">
-        
-        <!-- ================= DASHBOARD OVERVIEW TAB ================= -->
-        <section id="tab-dashboard" class="tab-content">
-          <!-- Stats Grid -->
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div>
-                <p class="stat-label">Active Providers</p>
-                <p class="stat-value" id="stat-active-providers">0</p>
-                <p style="font-size: 12px; color: var(--success); font-weight: 600;">Listed & Bookable</p>
-              </div>
-              <div class="stat-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              </div>
+  <!-- ══════ MAIN ══════ -->
+  <div class="adm-main">
+    <header class="adm-topbar">
+      <div>
+        <div class="adm-topbar-title" id="panel-title">Dashboard Overview</div>
+      </div>
+      <div class="adm-topbar-right">
+        <div style="font-size:12px; color:var(--text-light);" id="last-updated"></div>
+        <button class="notif-btn" onclick="switchPanel('audit')" title="Pending Audits">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span class="notif-count" id="topbar-notif-count" style="display:none;">0</span>
+        </button>
+        <div class="admin-avatar-group">
+          <div class="admin-avatar">SA</div>
+          <div>
+            <div class="admin-name">Sherif Amer</div>
+            <div class="admin-role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="adm-body">
+
+      <!-- ══════════════════════════════════════
+           PANEL: DASHBOARD
+      ══════════════════════════════════════ -->
+      <div class="adm-panel active" id="panel-dashboard">
+        <div class="stat-grid" id="stat-grid"></div>
+
+        <div class="quick-actions">
+          <button class="quick-action" onclick="switchPanel('audit')">
+            <div class="stat-card-icon" style="background:#fef3c7;"><svg width="18" height="18" fill="none" stroke="#d97706" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+            <div><div class="quick-action-label">Review Pending Audits</div><div class="quick-action-sub">Approve session summaries & trigger payouts</div></div>
+          </button>
+          <button class="quick-action" onclick="switchPanel('providers')">
+            <div class="stat-card-icon" style="background:#f0fdf4;"><svg width="18" height="18" fill="none" stroke="#15803d" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+            <div><div class="quick-action-label">Manage Providers</div><div class="quick-action-sub">Verify, activate, and manage RS & Doctors</div></div>
+          </button>
+          <button class="quick-action" onclick="switchPanel('financials')">
+            <div class="stat-card-icon" style="background:#ede9fe;"><svg width="18" height="18" fill="none" stroke="#6d28d9" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg></div>
+            <div><div class="quick-action-label">View Financials</div><div class="quick-action-sub">Transactions, revenue & payout history</div></div>
+          </button>
+        </div>
+
+        <div class="section-grid">
+          <div>
+            <div class="tbl-title" style="margin-bottom:12px; font-size:14px; font-weight:700; color:var(--dark);">Recent Appointments</div>
+            <div class="activity-feed" id="recent-apts"></div>
+          </div>
+          <div>
+            <div class="tbl-title" style="margin-bottom:12px; font-size:14px; font-weight:700; color:var(--dark);">Recent Transactions</div>
+            <div class="activity-feed" id="recent-txns"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           PANEL: SESSION AUDIT
+      ══════════════════════════════════════ -->
+      <div class="adm-panel" id="panel-audit">
+        <div class="tab-pills">
+          <div class="tab-pill active" id="audit-tab-pending" onclick="setAuditTab('pending')">⏳ Pending Review</div>
+          <div class="tab-pill" id="audit-tab-reviewed" onclick="setAuditTab('reviewed')">✅ Reviewed</div>
+        </div>
+        <div id="audit-pending-content"></div>
+        <div id="audit-reviewed-content" style="display:none;"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           PANEL: PROVIDERS
+      ══════════════════════════════════════ -->
+      <div class="adm-panel" id="panel-providers">
+        <div class="tbl-card">
+          <div class="tbl-header">
+            <div>
+              <div class="tbl-title">All Providers</div>
+              <div class="tbl-sub">Doctors and Rehab Specialists on the Ahilney network</div>
             </div>
-            <div class="stat-card">
-              <div>
-                <p class="stat-label">Pending Verification</p>
-                <p class="stat-value" id="stat-pending-providers">0</p>
-                <p style="font-size: 12px; color: var(--warning); font-weight: 600;">Action Required</p>
-              </div>
-              <div class="stat-icon" style="background-color: #fffbeb; color: var(--warning);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div>
-                <p class="stat-label">Total Sub-Admins</p>
-                <p class="stat-value" id="stat-subadmins">0</p>
-                <p style="font-size: 12px; color: var(--text-light);">Role-Based Staff</p>
-              </div>
-              <div class="stat-icon" style="background-color: var(--primary-light); color: var(--primary);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div>
-                <p class="stat-label">Active Promo Codes</p>
-                <p class="stat-value" id="stat-promocodes">0</p>
-                <p style="font-size: 12px; color: var(--success); font-weight: 600;">Marketing Active</p>
-              </div>
-              <div class="stat-icon" style="background-color: var(--secondary-light); color: var(--primary);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input class="adm-search" id="provider-search" placeholder="Search name…" oninput="renderProviders()">
+              <select class="adm-select" id="provider-type-filter" onchange="renderProviders()">
+                <option value="all">All Types</option>
+                <option value="RS">RS Only</option>
+                <option value="Doctor">Doctors Only</option>
+              </select>
+              <select class="adm-select" id="provider-status-filter" onchange="renderProviders()">
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="review">In Review</option>
+                <option value="interview">Interview</option>
+                <option value="contract">Contract</option>
+              </select>
             </div>
           </div>
-
-          <!-- Onboarding Pipelines Map/Overview -->
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Provider Onboarding Pipelines</h3>
-                <span class="table-subtitle">Summary of doctors and specialists currently progressing through verification.</span>
-              </div>
-            </div>
-            <div style="padding: 24px;">
-              <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
-                <!-- Step 1 Card -->
-                <div style="flex: 1; min-width: 180px; background: var(--light); padding: 16px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-                  <span class="badge badge-pending">Step 1: Upload</span>
-                  <p style="font-size: 20px; font-weight: 800; margin-top: 8px;" id="pipeline-count-pending">0</p>
-                  <p style="font-size: 11px; color: var(--text-light); margin-top: 4px;">Awaiting Documents</p>
-                </div>
-                <!-- Step 2 Card -->
-                <div style="flex: 1; min-width: 180px; background: var(--light); padding: 16px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-                  <span class="badge badge-review">Step 2: Review</span>
-                  <p style="font-size: 20px; font-weight: 800; margin-top: 8px;" id="pipeline-count-review">0</p>
-                  <p style="font-size: 11px; color: var(--text-light); margin-top: 4px;">Under Evaluation</p>
-                </div>
-                <!-- Step 3 Card -->
-                <div style="flex: 1; min-width: 180px; background: var(--light); padding: 16px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-                  <span class="badge badge-interview">Step 3: Interview</span>
-                  <p style="font-size: 20px; font-weight: 800; margin-top: 8px;" id="pipeline-count-interview">0</p>
-                  <p style="font-size: 11px; color: var(--text-light); margin-top: 4px;">Scheduled / Pending Meet</p>
-                </div>
-                <!-- Step 4 Card -->
-                <div style="flex: 1; min-width: 180px; background: var(--light); padding: 16px; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
-                  <span class="badge badge-contract">Step 4: Contract</span>
-                  <p style="font-size: 20px; font-weight: 800; margin-top: 8px;" id="pipeline-count-contract">0</p>
-                  <p style="font-size: 11px; color: var(--text-light); margin-top: 4px;">Pending Agreement</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Internal Sub-Admins Section inside Overview -->
-          <div class="table-card" style="margin-top: 24px;" id="subadmins-table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Internal Sub-Admins</h3>
-                <span class="table-subtitle">Manage internal staff, review capabilities, and roles.</span>
-              </div>
-              <button class="btn btn-primary" onclick="openAddSubadminModal()">+ Add Sub-Admin</button>
-            </div>
-            <table class="custom-table">
+          <div style="overflow-x:auto;">
+            <table class="adm-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Permissions</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="subadmins-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= VERIFICATION PIPELINE TAB ================= -->
-        <section id="tab-verification" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Providers Verification Pipeline</h3>
-                <span class="table-subtitle">Onboard, review certificates, interview, and activate Doctors or Rehab Specialists (RS).</span>
-              </div>
-              <div class="filters-bar">
-                <div class="search-input-wrapper">
-                  <input type="text" class="search-input" id="search-providers" placeholder="Search by name or email..." onkeyup="filterProvidersTable()">
-                  <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                </div>
-                <select class="select-filter" id="filter-type" onchange="filterProvidersTable()">
-                  <option value="ALL">All Types</option>
-                  <option value="Doctor">Doctors</option>
-                  <option value="RS">Rehab Specialists (RS)</option>
-                </select>
-                <select class="select-filter" id="filter-status" onchange="filterProvidersTable()">
-                  <option value="ALL">All Statuses</option>
-                  <option value="pending">Pending Docs</option>
-                  <option value="review">Docs Review</option>
-                  <option value="interview">Interview Stage</option>
-                  <option value="contract">Contract Stage</option>
-                  <option value="active">Active & Listed</option>
-                  <option value="rejected">Rejected</option>
-                </select>
-                <button class="btn btn-primary" onclick="openAddProviderModal()">+ Register Provider</button>
-              </div>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
+                  <th>Provider</th>
                   <th>Type</th>
                   <th>Specialty</th>
-                  <th>Documents</th>
                   <th>Status</th>
+                  <th>Regions</th>
+                  <th>Sessions</th>
+                  <th>Wallet</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="providers-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
+              <tbody id="providers-tbody"></tbody>
             </table>
           </div>
-        </section>
+        </div>
+      </div>
 
-        <!-- ================= SUB-ADMINS TAB ================= -->
-        <section id="tab-subadmins" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Internal Sub-Admins</h3>
-                <span class="table-subtitle">Manage internal staff, review capabilities, and roles.</span>
-              </div>
-              <button class="btn btn-primary" onclick="openAddSubadminModal()">+ Add Sub-Admin</button>
+      <!-- ══════════════════════════════════════
+           PANEL: PATIENTS
+      ══════════════════════════════════════ -->
+      <div class="adm-panel" id="panel-patients">
+        <div class="tbl-card">
+          <div class="tbl-header">
+            <div>
+              <div class="tbl-title">All Patients</div>
+              <div class="tbl-sub">Registered patients and their care records</div>
             </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Permissions</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="subadmins-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
+            <input class="adm-search" id="patient-search" placeholder="Search name…" oninput="renderPatients()">
           </div>
-        </section>
-
-        <!-- ================= PROMO CODES TAB ================= -->
-        <section id="tab-promocodes" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Promo Code Management</h3>
-                <span class="table-subtitle">Create, monitor usage, and configure coupon limits.</span>
-              </div>
-              <button class="btn btn-primary" onclick="openAddPromoModal()">+ Create Promo Code</button>
-            </div>
-            <table class="custom-table">
+          <div style="overflow-x:auto;">
+            <table class="adm-table">
               <thead>
                 <tr>
-                  <th>Promo Code</th>
-                  <th>Discount</th>
-                  <th>Usage Limit</th>
-                  <th>Current Uses</th>
-                  <th>Expiry Date</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="promocodes-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= PATIENTS TAB ================= -->
-        <section id="tab-patients" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Patient Management</h3>
-                <span class="table-subtitle">View patient case records, completed sessions, and wallet balances.</span>
-              </div>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Patient Name</th>
-                  <th>Contact Info</th>
-                  <th>Wallet Balance</th>
-                  <th>Sessions Completed</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="patients-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= FULL AUDIT LOG TAB ================= -->
-        <section id="tab-summaries" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Full Audit Log (All System Bookings)</h3>
-                <span class="table-subtitle">Read-only operational audit log of all Online Consultations, RS Home Care, and Clinic sessions.</span>
-              </div>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>Booking ID</th>
-                  <th>Booking Type</th>
-                  <th>Practitioner</th>
                   <th>Patient</th>
-                  <th>Time / Date</th>
-                  <th>Clinical Summary</th>
-                  <th>Patient Feedback</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="summaries-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= DOCTORS MANAGEMENT TAB ================= -->
-        <section id="tab-doctors" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Medical Doctors Directory</h3>
-                <span class="table-subtitle">Manage registered doctors, specialties, session pricing, and active status.</span>
-              </div>
-              <button class="btn btn-primary" onclick="openAddProviderModal()">+ Add Doctor</button>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Specialty</th>
-                  <th>Price & Duration</th>
-                  <th>Rating</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="doctors-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= REHAB SPECIALISTS (RS) TAB ================= -->
-        <section id="tab-rs_specialists" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Rehab Specialists (RS) Network</h3>
-                <span class="table-subtitle">Manage physical therapists, covered governorates/subregions, and session settings.</span>
-              </div>
-              <button class="btn btn-primary" onclick="openAddProviderModal()">+ Add RS Specialist</button>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Specialty</th>
-                  <th>Covered Regions</th>
-                  <th>Price & Duration</th>
-                  <th>Rating</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="rs-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= DOCTORS REPORT TAB ================= -->
-        <section id="tab-report_doctors" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Doctors Report</h3>
-                <span class="table-subtitle">Read-only operational report logging doctor consultations, ratings, and revenue.</span>
-              </div>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Doctor Name</th>
-                  <th>Specialty</th>
-                  <th>Completed Consultations</th>
-                  <th>Avg Rating</th>
-                  <th>Total Gross Revenue</th>
-                  <th>Payout Channel</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="report-doctors-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= RS REPORT TAB ================= -->
-        <section id="tab-report_rs" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Rehab Specialists (RS) Report</h3>
-                <span class="table-subtitle">Read-only operational report logging RS home visits, covered zones, and rating.</span>
-              </div>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>RS Specialist Name</th>
-                  <th>Specialty</th>
-                  <th>Covered Subregions</th>
-                  <th>Completed Visits</th>
-                  <th>Avg Rating</th>
-                  <th>Total Gross Revenue</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="report-rs-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= PATIENTS REPORT TAB ================= -->
-        <section id="tab-report_patients" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Patients Report</h3>
-                <span class="table-subtitle">Read-only operational report logging patient wallet balances, completed bookings, and medical history.</span>
-              </div>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Patient Name</th>
-                  <th>Contact Info</th>
-                  <th>Wallet Balance</th>
+                  <th>Contact</th>
+                  <th>Address</th>
                   <th>Completed Sessions</th>
-                  <th>Medical Record Case</th>
-                </tr>
-              </thead>
-              <tbody id="report-patients-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- ================= REGIONS TAB ================= -->
-        <section id="tab-regions" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Region Management</h3>
-                <span class="table-subtitle">Manage service operational areas and link subregions.</span>
-              </div>
-              <button class="btn btn-primary" onclick="openAddRegionModal()">+ Add Region</button>
-            </div>
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>Region (Icon)</th>
-                  <th>Arabic Name</th>
-                  <th>Currency</th>
-                  <th>Operational Subregions</th>
+                  <th>Wallet</th>
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="regions-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
+              <tbody id="patients-tbody"></tbody>
             </table>
           </div>
-        </section>
+        </div>
+      </div>
 
-
-
-        <!-- ================= TRANSACTIONS TAB ================= -->
-        <section id="tab-transactions" class="tab-content" style="display: none;">
-          <div class="table-card">
-            <div class="table-header">
-              <div class="table-header-left">
-                <h3 class="table-title">Payments & Payouts Ledger</h3>
-                <span class="table-subtitle">Review patient billing transaction receipts and approve provider payouts.</span>
-              </div>
+      <!-- ══════════════════════════════════════
+           PANEL: FINANCIALS
+      ══════════════════════════════════════ -->
+      <div class="adm-panel" id="panel-financials">
+        <div class="revenue-bar" id="revenue-bar"></div>
+        <div class="tbl-card">
+          <div class="tbl-header">
+            <div>
+              <div class="tbl-title">Transaction History</div>
+              <div class="tbl-sub">All payouts, commissions, and refunds</div>
             </div>
-            <table class="custom-table">
+            <select class="adm-select" id="txn-type-filter" onchange="renderFinancials()">
+              <option value="all">All Types</option>
+              <option value="Payout">Payouts</option>
+              <option value="Commission">Commissions</option>
+              <option value="Refund">Refunds</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="adm-table">
               <thead>
                 <tr>
                   <th>TXN ID</th>
                   <th>Date</th>
-                  <th>Transaction Type</th>
-                  <th>Entity Name</th>
+                  <th>Type</th>
+                  <th>Entity</th>
                   <th>Amount</th>
                   <th>Method</th>
-                  <th>Payout Destination</th>
                   <th>Status</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="transactions-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
+              <tbody id="txns-tbody"></tbody>
             </table>
           </div>
-        </section>
-
-
-
+        </div>
       </div>
-    </main>
-  </div>
 
-  <!-- ================= MODAL: PIPELINE REVIEW ================= -->
-  <div class="modal-overlay" id="modal-pipeline">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h3 class="modal-title" id="pipeline-modal-title">Verification Pipeline: [Name]</h3>
-        <button class="modal-close" onclick="closeModal('modal-pipeline')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        
-        <!-- Status indicator panel -->
-        <div class="verification-status-panel">
-          <div class="verification-status-icon" id="pipeline-status-icon" style="display:flex; align-items:center; justify-content:center;">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg>
-          </div>
-          <div class="verification-status-details">
-            <h4 id="pipeline-status-text">Ready for Documents Review</h4>
-            <p id="pipeline-status-desc">All onboarding stages must be checked off before live listing in the Doctor App.</p>
-          </div>
-        </div>
-
-        <h4 style="font-weight: 700; margin-bottom: 12px; font-size: 15px;">Progress Status Checkpoints:</h4>
-        
-        <!-- Interactive Step Visualiser -->
-        <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 24px;">
-          
-          <!-- Stage 1 -->
-          <div style="display: flex; gap: 16px; align-items: flex-start;">
-            <div class="pipeline-step" id="step-marker-1">1</div>
-            <div>
-              <h5 style="font-weight: 700; font-size: 14px;">Stage 1: Documents Upload</h5>
-              <p style="font-size: 12px; color: var(--text-light); margin-bottom: 6px;">National ID, medical credentials, board specializations, and practice permits.</p>
-              <div id="stage-upload-content">
-                <!-- list of docs or mock upload button -->
-              </div>
+      <!-- ══════════════════════════════════════
+           PANEL: PROMOTIONS
+      ══════════════════════════════════════ -->
+      <div class="adm-panel" id="panel-promotions">
+        <div class="section-grid">
+          <div class="tbl-card">
+            <div class="tbl-header">
+              <div class="tbl-title">Promo Codes</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="adm-table">
+                <thead>
+                  <tr><th>Code</th><th>Discount</th><th>Uses</th><th>Limit</th><th>Expiry</th><th>Status</th><th>Action</th></tr>
+                </thead>
+                <tbody id="promos-tbody"></tbody>
+              </table>
             </div>
           </div>
 
-          <!-- Stage 2 -->
-          <div style="display: flex; gap: 16px; align-items: flex-start;">
-            <div class="pipeline-step" id="step-marker-2">2</div>
-            <div>
-              <h5 style="font-weight: 700; font-size: 14px;">Stage 2: Documents Review & Approval</h5>
-              <p style="font-size: 12px; color: var(--text-light); margin-bottom: 8px;">Operations department verifies compliance and checks for authenticity.</p>
-              <div id="stage-review-actions" style="display: flex; gap: 10px;">
-                <button class="btn btn-primary btn-sm" onclick="approveDocuments()">Approve All Documents</button>
-                <button class="btn btn-danger btn-sm" onclick="rejectDocuments()">Reject</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Stage 3 -->
-          <div style="display: flex; gap: 16px; align-items: flex-start;">
-            <div class="pipeline-step" id="step-marker-3">3</div>
-            <div>
-              <h5 style="font-weight: 700; font-size: 14px;">Stage 3: Accept / Reject (Interview Stage)</h5>
-              <p style="font-size: 12px; color: var(--text-light); margin-bottom: 8px;">Conduct clinical panel/medical quality review meeting.</p>
-              <div id="stage-interview-actions" style="display: flex; gap: 10px;">
-                <button class="btn btn-primary btn-sm" onclick="passInterview()">Mark Interview Passed</button>
-                <button class="btn btn-danger btn-sm" onclick="rejectInterview()">Reject</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Stage 4 -->
-          <div style="display: flex; gap: 16px; align-items: flex-start;">
-            <div class="pipeline-step" id="step-marker-4">4</div>
-            <div>
-              <h5 style="font-weight: 700; font-size: 14px;">Stage 4: Physical Meeting & Contract Signing</h5>
-              <p style="font-size: 12px; color: var(--text-light); margin-bottom: 8px;">Final compliance protocols, fee structures alignment, and contract signing.</p>
-              <div id="stage-contract-actions">
-                <button class="btn btn-primary btn-sm" onclick="signContract()">Sign Contract & Ratify</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Stage 5 -->
-          <div style="display: flex; gap: 16px; align-items: flex-start;">
-            <div class="pipeline-step" id="step-marker-5">5</div>
-            <div>
-              <h5 style="font-weight: 700; font-size: 14px;">Stage 5: Listing & Launch in App</h5>
-              <p style="font-size: 12px; color: var(--text-light); margin-bottom: 8px;">List the provider to receive virtual or in-clinic session bookings.</p>
-              <div id="stage-launch-actions">
-                <button class="btn btn-primary btn-sm" onclick="toggleActiveStatus()">Activate Provider</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: REGISTER PROVIDER ================= -->
-  <div class="modal-overlay" id="modal-add-provider">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h3 class="modal-title">Register New Provider Profile</h3>
-        <button class="modal-close" onclick="closeModal('modal-add-provider')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <form id="form-add-provider" onsubmit="submitAddProviderForm(event)">
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Provider Name</label>
-              <input type="text" class="form-control" id="new-prov-name" placeholder="e.g. Dr. Adam Smith" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Provider Type</label>
-              <select class="form-control" id="new-prov-type" required>
-                <option value="Doctor">Doctor</option>
-                <option value="RS">Rehab Specialist (RS)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Specialty Field</label>
-              <input type="text" class="form-control" id="new-prov-specialty" placeholder="e.g. Orthopedics" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" class="form-control" id="new-prov-email" placeholder="email@gmail.com" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Phone Number</label>
-              <input type="text" class="form-control" id="new-prov-phone" placeholder="+201..." required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Session Base Price</label>
-              <input type="text" class="form-control" id="new-prov-price" placeholder="400 EGP" required>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-provider')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Profile</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: ADD SUB-ADMIN ================= -->
-  <div class="modal-overlay" id="modal-add-subadmin">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h3 class="modal-title">Create Internal Sub-Admin Profile</h3>
-        <button class="modal-close" onclick="closeModal('modal-add-subadmin')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <form id="form-add-subadmin" onsubmit="submitAddSubadminForm(event)">
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Staff Name</label>
-              <input type="text" class="form-control" id="new-admin-name" placeholder="e.g. Ahmed Ali" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" class="form-control" id="new-admin-email" placeholder="admin@ahilney.com" required>
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Role Designation</label>
-              <select class="form-control" id="new-admin-role" required>
-                <option value="Super Admin">Super Admin</option>
-                <option value="Operations Lead">Operations Lead</option>
-                <option value="Document Reviewer">Document Reviewer</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-subadmin')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Member</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: ADD PROMO CODE ================= -->
-  <div class="modal-overlay" id="modal-add-promo">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h3 class="modal-title">Create Promo Discount Code</h3>
-        <button class="modal-close" onclick="closeModal('modal-add-promo')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <form id="form-add-promo" onsubmit="submitAddPromoForm(event)">
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Promo Coupon Code</label>
-              <input type="text" class="form-control" id="new-promo-code" placeholder="e.g. SUMMER50" style="text-transform: uppercase;" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Discount Value</label>
-              <input type="text" class="form-control" id="new-promo-discount" placeholder="e.g. 25% or 100 EGP" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Max Usage Limit</label>
-              <input type="number" class="form-control" id="new-promo-limit" placeholder="300" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Expiry Date</label>
-              <input type="date" class="form-control" id="new-promo-expiry" required>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-promo')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Publish Coupon</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: EDIT SUB-ADMIN ================= -->
-  <div class="modal-overlay" id="modal-edit-subadmin">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h3 class="modal-title">Edit Internal Sub-Admin Profile</h3>
-        <button class="modal-close" onclick="closeModal('modal-edit-subadmin')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <form id="form-edit-subadmin" onsubmit="submitEditSubadminForm(event)">
-        <input type="hidden" id="edit-admin-id">
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Staff Name</label>
-              <input type="text" class="form-control" id="edit-admin-name" placeholder="e.g. Ahmed Ali" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Email Address</label>
-              <input type="email" class="form-control" id="edit-admin-email" placeholder="admin@ahilney.com" required>
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Role Designation</label>
-              <select class="form-control" id="edit-admin-role" required>
-                <option value="Super Admin">Super Admin</option>
-                <option value="Operations Lead">Operations Lead</option>
-                <option value="Document Reviewer">Document Reviewer</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-edit-subadmin')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: EDIT PROMO CODE ================= -->
-  <div class="modal-overlay" id="modal-edit-promo">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h3 class="modal-title">Edit Promo Discount Code</h3>
-        <button class="modal-close" onclick="closeModal('modal-edit-promo')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <form id="form-edit-promo" onsubmit="submitEditPromoForm(event)">
-        <input type="hidden" id="edit-promo-old-code">
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Promo Coupon Code</label>
-              <input type="text" class="form-control" id="edit-promo-code" placeholder="e.g. SUMMER50" style="text-transform: uppercase;" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Discount Value</label>
-              <input type="text" class="form-control" id="edit-promo-discount" placeholder="e.g. 25% or 100 EGP" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Max Usage Limit</label>
-              <input type="number" class="form-control" id="edit-promo-limit" placeholder="300" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Current Uses</label>
-              <input type="number" class="form-control" id="edit-promo-uses" placeholder="0" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Expiry Date</label>
-              <input type="date" class="form-control" id="edit-promo-expiry" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Status</label>
-              <select class="form-control" id="edit-promo-status" required>
-                <option value="active">Active</option>
-                <option value="expired">Expired</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-edit-promo')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: VIEW PATIENT DETAILS ================= -->
-  <div class="modal-overlay" id="modal-view-patient">
-    <div class="modal-container" style="max-width: 600px;">
-      <div class="modal-header">
-        <h3 class="modal-title">Patient Profile & Medical History</h3>
-        <button class="modal-close" onclick="closeModal('modal-view-patient')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div class="modal-body" id="patient-detail-body">
-        <!-- Dynamically populated -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-view-patient')">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: REVIEW SESSION SUMMARY ================= -->
-  <div class="modal-overlay" id="modal-review-summary">
-    <div class="modal-container" style="max-width: 550px;">
-      <div class="modal-header">
-        <h3 class="modal-title">Clinical Panel Review</h3>
-        <button class="modal-close" onclick="closeModal('modal-review-summary')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div class="modal-body" id="summary-review-body">
-        <!-- Dynamically populated -->
-      </div>
-      <div class="modal-footer" style="display:flex; justify-content:space-between; width:100%;">
-        <button type="button" class="btn btn-danger" id="summary-reject-btn">Reject Summary</button>
-        <button type="button" class="btn btn-primary" id="summary-approve-btn">Approve Summary</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: SIMULATE SUMMARY SUBMISSION ================= -->
-  <div class="modal-overlay" id="modal-simulate-summary">
-    <div class="modal-container" style="max-width: 550px;">
-      <div class="modal-header">
-        <h3 class="modal-title">Simulate Practitioner Submission</h3>
-        <button class="modal-close" onclick="closeModal('modal-simulate-summary')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <form onsubmit="submitSimulatedSummary(event)">
-        <input type="hidden" id="sim-apt-id">
-        <div class="modal-body">
-          <div style="margin-bottom: 12px;">
-            <label class="form-label" style="font-size:11px; font-weight:700; color:var(--dark);">Chief Complaint</label>
-            <textarea id="sim-complaint" class="form-control" style="height:60px; font-size:12px;" required placeholder="e.g. Knee extension stiffness"></textarea>
-          </div>
-          <div style="margin-bottom: 12px;">
-            <label class="form-label" style="font-size:11px; font-weight:700; color:var(--dark);">Clinical Diagnosis</label>
-            <textarea id="sim-diagnosis" class="form-control" style="height:60px; font-size:12px;" required placeholder="e.g. Post-ACL stiffness"></textarea>
-          </div>
-          <div style="margin-bottom: 12px;">
-            <label class="form-label" style="font-size:11px; font-weight:700; color:var(--dark);">Prescribed Treatment Plan</label>
-            <textarea id="sim-plan" class="form-control" style="height:80px; font-size:12px;" required placeholder="e.g. Hamstring curls 3x10 daily"></textarea>
-          </div>
-        </div>
-        <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:10px;">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-simulate-summary')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Submit Summary</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: ADD REGION ================= -->
-  <div class="modal-overlay" id="modal-add-region">
-    <div class="modal-container">
-      <div class="modal-header">
-        <h3 class="modal-title">Add Operational Region</h3>
-        <button class="modal-close" onclick="closeModal('modal-add-region')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <form id="form-add-region" onsubmit="submitAddRegionForm(event)">
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Region Name (English)</label>
-              <input type="text" class="form-control" id="region-name-en" placeholder="e.g. Egypt" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Region Name (Arabic)</label>
-              <input type="text" class="form-control" id="region-name-ar" placeholder="e.g. مصر" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Region Icon (Emoji)</label>
-              <input type="text" class="form-control" id="region-icon" placeholder="e.g. 🇪🇬" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Currency Code</label>
-              <input type="text" class="form-control" id="region-currency" placeholder="e.g. EGP" required>
-            </div>
-            <div class="form-group full-width">
-              <label class="form-label">Subregions (Comma Separated)</label>
-              <input type="text" class="form-control" id="region-subregions" placeholder="e.g. New Cairo, Al-Raml, Heliopolis" required>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-region')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Create Region</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-
-
-  <script src="app.js"></script>
-  <script>
-    let activeProviderId = null;
-
-    // Switch sidebar tab
-    function switchTab(tabId) {
-      if (tabId === 'subadmins') {
-        tabId = 'dashboard';
-        setTimeout(() => {
-          const card = document.getElementById('subadmins-table-card');
-          if (card) card.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      }
-
-      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-      
-      const tabEl = document.getElementById(`tab-${tabId}`);
-      if (tabEl) tabEl.style.display = 'block';
-      
-      const activeLink = document.querySelector(`a[onclick="switchTab('${tabId}')"]`);
-      if (activeLink) activeLink.classList.add('active');
-
-      const pageTitles = {
-        'dashboard': 'Dashboard Overview',
-        'verification': 'Providers Verification Pipeline',
-        'subadmins': 'Dashboard Overview (Sub-Admins)',
-        'patients': 'Patients Directory',
-        'doctors': 'Doctors Directory & Management',
-        'rs_specialists': 'Rehab Specialists (RS) Network',
-        'promocodes': 'Promo Codes & Marketing',
-        'summaries': 'Reports: Full Audit Log',
-        'report_doctors': 'Reports: Doctors',
-        'report_rs': 'Reports: RS',
-        'report_patients': 'Reports: Patients',
-        'regions': 'Region & Subregion Management',
-        'banners': 'App Promotion Banners',
-        'transactions': 'Payment Transactions & Withdrawals',
-        'chats': 'Chat & Support Monitoring'
-      };
-      document.getElementById('page-title-text').innerText = pageTitles[tabId] || 'Ahilney Admin';
-
-      renderAllData();
-    }
-
-    // Modal Control
-    function openModal(id) {
-      document.getElementById(id).classList.add('open');
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('open');
-    }
-
-    // Rendering Logic
-    function renderAllData() {
-      const providers = getProviders();
-      const subAdmins = getSubAdmins();
-      const promoCodes = getPromoCodes();
-
-      // Stats counters
-      const activeCount = providers.filter(p => p.status === 'active').length;
-      const pendingCount = providers.filter(p => p.status !== 'active' && p.status !== 'rejected').length;
-      
-      document.getElementById('stat-active-providers').innerText = activeCount;
-      document.getElementById('stat-pending-providers').innerText = pendingCount;
-      document.getElementById('stat-subadmins').innerText = subAdmins.length;
-      document.getElementById('stat-promocodes').innerText = promoCodes.filter(c => c.status === 'active').length;
-
-      // Pipeline status breakdowns
-      document.getElementById('pipeline-count-pending').innerText = providers.filter(p => p.status === 'pending').length;
-      document.getElementById('pipeline-count-review').innerText = providers.filter(p => p.status === 'review').length;
-      document.getElementById('pipeline-count-interview').innerText = providers.filter(p => p.status === 'interview').length;
-      document.getElementById('pipeline-count-contract').innerText = providers.filter(p => p.status === 'contract').length;
-
-      // Unread action items marker
-      const reviewerAlert = providers.some(p => p.status === 'review');
-      document.getElementById('admin-notif-dot').style.display = reviewerAlert ? 'block' : 'none';
-
-      // Providers Table
-      const providersTbody = document.getElementById('providers-table-body');
-      providersTbody.innerHTML = '';
-      providers.forEach(p => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
-          <td>
-            <div style="font-weight:600; color:var(--dark);">${p.name}</div>
-            <div style="font-size:12px; color:var(--text-light);">${p.email}</div>
-          </td>
-          <td><span class="badge ${p.type === 'Doctor' ? 'badge-interview' : 'badge-contract'}">${p.type === 'Doctor' ? 'Doctor' : 'Rehab Specialist'}</span></td>
-          <td style="font-weight:500;">${p.specialty}</td>
-          <td>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:12px; font-weight:600;">${p.documents.length}/3</span>
-              <div style="width:60px; height:6px; background-color:var(--border); border-radius:3px; overflow:hidden;">
-                <div style="width:${(p.documents.length/3)*100}%; height:100%; background-color:var(--primary);"></div>
-              </div>
-            </div>
-          </td>
-          <td><span class="badge badge-${p.status}">${p.status === 'pending' ? 'Pending Docs' : p.status === 'review' ? 'Docs Review' : p.status === 'interview' ? 'Interview' : p.status === 'contract' ? 'Contract' : p.status === 'active' ? 'Active & Listed' : 'Rejected'}</span></td>
-          <td>
-            <button class="btn btn-secondary btn-sm" onclick="openPipelineReview('${p.id}')">Review Pipeline</button>
-          </td>
-        `;
-        providersTbody.appendChild(row);
-      });
-
-      // Subadmins Table
-      const subadminsTbody = document.getElementById('subadmins-table-body');
-      subadminsTbody.innerHTML = '';
-      subAdmins.forEach(s => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${s.id}</td>
-          <td style="font-weight:600; color:var(--dark);">${s.name}</td>
-          <td>${s.email}</td>
-          <td><span class="badge badge-active">${s.role}</span></td>
-          <td style="font-size:12px; color:var(--text-light); font-weight:500;">Can Approve Verification, Edit Configuration, View Transactions</td>
-          <td>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-secondary btn-sm" onclick="openEditSubadminModal('${s.id}')">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteSubadmin('${s.id}')">Delete</button>
-            </div>
-          </td>
-        `;
-        subadminsTbody.appendChild(row);
-      });
-
-      // Promo Codes Table
-      const promoTbody = document.getElementById('promocodes-table-body');
-      promoTbody.innerHTML = '';
-      promoCodes.forEach(c => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--primary); font-family:monospace; font-size:15px;">${c.code}</td>
-          <td style="font-weight:600; color:var(--dark);">${c.discount}</td>
-          <td>${c.maxUses} uses</td>
-          <td>${c.uses} redeemed</td>
-          <td>${c.expiry}</td>
-          <td><span class="badge badge-${c.status}">${c.status}</span></td>
-          <td>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-secondary btn-sm" onclick="openEditPromoModal('${c.code}')">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deletePromoCode('${c.code}')">Delete</button>
-            </div>
-          </td>
-        `;
-        promoTbody.appendChild(row);
-      });
-
-      renderPatientsTable();
-      renderDoctorsTable();
-      renderRSTable();
-      renderDoctorsReportTable();
-      renderRSReportTable();
-      renderPatientsReportTable();
-      renderSummariesTable();
-      renderRegionsTable();
-      renderBannersGrid();
-      renderTransactionsTable();
-      renderChatChannelsList();
-    }
-
-    // New management tabs rendering and action handlers (Requirement 2 & 6)
-    function renderPatientsTable() {
-      const patients = getPatients();
-      const tbody = document.getElementById('patients-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      patients.forEach(p => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
-          <td style="font-weight:600; color:var(--dark);">${p.name}</td>
-          <td style="font-size:13px; color:var(--text);">${p.phone}<br><span style="font-size:11px; color:var(--text-light);">${p.email}</span></td>
-          <td style="font-weight:600; color:var(--primary);">${p.walletBalance} EGP</td>
-          <td><span class="badge badge-active">${p.completedSessionsCount || 0} completed</span></td>
-          <td>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button class="btn btn-secondary btn-sm" onclick="viewPatientDetails('${p.id}')">View History</button>
-              <button class="btn btn-warning btn-sm" style="background:#fffbeb; color:#b45309; border-color:#fef3c7;" onclick="promptIssueRefund('${p.id}')">Issue Refund</button>
-              <button class="btn btn-primary btn-sm" onclick="promptAddSessions('${p.id}')">+ Add Sessions</button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function renderDoctorsTable() {
-      const providers = getProviders().filter(p => p.type === 'Doctor');
-      const tbody = document.getElementById('doctors-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      providers.forEach(p => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
-          <td style="font-weight:600; color:var(--dark);">${p.name}<br/><span style="font-size:11px; color:var(--text-light);">${p.email}</span></td>
-          <td>${p.specialty}</td>
-          <td style="font-weight:600; color:var(--primary);">${p.price} / ${p.duration}</td>
-          <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span> (${p.reviewCount || 15})</td>
-          <td><span class="badge badge-${p.status}">${p.status}</span></td>
-          <td>
-            <button class="btn btn-secondary btn-sm" onclick="openPipelineReview('${p.id}')">View Details</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function renderRSTable() {
-      const providers = getProviders().filter(p => p.type === 'RS');
-      const tbody = document.getElementById('rs-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      providers.forEach(p => {
-        const regions = (p.regionsCovered && p.regionsCovered.length > 0) ? p.regionsCovered.join(', ') : 'None assigned';
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
-          <td style="font-weight:600; color:var(--dark);">${p.name}<br/><span style="font-size:11px; color:var(--text-light);">${p.email}</span></td>
-          <td>${p.specialty}</td>
-          <td style="max-width:180px; font-size:11px; color:var(--primary); font-weight:600;">${regions}</td>
-          <td style="font-weight:600; color:var(--primary);">${p.price} / ${p.duration}</td>
-          <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span> (${p.reviewCount || 15})</td>
-          <td><span class="badge badge-${p.status}">${p.status}</span></td>
-          <td>
-            <button class="btn btn-secondary btn-sm" onclick="openPipelineReview('${p.id}')">View Details</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function renderDoctorsReportTable() {
-      const providers = getProviders().filter(p => p.type === 'Doctor');
-      const appointments = getAppointments();
-      const tbody = document.getElementById('report-doctors-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      providers.forEach(p => {
-        const docApts = appointments.filter(a => a.providerId === p.id && a.status === 'Finished');
-        const totalGross = docApts.reduce((sum, a) => sum + (a.price || 450), 0);
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
-          <td style="font-weight:600; color:var(--dark);">${p.name}</td>
-          <td>${p.specialty}</td>
-          <td style="font-weight:700; color:var(--primary);">${docApts.length} consultations</td>
-          <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span></td>
-          <td style="font-weight:700; color:var(--dark);">${totalGross} EGP</td>
-          <td style="font-size:11px; color:var(--text-light);">${p.payoutDetails || 'Bank: CIB'}</td>
-          <td><span class="badge badge-${p.status}">${p.status}</span></td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function renderRSReportTable() {
-      const providers = getProviders().filter(p => p.type === 'RS');
-      const appointments = getAppointments();
-      const tbody = document.getElementById('report-rs-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      providers.forEach(p => {
-        const rsApts = appointments.filter(a => a.providerId === p.id && a.status === 'Finished');
-        const totalGross = rsApts.reduce((sum, a) => sum + (a.price || 400), 0);
-        const regions = (p.regionsCovered && p.regionsCovered.length > 0) ? p.regionsCovered.join(', ') : 'All Subregions';
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
-          <td style="font-weight:600; color:var(--dark);">${p.name}</td>
-          <td>${p.specialty}</td>
-          <td style="max-width:180px; font-size:11px; color:var(--primary); font-weight:600;">${regions}</td>
-          <td style="font-weight:700; color:var(--primary);">${rsApts.length} visits</td>
-          <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span></td>
-          <td style="font-weight:700; color:var(--dark);">${totalGross} EGP</td>
-          <td><span class="badge badge-${p.status}">${p.status}</span></td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function renderPatientsReportTable() {
-      const patients = getPatients();
-      const tbody = document.getElementById('report-patients-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      patients.forEach(p => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
-          <td style="font-weight:600; color:var(--dark);">${p.name}</td>
-          <td style="font-size:12px;">${p.phone}<br/><span style="font-size:11px; color:var(--text-light);">${p.email}</span></td>
-          <td style="font-weight:700; color:var(--primary);">${p.walletBalance} EGP</td>
-          <td><span class="badge badge-active">${p.completedSessionsCount || 0} completed</span></td>
-          <td style="max-width:200px; font-size:11px; color:var(--text);">${p.history || 'No medical record'}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    // REQUIREMENT 6: Exclusive Ops Team Financial Actions
-    function promptIssueRefund(patientId) {
-      const amtStr = prompt("Enter Refund Amount (EGP):", "400");
-      if (!amtStr) return;
-      const reason = prompt("Enter Refund Reason:", "RS Rejection / Operational Refund");
-      if (issuePatientRefund(patientId, parseFloat(amtStr), reason)) {
-        alert(`Refund of ${amtStr} EGP issued successfully to patient wallet!`);
-        renderPatientsTable();
-        renderTransactionsTable();
-      }
-    }
-
-    function promptAddSessions(patientId) {
-      const countStr = prompt("Enter number of package sessions to add to patient balance:", "3");
-      if (!countStr) return;
-      if (addPackageSessions(patientId, parseInt(countStr))) {
-        alert(`Added ${countStr} session(s) to patient package balance!`);
-        renderPatientsTable();
-      }
-    }
-
-    function viewPatientDetails(id) {
-      const patients = getPatients();
-      const p = patients.find(item => item.id === id);
-      if (!p) return;
-
-      const body = document.getElementById('patient-detail-body');
-      body.innerHTML = `
-        <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
-          <div class="patient-img-placeholder" style="width:54px; height:54px; font-size:18px; display:flex; align-items:center; justify-content:center; background:var(--light); border-radius:50%; font-weight:700; color:var(--primary);">${p.name.split(' ').map(n=>n[0]).join('')}</div>
-          <div>
-            <h4 style="font-size:16px; font-weight:700; color:var(--dark);">${p.name}</h4>
-            <p style="font-size:12px; color:var(--text-light);">${p.age} | ${p.phone} | ${p.email}</p>
-          </div>
-        </div>
-        <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">Visit Address</p>
-        <p style="font-size:13px; margin-top:4px; color:var(--text); margin-bottom:15px;">${p.address}</p>
-
-        <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">Medical Case History</p>
-        <p style="font-size:13px; margin-top:4px; color:var(--text); margin-bottom:15px;">${p.history}</p>
-
-        <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-top:15px;">
-          <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">📄 Doctor Treatment Plan Audit Log</p>
-          <p style="color:var(--dark); font-weight:500; font-style:italic; margin-top:4px;">"${p.prescription ? p.prescription.text : ''}"</p>
-          <p style="font-size:11px; margin-top:6px; color:var(--text-light);">Prescribed by: <strong>${p.prescription ? p.prescription.doctor : 'Doctor'}</strong></p>
-        </div>
-      `;
-      openModal('modal-view-patient');
-    }
-
-    // Full Audit Log for All Bookings (Online Doctor, RS Home, RS Clinic)
-    function renderSummariesTable() {
-      const appointments = getAppointments();
-      const summaries = getSummaries();
-      const tbody = document.getElementById('summaries-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      const providers = getProviders();
-      const patients = getPatients();
-
-      appointments.forEach(apt => {
-        const s = summaries.find(item => item.appointmentId === apt.id);
-        const prov = providers.find(p => p.id === apt.providerId);
-        const pat = patients.find(p => p.id === apt.patientId);
-        const provName = prov ? prov.name : 'Clinical Specialist';
-        const patName = pat ? pat.name : 'Patient';
-
-        const feedbackHtml = apt.rating ? 
-          `<div style="font-size:11px;"><span style="color:#fbbf24; font-weight:700;">${'★'.repeat(apt.rating)}${'☆'.repeat(5-apt.rating)}</span> <br/><span style="color:var(--dark); font-style:italic;">"${apt.feedback || ''}"</span></div>` : 
-          `<span style="color:var(--text-light); font-size:11px; font-style:italic;">No feedback yet</span>`;
-
-        const summaryText = s ? 
-          `<div style="font-size:11px;"><strong>Diag:</strong> ${s.diagnosis}<br/><span style="color:var(--primary); font-weight:600;"><strong>Plan:</strong> ${s.treatmentPlan}</span></div>` : 
-          `<span style="color:var(--text-light); font-size:11px; font-style:italic;">Pending Clinical Log</span>`;
-
-        const typeBadge = apt.type.includes('Online') ? 
-          `<span class="badge badge-interview">Online Doctor</span>` : 
-          apt.type.includes('Home') ? 
-          `<span class="badge badge-contract">RS Home Care</span>` : 
-          `<span class="badge badge-active">RS Rehab Center</span>`;
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light);">${apt.id}</td>
-          <td>${typeBadge}</td>
-          <td style="font-weight:600; color:var(--dark);">${provName}</td>
-          <td>${patName}</td>
-          <td style="font-size:12px;">${apt.time}</td>
-          <td style="max-width:200px;">${summaryText}</td>
-          <td style="max-width:200px;">${feedbackHtml}</td>
-          <td><span class="badge ${apt.status === 'Finished' ? 'badge-active' : 'badge-review'}">${apt.status}</span></td>
-          <td>
-            ${s ? `<button class="btn btn-secondary btn-sm" onclick="openReviewSummaryModal('${s.id}')">Audit Details</button>` : `<button class="btn btn-primary btn-sm" style="background:var(--primary); border-color:var(--primary);" onclick="openSimulateSubmissionModal('${apt.id}')">Simulate Doctor Log</button>`}
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function openReviewSummaryModal(id) {
-      const summaries = getSummaries();
-      const s = summaries.find(item => item.id === id);
-      if (!s) return;
-
-      const providers = getProviders();
-      const patients = getPatients();
-      const prov = providers.find(p => p.id === s.providerId);
-      const pat = patients.find(p => p.id === s.patientId);
-
-      const body = document.getElementById('summary-review-body');
-      body.innerHTML = `
-        <div style="background:var(--primary-light); color:var(--primary); padding:10px 12px; border-radius:8px; font-size:11px; font-weight:700; margin-bottom:14px;">
-          ℹ️ Read-Only Treatment Plan Audit Log (No Operations Approval Required)
-        </div>
-        <div style="margin-bottom:12px;">
-          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Doctor / Practitioner</strong>
-          <span style="font-size:13px; font-weight:600; color:var(--dark);">${prov ? prov.name : 'Unknown Doctor'} (${prov ? prov.type : ''})</span>
-        </div>
-        <div style="margin-bottom:12px;">
-          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Patient</strong>
-          <span style="font-size:13px; font-weight:600; color:var(--dark);">${pat ? pat.name : 'Unknown Patient'}</span>
-        </div>
-        <div style="margin-bottom:12px; border-top:1px solid var(--border); padding-top:8px;">
-          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Chief Complaint</strong>
-          <p style="font-size:12px; color:var(--text); margin-top:2px;">${s.complaint}</p>
-        </div>
-        <div style="margin-bottom:12px;">
-          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Clinical Diagnosis</strong>
-          <p style="font-size:12px; color:var(--text); margin-top:2px;">${s.diagnosis}</p>
-        </div>
-        <div style="margin-bottom:12px;">
-          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Logged Treatment Plan</strong>
-          <p style="font-size:12px; color:var(--primary); font-weight:600; margin-top:2px;">${s.treatmentPlan}</p>
-        </div>
-        ${(() => {
-          const apts = getAppointments();
-          const apt = apts.find(a => a.id === s.appointmentId);
-          if (apt && apt.rating) {
-            const stars = '★'.repeat(apt.rating) + '☆'.repeat(5 - apt.rating);
-            const fbText = apt.feedback || '';
-            return `
-              <div style="margin-top:16px; background:rgba(251, 191, 36, 0.1); border:1px solid #fde68a; padding:12px; border-radius:8px;">
-                <strong style="font-size:11px; color:#b45309; text-transform:uppercase; display:block;">Patient Feedback</strong>
-                <div style="margin-top:4px; font-size:16px; color:#fbbf24;">${stars}</div>
-                <div style="margin-top:4px; font-size:12px; font-style:italic; color:#92400e;">"${fbText}"</div>
-              </div>
-            `;
-          }
-          return '';
-        })()}
-      `;
-
-      // Hide approve/reject buttons since Ops does not approve or reject doctor treatment plans
-      document.getElementById('summary-reject-btn').style.display = 'none';
-      document.getElementById('summary-approve-btn').style.display = 'none';
-
-      openModal('modal-review-summary');
-    }
-
-    function auditSummary(summaryId, newStatus) {
-      const summaries = getSummaries();
-      const s = summaries.find(item => item.id === summaryId);
-      if (!s) return;
-
-      s.status = newStatus;
-      saveSummaries(summaries);
-
-      if (newStatus === 'Approved') {
-        const appointments = getAppointments();
-        const apt = appointments.find(a => a.id === s.appointmentId);
-        const payoutAmount = apt ? Math.round(apt.price / (apt.packageSize || 1)) : 400;
-
-        const txns = getTransactions();
-        const providers = getProviders();
-        const prov = providers.find(p => p.id === s.providerId);
-        const provName = prov ? prov.name : 'Doctor';
-
-        txns.unshift({
-          id: `TXN-${String(txns.length + 1).padStart(3, '0')}`,
-          date: new Date().toISOString().split('T')[0],
-          type: "Payout",
-          entityName: provName,
-          amount: payoutAmount,
-          status: "Completed",
-          method: "Online"
-        });
-        saveTransactions(txns);
-
-        const patients = getPatients();
-        const pat = patients.find(p => p.id === s.patientId);
-        if (pat) {
-          pat.completedSessionsCount = (pat.completedSessionsCount || 0) + 1;
-          
-          if (!pat.treatmentPlans) pat.treatmentPlans = [];
-          const newPlanId = `PLAN-${String(Date.now()).substring(7)}`;
-          pat.treatmentPlans.unshift({
-            id: newPlanId,
-            doctorName: provName,
-            diagnosis: s.diagnosis,
-            text: s.treatmentPlan,
-            date: new Date().toISOString().split('T')[0],
-            status: "Approved"
-          });
-          
-          pat.prescription = {
-            text: s.treatmentPlan,
-            doctor: provName
-          };
-
-          savePatients(patients);
-        }
-
-        const notifs = getNotifications(s.providerId);
-        notifs.unshift({
-          id: Date.now(),
-          text: `Payment Received: ${payoutAmount} EGP has been added to your wallet for Session ${s.appointmentId}.`,
-          time: "Just Now"
-        });
-        saveNotifications(s.providerId, notifs);
-        
-        if (apt) {
-          apt.completedSessions = (apt.completedSessions || 0) + 1;
-          const totalSessions = apt.packageSize || 1;
-          if (apt.completedSessions >= totalSessions) {
-            apt.status = 'Finished';
-          } else {
-            apt.status = 'Upcoming';
-          }
-          saveAppointments(appointments);
-        }
-      } else {
-        const notifs = getNotifications(s.providerId);
-        notifs.unshift({
-          id: Date.now(),
-          text: `Summary Rejected: Your session summary for Session ${s.appointmentId} was rejected by clinical panel. Please review and correct.`,
-          time: "Just Now"
-        });
-        saveNotifications(s.providerId, notifs);
-
-        const appointments = getAppointments();
-        const apt = appointments.find(a => a.id === s.appointmentId);
-        if (apt) {
-          apt.status = 'Need Summary';
-          saveAppointments(appointments);
-        }
-      }
-
-      closeModal('modal-review-summary');
-    }
-
-    function openSimulateSubmissionModal(aptId) {
-      document.getElementById('sim-apt-id').value = aptId;
-      document.getElementById('sim-complaint').value = "";
-      document.getElementById('sim-diagnosis').value = "";
-      document.getElementById('sim-plan').value = "";
-      openModal('modal-simulate-summary');
-    }
-
-    function submitSimulatedSummary(e) {
-      e.preventDefault();
-      const aptId = document.getElementById('sim-apt-id').value;
-      const complaint = document.getElementById('sim-complaint').value;
-      const diagnosis = document.getElementById('sim-diagnosis').value;
-      const treatmentPlan = document.getElementById('sim-plan').value;
-
-      const appointments = getAppointments();
-      const apt = appointments.find(a => a.id === aptId);
-      if (!apt) return;
-
-      const summaries = getSummaries();
-      const newId = `SUM-${String(summaries.length + 1).padStart(3, '0')}`;
-      summaries.unshift({
-        id: newId,
-        appointmentId: aptId,
-        providerId: apt.providerId,
-        patientId: apt.patientId,
-        date: new Date().toISOString().split('T')[0],
-        complaint,
-        diagnosis,
-        treatmentPlan,
-        status: "Pending"
-      });
-      saveSummaries(summaries);
-
-      apt.status = "Awaiting Audit";
-      saveAppointments(appointments);
-
-      closeModal('modal-simulate-summary');
-      renderAllData();
-      alert(`Simulated summary ${newId} submitted successfully! It is now pending audit.`);
-    }
-
-    function renderRegionsTable() {
-      const regions = getRegions();
-      const tbody = document.getElementById('regions-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      regions.forEach(r => {
-        const subList = r.subregions.map(s => s.name).join(', ');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--dark);">${r.icon} ${r.name}</td>
-          <td>${r.nameAr}</td>
-          <td style="font-weight:600; color:var(--primary);">${r.currency}</td>
-          <td style="font-size:12px; color:var(--text-light); max-width:300px;">${subList}</td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteRegion('${r.id}')">Delete</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function openAddRegionModal() {
-      document.getElementById('form-add-region').reset();
-      openModal('modal-add-region');
-    }
-
-    function submitAddRegionForm(e) {
-      e.preventDefault();
-      const name = document.getElementById('region-name-en').value;
-      const nameAr = document.getElementById('region-name-ar').value;
-      const icon = document.getElementById('region-icon').value;
-      const currency = document.getElementById('region-currency').value;
-      const subStr = document.getElementById('region-subregions').value;
-
-      const subregions = subStr.split(',').map(s => ({ name: s.trim(), nameAr: s.trim() }));
-      const regions = getRegions();
-      const newId = `REG-${String(regions.length + 1).padStart(3, '0')}`;
-
-      regions.push({ id: newId, name, nameAr, icon, currency, subregions });
-      saveRegions(regions);
-      closeModal('modal-add-region');
-      renderAllData();
-    }
-
-    function deleteRegion(id) {
-      if (!confirm("Are you sure you want to delete this region?")) return;
-      const regions = getRegions();
-      const filtered = regions.filter(r => r.id !== id);
-      saveRegions(filtered);
-      renderAllData();
-    }
-
-    function renderBannersGrid() {
-      const banners = getBanners();
-      const grid = document.getElementById('banners-grid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      banners.forEach(b => {
-        const card = document.createElement('div');
-        card.style.background = 'var(--white)';
-        card.style.borderRadius = '12px';
-        card.style.border = '1px solid var(--border)';
-        card.style.overflow = 'hidden';
-        card.style.boxShadow = 'var(--shadow-sm)';
-        card.style.display = 'flex';
-        card.style.flexDirection = 'column';
-
-        card.innerHTML = `
-          <img src="${b.image}" style="width:100%; height:120px; object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400'">
-          <div style="padding:15px; flex:1; display:flex; flex-direction:column; gap:8px;">
-            <h4 style="font-weight:700; color:var(--dark); margin:0;">${b.title}</h4>
-            <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:center;">
-              <span class="badge badge-${b.status === 'active' ? 'active' : 'pending'}">${b.status}</span>
-              <div style="display:flex; gap:8px;">
-                <button class="btn btn-secondary btn-sm" onclick="toggleBannerStatus('${b.id}')">Toggle Status</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteBanner('${b.id}')">Delete</button>
-              </div>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function openAddBannerModal() {
-      document.getElementById('form-add-banner').reset();
-      openModal('modal-add-banner');
-    }
-
-    function submitAddBannerForm(e) {
-      e.preventDefault();
-      const title = document.getElementById('banner-title').value;
-      const image = document.getElementById('banner-image').value;
-
-      const banners = getBanners();
-      const newId = `BAN-${String(banners.length + 1).padStart(3, '0')}`;
-      banners.push({ id: newId, title, image, status: 'active' });
-      saveBanners(banners);
-
-      closeModal('modal-add-banner');
-      renderAllData();
-    }
-
-    function toggleBannerStatus(id) {
-      const banners = getBanners();
-      const b = banners.find(item => item.id === id);
-      if (b) {
-        b.status = b.status === 'active' ? 'inactive' : 'active';
-        saveBanners(banners);
-        renderAllData();
-      }
-    }
-
-    function deleteBanner(id) {
-      if (!confirm("Are you sure you want to delete this banner?")) return;
-      const banners = getBanners();
-      const filtered = banners.filter(b => b.id !== id);
-      saveBanners(filtered);
-      renderAllData();
-    }
-
-    function renderTransactionsTable() {
-      const txns = getTransactions();
-      const tbody = document.getElementById('transactions-table-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      txns.forEach(t => {
-        const isWithdraw = t.type === 'Withdrawal';
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td style="font-weight:700; color:var(--text-light); font-family:monospace;">${t.id}</td>
-          <td>${t.date}</td>
-          <td><span class="badge badge-${t.type === 'Payout' ? 'interview' : t.type === 'Withdrawal' ? 'rejected' : 'active'}">${t.type}</span></td>
-          <td style="font-weight:600; color:var(--dark);">${t.entityName}</td>
-          <td style="font-weight:700; color:${t.type === 'Withdrawal' ? 'var(--danger)' : 'var(--primary)'}">${isWithdraw ? '-' : '+'}${t.amount} EGP</td>
-          <td>${t.method}</td>
-          <td style="font-weight:500; font-size:12px; color:var(--text);">${t.payoutDetails || '-'}</td>
-          <td><span class="badge badge-${t.status.toLowerCase()}">${t.status}</span></td>
-          <td>
-            ${t.status === 'Pending' ? `
-              <div style="display:flex; gap:6px;">
-                <button class="btn btn-primary btn-sm" onclick="approveWithdrawRequest('${t.id}')">Approve</button>
-                <button class="btn btn-danger btn-sm" onclick="rejectWithdrawRequest('${t.id}')">Reject</button>
-              </div>
-            ` : `<span style="font-size:12px; color:var(--text-light); font-weight:600;">No Action</span>`}
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function approveWithdrawRequest(id) {
-      const txns = getTransactions();
-      const t = txns.find(item => item.id === id);
-      if (t) {
-        t.status = 'Completed';
-        saveTransactions(txns);
-        
-        if (t.entityName.includes('Dr.') || t.entityName.includes('Karim')) {
-          const providers = getProviders();
-          const p = providers.find(item => item.name === t.entityName);
-          const notifs = getNotifications(p ? p.id : "PROV-001");
-          notifs.unshift({
-            id: Date.now(),
-            text: `Withdrawal Approved: Your request for ${t.amount} EGP has been successfully processed and transferred to your bank account.`,
-            time: "Just Now"
-          });
-          saveNotifications(p ? p.id : "PROV-001", notifs);
-        } else {
-          const patients = getPatients();
-          const p = patients.find(item => item.name === t.entityName);
-          if (p) {
-            p.walletBalance = Math.max(0, p.walletBalance - t.amount);
-            savePatients(patients);
-          }
-        }
-        renderAllData();
-      }
-    }
-
-    function rejectWithdrawRequest(id) {
-      const txns = getTransactions();
-      const t = txns.find(item => item.id === id);
-      if (t) {
-        t.status = 'Rejected';
-        saveTransactions(txns);
-        
-        if (t.entityName.includes('Dr.') || t.entityName.includes('Karim')) {
-          const providers = getProviders();
-          const p = providers.find(item => item.name === t.entityName);
-          const notifs = getNotifications(p ? p.id : "PROV-001");
-          notifs.unshift({
-            id: Date.now(),
-            text: `Withdrawal Rejected: Your withdrawal request for ${t.amount} EGP was denied. Funds remain in your wallet.`,
-            time: "Just Now"
-          });
-          saveNotifications(p ? p.id : "PROV-001", notifs);
-        }
-        renderAllData();
-      }
-    }
-
-    const MOCK_CHATS = {
-      "P-001": [
-        { sender: "patient", text: "Hello Doctor, I finished the exercises but feel slight pain in my hamstring.", time: "10:15 AM" },
-        { sender: "doctor", text: "Hi Ahmed. That is normal, but make sure not to over-stretch. Apply ice for 15 minutes.", time: "10:20 AM" },
-        { sender: "patient", text: "Will do. Thanks for the quick advice!", time: "10:22 AM" }
-      ],
-      "P-002": [
-        { sender: "patient", text: "Is it okay if I move my shoulder up to 120 degrees?", time: "Yesterday" },
-        { sender: "doctor", text: "No Mariam, let's keep it below 90 degrees as prescribed until our next session.", time: "Yesterday" }
-      ]
-    };
-
-    let activeChatChannelId = null;
-
-    function renderChatChannelsList() {
-      const listEl = document.getElementById('chat-channels-list');
-      if (!listEl) return;
-      listEl.innerHTML = '';
-
-      const patients = getPatients();
-      const chatsKeys = Object.keys(MOCK_CHATS);
-
-      chatsKeys.forEach(k => {
-        const p = patients.find(item => item.id === k);
-        if (!p) return;
-
-        const lastMsg = MOCK_CHATS[k][MOCK_CHATS[k].length - 1];
-        const item = document.createElement('div');
-        item.style.padding = '10px';
-        item.style.borderRadius = '6px';
-        item.style.cursor = 'pointer';
-        item.style.marginBottom = '6px';
-        item.style.background = activeChatChannelId === k ? 'rgba(76, 175, 80, 0.15)' : 'transparent';
-        item.style.border = activeChatChannelId === k ? '1px solid var(--primary)' : '1px solid transparent';
-        item.onclick = () => selectChatChannel(k);
-
-        item.innerHTML = `
-          <div style="font-weight:700; color:var(--dark); font-size:13px;">${p.name}</div>
-          <div style="font-size:11px; color:var(--text-light); text-overflow:ellipsis; white-space:nowrap; overflow:hidden; margin-top:2px;">${lastMsg ? lastMsg.text : 'Active Chat'}</div>
-        `;
-        listEl.appendChild(item);
-      });
-
-      if (activeChatChannelId) {
-        renderChatMessages(activeChatChannelId);
-      }
-    }
-
-    function selectChatChannel(k) {
-      activeChatChannelId = k;
-      renderChatChannelsList();
-    }
-
-    function renderChatMessages(k) {
-      const titleEl = document.getElementById('chat-active-channel-title');
-      const msgContainer = document.getElementById('chat-messages-container');
-      const patients = getPatients();
-      const p = patients.find(item => item.id === k);
-
-      titleEl.innerText = `Monitoring Audit: ${p ? p.name : 'Patient'} <> Dr. Sarah Jenkins`;
-      msgContainer.innerHTML = '';
-
-      const list = MOCK_CHATS[k] || [];
-      list.forEach(m => {
-        const isPat = m.sender === 'patient';
-        const msgDiv = document.createElement('div');
-        msgDiv.style.alignSelf = isPat ? 'flex-start' : 'flex-end';
-        msgDiv.style.background = isPat ? 'var(--white)' : 'var(--primary)';
-        msgDiv.style.color = isPat ? 'var(--dark)' : 'var(--white)';
-        msgDiv.style.padding = '8px 12px';
-        msgDiv.style.borderRadius = '10px';
-        msgDiv.style.maxWidth = '70%';
-        msgDiv.style.boxShadow = 'var(--shadow-sm)';
-        msgDiv.style.fontSize = '12px';
-
-        msgDiv.innerHTML = `
-          <div>${m.text}</div>
-          <span style="font-size:9px; color:${isPat ? 'var(--text-light)' : 'rgba(255,255,255,0.7)'}; display:block; text-align:right; margin-top:4px;">${m.time}</span>
-        `;
-        msgContainer.appendChild(msgDiv);
-      });
-    }
-
-    // Filter Providers Table
-    function filterProvidersTable() {
-      const searchVal = document.getElementById('search-providers').value.toLowerCase();
-      const typeVal = document.getElementById('filter-type').value;
-      const statusVal = document.getElementById('filter-status').value;
-      
-      const rows = document.querySelectorAll('#providers-table-body tr');
-      rows.forEach(row => {
-        const nameText = row.cells[1].innerText.toLowerCase();
-        const typeText = row.cells[2].innerText.includes('Doctor') ? 'Doctor' : 'RS';
-        const statusText = row.cells[5].innerText;
-        
-        let statusKey = 'active';
-        if (statusText.includes('Pending')) statusKey = 'pending';
-        else if (statusText.includes('Review')) statusKey = 'review';
-        else if (statusText.includes('Interview')) statusKey = 'interview';
-        else if (statusText.includes('Contract')) statusKey = 'contract';
-        else if (statusText.includes('Rejected')) statusKey = 'rejected';
-
-        const matchesSearch = nameText.includes(searchVal);
-        const matchesType = (typeVal === 'ALL' || typeText === typeVal);
-        const matchesStatus = (statusVal === 'ALL' || statusKey === statusVal);
-
-        if (matchesSearch && matchesType && matchesStatus) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    }
-
-    // Open Pipeline Verification Modal
-    function openPipelineReview(provId) {
-      activeProviderId = provId;
-      const providers = getProviders();
-      const p = providers.find(item => item.id === provId);
-      if (!p) return;
-
-      document.getElementById('pipeline-modal-title').innerText = `Verification Pipeline: ${p.name} (${p.type === 'Doctor' ? 'Doctor' : 'RS'})`;
-      
-      // Update Pipeline Indicators
-      const statusPanelMap = {
-        'pending': { label: 'Upload Documents Stage', desc: 'Awaiting credentials and physical documentation from the provider.', class: 'badge-pending' },
-        'review': { label: 'Ready for Review', desc: 'Verify qualifications, identification, and licensing documents.', class: 'badge-review' },
-        'interview': { label: 'Ready for Medical Interview', desc: 'Conduct clinical suitability, procedure verification, and compliance meeting.', class: 'badge-interview' },
-        'contract': { label: 'Ready for Contract Ratification', desc: 'Finalize service agreements and medical liability contract signatures.', class: 'badge-contract' },
-        'active': { label: 'Active & Listed Live', desc: 'Provider is live and discoverable for patient session bookings.', class: 'badge-active' },
-        'rejected': { label: 'Verification Denied', desc: 'Documents or interview failed our medical verification standards.', class: 'badge-rejected' }
-      };
-      
-      const config = statusPanelMap[p.status] || statusPanelMap['pending'];
-      document.getElementById('pipeline-status-text').innerText = config.label;
-      document.getElementById('pipeline-status-desc').innerText = config.desc;
-      
-      const pIcon = document.getElementById('pipeline-status-icon');
-      pIcon.className = `verification-status-icon badge-${p.status}`;
-      pIcon.style.display = 'flex';
-      pIcon.style.alignItems = 'center';
-      pIcon.style.justifyContent = 'center';
-      
-      const iconMap = {
-        'active': `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg>`,
-        'rejected': `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`,
-        'pending': `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`,
-        'review': `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-        'interview': `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`,
-        'contract': `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`
-      };
-      pIcon.innerHTML = iconMap[p.status] || iconMap['pending'];
-
-      // Update Step Checkpoints visualizer
-      const stepStates = {
-        'pending': 0,
-        'review': 1,
-        'interview': 2,
-        'contract': 3,
-        'active': 5,
-        'rejected': 1
-      };
-      
-      const activeStep = stepStates[p.status] || 0;
-      for (let i = 1; i <= 5; i++) {
-        const marker = document.getElementById(`step-marker-${i}`);
-        marker.className = 'pipeline-step';
-        marker.style.display = 'flex';
-        marker.style.alignItems = 'center';
-        marker.style.justifyContent = 'center';
-        if (i <= activeStep) {
-          marker.classList.add('completed');
-          marker.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" style="display:block;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
-        } else if (i === activeStep + 1 && p.status !== 'rejected') {
-          marker.classList.add('active');
-          marker.innerText = i;
-        } else {
-          marker.innerText = i;
-        }
-      }
-
-      // Action views inside stages
-      // Stage 1 content (Docs List)
-      const uploadContent = document.getElementById('stage-upload-content');
-      if (p.documents.length === 0) {
-        uploadContent.innerHTML = `
-          <button class="btn btn-secondary btn-sm" onclick="simulateDocUpload()">Simulate Upload ID & License</button>
-        `;
-      } else {
-        let docsHtml = '<div class="document-list">';
-        p.documents.forEach(doc => {
-          docsHtml += `
-            <div class="document-item">
+          <div class="tbl-card" style="padding:20px;">
+            <div class="tbl-title" style="margin-bottom:16px;">Add Promo Code</div>
+            <div class="adm-form">
               <div>
-                <span class="document-name">${doc.name}</span>
-                <span class="document-meta"> (${doc.status})</span>
+                <label>Code</label>
+                <input id="new-promo-code" placeholder="e.g. AHIL25" style="text-transform:uppercase;">
               </div>
-              <a href="#" style="font-size:12px; color:var(--primary); font-weight:600; text-decoration:none;">View File</a>
+              <div>
+                <label>Discount (%)</label>
+                <input id="new-promo-pct" type="number" min="1" max="100" placeholder="e.g. 20">
+              </div>
+              <div>
+                <label>Max Uses</label>
+                <input id="new-promo-limit" type="number" placeholder="e.g. 50">
+              </div>
+              <div>
+                <label>Expiry Date</label>
+                <input id="new-promo-expiry" type="date">
+              </div>
+              <button class="btn-primary-full" onclick="addPromoCode()">Create Promo Code</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           PANEL: REGIONS
+      ══════════════════════════════════════ -->
+      <div class="adm-panel" id="panel-regions">
+        <div class="section-grid">
+          <div class="tbl-card">
+            <div class="tbl-header">
+              <div class="tbl-title">Coverage Regions & Subregions</div>
+            </div>
+            <div id="regions-list" style="padding:0 16px 16px;"></div>
+          </div>
+
+          <div class="tbl-card" style="padding:20px;">
+            <div class="tbl-title" style="margin-bottom:16px;">Add Subregion</div>
+            <div class="adm-form">
+              <div>
+                <label>Parent Region</label>
+                <select id="new-sub-region"></select>
+              </div>
+              <div>
+                <label>Subregion Name</label>
+                <input id="new-sub-name" placeholder="e.g. Al-Andalus">
+              </div>
+              <button class="btn-primary-full" onclick="addSubregion()">Add Subregion</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end adm-body -->
+  </div><!-- end adm-main -->
+</div><!-- end admin-shell -->
+
+<!-- ══════════════════════════════════════
+     MODALS
+══════════════════════════════════════ -->
+
+<!-- Reject summary modal -->
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal-box reject-modal">
+    <div class="modal-header">
+      <div class="modal-title">Reject Session Summary</div>
+      <button class="modal-close" onclick="closeModal('reject-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:var(--text-light); margin-bottom:12px;">Provide a clear reason for rejecting this summary. The provider will be notified.</p>
+      <textarea id="reject-reason-input" placeholder="e.g. Summary is incomplete — please include specific exercise sets performed…" style="width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:var(--font);font-size:13px;resize:vertical;min-height:90px;"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('reject-modal')">Cancel</button>
+      <button class="btn-sm danger" onclick="confirmRejectSummary()">Reject Summary</button>
+    </div>
+  </div>
+</div>
+
+<!-- Provider profile modal -->
+<div class="modal-overlay" id="provider-modal">
+  <div class="modal-box" style="max-width:700px;">
+    <div class="modal-header">
+      <div class="modal-title" id="provider-modal-title">Provider Profile</div>
+      <button class="modal-close" onclick="closeModal('provider-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="provider-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('provider-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Patient profile modal -->
+<div class="modal-overlay" id="patient-modal">
+  <div class="modal-box" style="max-width:660px;">
+    <div class="modal-header">
+      <div class="modal-title" id="patient-modal-title">Patient Profile</div>
+      <button class="modal-close" onclick="closeModal('patient-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="patient-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('patient-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="adm-toast"></div>
+
+<script src="app.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let currentPanel = 'dashboard';
+let auditTab = 'pending';
+let pendingRejectSummaryId = null;
+let toastTimer = null;
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  updateLastUpdated();
+  renderAll();
+  setInterval(updateLastUpdated, 60000);
+});
+
+window.addEventListener('storage', () => {
+  syncGlobals();
+  renderAll();
+});
+
+function renderAll() {
+  renderBadges();
+  if (currentPanel === 'dashboard')   renderDashboard();
+  if (currentPanel === 'audit')       renderAudit();
+  if (currentPanel === 'providers')   renderProviders();
+  if (currentPanel === 'patients')    renderPatients();
+  if (currentPanel === 'financials')  renderFinancials();
+  if (currentPanel === 'promotions')  renderPromotions();
+  if (currentPanel === 'regions')     renderRegions();
+}
+
+function updateLastUpdated() {
+  const el = document.getElementById('last-updated');
+  if (el) el.textContent = `Updated ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PANEL SWITCHING
+// ═══════════════════════════════════════════════════════
+const PANEL_TITLES = {
+  dashboard: 'Dashboard Overview',
+  audit: 'Session Audit',
+  providers: 'Provider Management',
+  patients: 'Patient Management',
+  financials: 'Financials & Payouts',
+  promotions: 'Promotions',
+  regions: 'Regions & Coverage',
+};
+
+function switchPanel(name) {
+  document.querySelectorAll('.adm-panel').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  const nav = document.getElementById(`nav-${name}`);
+  if (nav) nav.classList.add('active');
+  document.getElementById('panel-title').textContent = PANEL_TITLES[name] || name;
+  currentPanel = name;
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+//  BADGES
+// ═══════════════════════════════════════════════════════
+function renderBadges() {
+  const pending = getSummaries().filter(s => s.status === 'Pending').length;
+  const badge = document.getElementById('audit-nav-badge');
+  const topBadge = document.getElementById('topbar-notif-count');
+  if (badge) {
+    badge.style.display = pending > 0 ? 'inline' : 'none';
+    badge.textContent = pending;
+  }
+  if (topBadge) {
+    topBadge.style.display = pending > 0 ? 'flex' : 'none';
+    topBadge.textContent = pending;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════
+function renderDashboard() {
+  const patients = getPatients();
+  const providers = getProviders();
+  const apts = getAppointments();
+  const txns = getTransactions();
+  const summaries = getSummaries();
+
+  const today = new Date().toISOString().split('T')[0];
+  const homeVisitsToday = apts.filter(a => a.type === 'Home Visit' && a.time && a.time.toLowerCase().includes('today')).length;
+  const pendingAudits = summaries.filter(s => s.status === 'Pending').length;
+  const completed = apts.filter(a => a.status === 'Finished').length;
+  const totalRevenue = txns.reduce((s, t) => s + (t.amount || 0), 0);
+
+  const stats = [
+    { label: 'Total Patients', value: patients.length, icon: '👥', color: '#dbeafe', sub: 'Registered' },
+    { label: 'Total Providers', value: providers.length, sub: `${providers.filter(p=>p.type==='Doctor').length} Doctors · ${providers.filter(p=>p.type==='RS').length} RS`, icon: '🩺', color: '#dcfce7' },
+    { label: 'Pending Audits', value: pendingAudits, icon: '📋', color: '#fef3c7', sub: 'Awaiting review', urgent: pendingAudits > 0 },
+    { label: 'Home Visits Today', value: homeVisitsToday, icon: '🏠', color: '#f3e8ff', sub: 'Scheduled today' },
+    { label: 'Total Revenue', value: `${totalRevenue.toLocaleString()} EGP`, icon: '💰', color: '#dcfce7', sub: 'From transactions' },
+    { label: 'Sessions Completed', value: completed, icon: '✅', color: '#f0fdf4', sub: 'Across all providers' },
+  ];
+
+  document.getElementById('stat-grid').innerHTML = stats.map(s => `
+    <div class="stat-card" style="${s.urgent ? 'border-color:#f59e0b;' : ''}">
+      <div class="stat-card-icon" style="background:${s.color}; font-size:18px;">${s.icon}</div>
+      <div class="stat-card-label">${s.label}</div>
+      <div class="stat-card-value" style="${s.urgent ? 'color:#d97706;' : ''}">${s.value}</div>
+      <div class="stat-card-sub">${s.sub}</div>
+    </div>
+  `).join('');
+
+  // Recent appointments
+  const recentApts = [...apts].reverse().slice(0, 6);
+  document.getElementById('recent-apts').innerHTML = recentApts.length === 0
+    ? `<div class="empty"><div class="empty-icon">📅</div><p>No appointments yet</p></div>`
+    : recentApts.map(a => {
+        const pat = PATIENTS_DATA[a.patientId] || {};
+        const prov = getProviders().find(p => p.id === a.providerId) || {};
+        return `
+          <div class="activity-item">
+            <div class="activity-dot" style="background:${statusColor(a.status)};"></div>
+            <div class="activity-text">
+              <strong>${pat.name || 'Patient'}</strong> · ${a.type}
+              <span style="color:var(--text-light); font-size:11px;"> with ${prov.name || 'Provider'}</span>
+            </div>
+            <span class="badge ${statusBadgeClass(a.status)}" style="font-size:10px;">${a.status}</span>
+          </div>
+        `;
+      }).join('');
+
+  // Recent transactions
+  const recentTxns = [...txns].slice(0, 6);
+  document.getElementById('recent-txns').innerHTML = recentTxns.length === 0
+    ? `<div class="empty"><div class="empty-icon">💳</div><p>No transactions yet</p></div>`
+    : recentTxns.map(t => `
+        <div class="activity-item">
+          <div class="activity-dot" style="background:${t.type==='Payout'?'#15803d':'#6d28d9'};"></div>
+          <div class="activity-text">
+            <strong>${t.type}</strong> · ${t.entityName}
+          </div>
+          <div style="font-size:13px; font-weight:700; color:${t.type==='Payout'?'#15803d':'#6d28d9'};">
+            ${t.type==='Payout'?'+':''}${t.amount} EGP
+          </div>
+        </div>
+      `).join('');
+}
+
+function statusColor(s) {
+  const map = { 'Pending RS Acceptance': '#d97706', 'Confirmed': '#15803d', 'Upcoming': '#1d4ed8', 'Need Summary': '#6d28d9', 'Finished': '#0f766e', 'Rejected': '#b91c1c' };
+  return map[s] || '#64748b';
+}
+function statusBadgeClass(s) {
+  const map = { 'Pending RS Acceptance': 'badge-pending', 'Confirmed': 'badge-approved', 'Upcoming': 'badge-review', 'Need Summary': 'badge-interview', 'Finished': 'badge-finished', 'Rejected': 'badge-rejected' };
+  return map[s] || 'badge-gray';
+}
+
+// ═══════════════════════════════════════════════════════
+//  SESSION AUDIT
+// ═══════════════════════════════════════════════════════
+function setAuditTab(tab) {
+  auditTab = tab;
+  document.getElementById('audit-tab-pending').classList.toggle('active', tab === 'pending');
+  document.getElementById('audit-tab-reviewed').classList.toggle('active', tab === 'reviewed');
+  document.getElementById('audit-pending-content').style.display = tab === 'pending' ? 'block' : 'none';
+  document.getElementById('audit-reviewed-content').style.display = tab === 'reviewed' ? 'block' : 'none';
+}
+
+function renderAudit() {
+  const summaries = getSummaries();
+  const pending  = summaries.filter(s => s.status === 'Pending').sort((a,b) => a.date.localeCompare(b.date));
+  const reviewed = summaries.filter(s => s.status !== 'Pending').sort((a,b) => b.date.localeCompare(a.date));
+
+  // Pending
+  const pendingEl = document.getElementById('audit-pending-content');
+  if (pending.length === 0) {
+    pendingEl.innerHTML = `<div class="empty"><div class="empty-icon">🎉</div><p>All caught up — no summaries pending review.</p></div>`;
+  } else {
+    pendingEl.innerHTML = pending.map(s => auditCard(s)).join('');
+  }
+
+  // Reviewed
+  const reviewedEl = document.getElementById('audit-reviewed-content');
+  reviewedEl.innerHTML = `
+    <div class="tbl-card">
+      <div style="overflow-x:auto;">
+        <table class="adm-table">
+          <thead>
+            <tr><th>ID</th><th>Date</th><th>Patient</th><th>Provider</th><th>Complaint</th><th>Decision</th><th>Payout</th></tr>
+          </thead>
+          <tbody>
+            ${reviewed.length === 0 ? `<tr><td colspan="7" style="text-align:center; color:var(--text-light); padding:24px;">No reviewed summaries yet</td></tr>` :
+              reviewed.map(s => {
+                const pat  = PATIENTS_DATA[s.patientId] || {};
+                const prov = getProviders().find(p => p.id === s.providerId) || {};
+                const payout = Math.round((s.price || 0) * 0.85);
+                return `
+                  <tr>
+                    <td><code style="font-size:11px;">${s.id}</code></td>
+                    <td>${s.date}</td>
+                    <td>${pat.name || s.patientId}</td>
+                    <td>${prov.name || s.providerId}</td>
+                    <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.complaint}</td>
+                    <td><span class="badge ${s.status==='Approved'?'badge-approved':'badge-rejected'}">${s.status}</span></td>
+                    <td style="font-weight:700; color:${s.status==='Approved'?'#15803d':'var(--text-light)'};">${s.status==='Approved'?`${payout} EGP`:'—'}</td>
+                  </tr>
+                `;
+              }).join('')
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function auditCard(s) {
+  const pat  = PATIENTS_DATA[s.patientId]  || { name: s.patientId };
+  const prov = getProviders().find(p => p.id === s.providerId) || { name: s.providerId };
+  const apt  = getAppointments().find(a => a.id === s.appointmentId) || {};
+  const payout = Math.round((apt.price || s.price || 0) * 0.85);
+  const commission = (apt.price || s.price || 0) - payout;
+
+  return `
+    <div class="audit-card" id="audit-${s.id}">
+      <div class="audit-card-header">
+        <div>
+          <div class="audit-card-id">${s.id} · ${apt.type || 'Home Visit'} · ${s.date}</div>
+          <div style="font-size:12px; color:var(--text-light); margin-top:2px;">${apt.time || ''} ${apt.district ? '· ' + apt.district : ''}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="text-align:right;">
+            <div style="font-size:11px; color:var(--text-light);">Provider payout</div>
+            <div style="font-size:16px; font-weight:800; color:#15803d;">${payout} EGP</div>
+            <div style="font-size:10px; color:var(--text-light);">Commission: ${commission} EGP (15%)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="audit-parties">
+        <div>
+          <div class="audit-party-label">Patient</div>
+          <div class="audit-party-name">${pat.name}</div>
+          <div class="audit-party-sub">${pat.age || ''} · ${pat.phone || ''}</div>
+        </div>
+        <div>
+          <div class="audit-party-label">Provider (RS)</div>
+          <div class="audit-party-name">${prov.name}</div>
+          <div class="audit-party-sub">${prov.specialty || ''} · ${prov.payoutDetails || ''}</div>
+        </div>
+      </div>
+
+      <div class="audit-clinical">
+        <div>
+          <div class="audit-field-label">Chief Complaint</div>
+          <div class="audit-field-value">${s.complaint}</div>
+        </div>
+        <div>
+          <div class="audit-field-label">Clinical Findings</div>
+          <div class="audit-field-value">${s.diagnosis}</div>
+        </div>
+        <div>
+          <div class="audit-field-label">Treatment Plan</div>
+          <div class="audit-field-value">${s.treatmentPlan}</div>
+        </div>
+      </div>
+
+      ${apt.sessionNotes ? `
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:0; font-size:12px; color:var(--text);">
+        <strong>Session Notes:</strong> ${apt.sessionNotes}
+      </div>` : ''}
+
+      <div class="audit-actions">
+        <button class="btn-sm success" onclick="approveSummary('${s.id}')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Approve & Pay ${payout} EGP
+        </button>
+        <button class="btn-sm danger" onclick="openRejectModal('${s.id}')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          Reject
+        </button>
+        <div style="margin-left:auto; font-size:11px; color:var(--text-light); align-self:center;">Submitted: ${s.date}</div>
+      </div>
+    </div>
+  `;
+}
+
+function approveSummary(summaryId) {
+  const summaries = getSummaries();
+  const s = summaries.find(x => x.id === summaryId);
+  if (!s) return;
+
+  s.status = 'Approved';
+  s.reviewedAt = new Date().toISOString().split('T')[0];
+  saveSummaries(summaries);
+
+  // Update appointment completedSessions
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === s.appointmentId);
+  const sessionPrice = apt ? (apt.price || 0) : (s.price || 0);
+  if (apt) {
+    apt.completedSessions = (apt.completedSessions || 0) + 1;
+    saveAppointments(apts);
+  }
+
+  // Calculate payout (85% provider, 15% platform commission)
+  const payout = Math.round(sessionPrice * 0.85);
+  const commission = sessionPrice - payout;
+
+  // Write payout transaction
+  const txns = getTransactions();
+  const prov = getProviders().find(p => p.id === s.providerId) || {};
+  const pat  = PATIENTS_DATA[s.patientId] || {};
+  const txnId = `TXN-${String(txns.length + 1).padStart(3,'0')}`;
+  txns.unshift({
+    id: txnId,
+    date: new Date().toISOString().split('T')[0],
+    type: 'Payout',
+    entityName: prov.name || s.providerId,
+    summaryId: s.id,
+    patientName: pat.name || s.patientId,
+    amount: payout,
+    status: 'Completed',
+    method: prov.payoutDetails || 'Auto',
+  });
+  // Write commission record
+  txns.unshift({
+    id: `TXN-${String(txns.length + 1).padStart(3,'0')}`,
+    date: new Date().toISOString().split('T')[0],
+    type: 'Commission',
+    entityName: `Ahilney Commission (${pat.name || 'session'})`,
+    summaryId: s.id,
+    amount: commission,
+    status: 'Completed',
+    method: 'Platform',
+  });
+  saveTransactions(txns);
+
+  // Credit provider wallet balance
+  const providers = getProviders();
+  const provRec = providers.find(p => p.id === s.providerId);
+  if (provRec) {
+    provRec.walletBalance = (provRec.walletBalance || 0) + payout;
+    saveProviders(providers);
+  }
+
+  // Notify provider
+  const notifs = getNotifications(s.providerId);
+  notifs.unshift({
+    id: Date.now(),
+    text: `✅ Session summary ${s.id} approved. ${payout} EGP has been credited to your wallet.`,
+    time: 'Just now',
+  });
+  saveNotifications(s.providerId, notifs);
+
+  showToast(`Approved! ${payout} EGP payout credited to ${prov.name || 'provider'}.`, 'success');
+  renderAudit();
+  renderBadges();
+}
+
+function openRejectModal(summaryId) {
+  pendingRejectSummaryId = summaryId;
+  document.getElementById('reject-reason-input').value = '';
+  document.getElementById('reject-modal').classList.add('open');
+}
+
+function confirmRejectSummary() {
+  if (!pendingRejectSummaryId) return;
+  const reason = document.getElementById('reject-reason-input').value.trim() || 'Summary did not meet clinical documentation standards.';
+
+  const summaries = getSummaries();
+  const s = summaries.find(x => x.id === pendingRejectSummaryId);
+  if (!s) return;
+
+  s.status = 'Rejected';
+  s.rejectionReason = reason;
+  s.reviewedAt = new Date().toISOString().split('T')[0];
+  saveSummaries(summaries);
+
+  // Notify provider
+  const prov = getProviders().find(p => p.id === s.providerId) || {};
+  const notifs = getNotifications(s.providerId);
+  notifs.unshift({
+    id: Date.now(),
+    text: `❌ Session summary ${s.id} was rejected. Reason: ${reason}. Please resubmit with corrections.`,
+    time: 'Just now',
+  });
+  saveNotifications(s.providerId, notifs);
+
+  closeModal('reject-modal');
+  pendingRejectSummaryId = null;
+  showToast(`Summary rejected. Provider ${prov.name || ''} has been notified.`, '');
+  renderAudit();
+  renderBadges();
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROVIDERS
+// ═══════════════════════════════════════════════════════
+function renderProviders() {
+  const search = (document.getElementById('provider-search')?.value || '').toLowerCase();
+  const typeFilter = document.getElementById('provider-type-filter')?.value || 'all';
+  const statusFilter = document.getElementById('provider-status-filter')?.value || 'all';
+  let providers = getProviders();
+  if (search) providers = providers.filter(p => p.name.toLowerCase().includes(search));
+  if (typeFilter !== 'all') providers = providers.filter(p => p.type === typeFilter);
+  if (statusFilter !== 'all') providers = providers.filter(p => p.status === statusFilter);
+
+  document.getElementById('providers-tbody').innerHTML = providers.map(p => `
+    <tr>
+      <td>
+        <div style="font-weight:700;">${p.name}</div>
+        <div style="font-size:11px; color:var(--text-light);">${p.email}</div>
+      </td>
+      <td><span class="badge ${p.type==='Doctor'?'badge-review':'badge-info'}">${p.type}</span></td>
+      <td style="font-size:12px;">${p.specialty}</td>
+      <td><span class="badge ${providerStatusClass(p.status)}">${p.status}</span></td>
+      <td style="font-size:11px;">${(p.regionsCovered||[]).slice(0,2).join(', ')}${(p.regionsCovered||[]).length>2?' …':''}</td>
+      <td style="font-weight:700;">${p.completedSessionsCount || 0}</td>
+      <td style="font-weight:700; color:${(p.walletBalance||0)>0?'#15803d':'var(--dark)'};">${(p.walletBalance||0).toLocaleString()} EGP</td>
+      <td>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn-sm" onclick="openProviderModal('${p.id}')">View</button>
+          <select class="adm-select" style="font-size:11px; padding:4px 8px;" onchange="changeProviderStatus('${p.id}', this.value)">
+            <option value="">Change status…</option>
+            <option value="pending">Pending</option>
+            <option value="review">Review</option>
+            <option value="interview">Interview</option>
+            <option value="contract">Contract</option>
+            <option value="active">Active</option>
+          </select>
+        </div>
+      </td>
+    </tr>
+  `).join('') || `<tr><td colspan="8" style="text-align:center; color:var(--text-light); padding:24px;">No providers match filters</td></tr>`;
+}
+
+function providerStatusClass(s) {
+  const map = { pending:'badge-pending', review:'badge-review', interview:'badge-interview', contract:'badge-contract', active:'badge-active', rejected:'badge-rejected' };
+  return map[s] || 'badge-gray';
+}
+
+function changeProviderStatus(id, newStatus) {
+  if (!newStatus) return;
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === id);
+  if (prov) {
+    prov.status = newStatus;
+    saveProviders(providers);
+    showToast(`${prov.name} status updated to "${newStatus}"`, 'success');
+    renderProviders();
+  }
+}
+
+function openProviderModal(id) {
+  const prov = getProviders().find(p => p.id === id);
+  if (!prov) return;
+  const apts = getAppointments().filter(a => a.providerId === id);
+  const summaries = getSummaries().filter(s => s.providerId === id);
+
+  document.getElementById('provider-modal-title').textContent = prov.name;
+  document.getElementById('provider-modal-body').innerHTML = `
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+      <div style="width:56px;height:56px;border-radius:14px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;flex-shrink:0;">
+        ${prov.name.replace('Dr. ','').split(' ').map(n=>n[0]).join('').slice(0,2)}
+      </div>
+      <div>
+        <div style="font-size:16px;font-weight:800;color:var(--dark);">${prov.name}</div>
+        <div style="font-size:13px;color:var(--text-light);">${prov.specialty} · ${prov.type === 'RS' ? 'Rehab Specialist' : 'Doctor'}</div>
+        <span class="badge ${providerStatusClass(prov.status)}" style="margin-top:4px;">${prov.status}</span>
+      </div>
+    </div>
+
+    <div class="info-block">
+      <h4>Details</h4>
+      <div class="info-row"><span>Email</span><span>${prov.email}</span></div>
+      <div class="info-row"><span>Phone</span><span>${prov.phone}</span></div>
+      <div class="info-row"><span>Price</span><span>${prov.price} / session</span></div>
+      <div class="info-row"><span>Duration</span><span>${prov.duration}</span></div>
+      <div class="info-row"><span>Payout</span><span style="font-size:11px;">${prov.payoutDetails || '—'}</span></div>
+      <div class="info-row"><span>Wallet Balance</span><span style="color:#15803d;font-weight:800;">${(prov.walletBalance||0).toLocaleString()} EGP</span></div>
+      <div class="info-row"><span>Sessions Completed</span><span>${prov.completedSessionsCount || 0}</span></div>
+      <div class="info-row"><span>Rating</span><span>⭐ ${prov.rating || 'N/A'} (${prov.reviewCount || 0} reviews)</span></div>
+      <div class="info-row"><span>Interview Date</span><span>${prov.interviewDate || 'TBD'}</span></div>
+      <div class="info-row"><span>Contract Signed</span><span>${prov.contractSigned ? '✅ Yes' : '❌ No'}</span></div>
+    </div>
+
+    <div class="info-block">
+      <h4>Coverage Districts</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
+        ${(prov.regionsCovered||[]).map(r=>`<span style="background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;">📍 ${r}</span>`).join('')}
+        ${!(prov.regionsCovered||[]).length?'<span style="font-size:12px;color:var(--text-light);">None</span>':''}
+      </div>
+    </div>
+
+    <div class="info-block">
+      <h4>Documents</h4>
+      ${!(prov.documents||[]).length ? '<p style="font-size:12px;color:var(--text-light);">No documents uploaded</p>' :
+        prov.documents.map((doc, i) => `
+          <div class="doc-row">
+            <div class="doc-name">📄 ${doc.name}</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <span class="badge ${doc.status==='Approved'?'badge-approved':'badge-pending'}">${doc.status}</span>
+              <button class="btn-sm success" style="font-size:10px;padding:3px 8px;" onclick="approveDoc('${prov.id}', ${i})">✓</button>
+              <button class="btn-sm danger" style="font-size:10px;padding:3px 8px;" onclick="rejectDoc('${prov.id}', ${i})">✕</button>
+            </div>
+          </div>
+        `).join('')}
+    </div>
+
+    <div class="info-block">
+      <h4>Appointment Summary</h4>
+      <div class="info-row"><span>Total Appointments</span><span>${apts.length}</span></div>
+      <div class="info-row"><span>Confirmed</span><span>${apts.filter(a=>a.status==='Confirmed').length}</span></div>
+      <div class="info-row"><span>Finished</span><span>${apts.filter(a=>a.status==='Finished').length}</span></div>
+      <div class="info-row"><span>Pending Acceptance</span><span>${apts.filter(a=>a.status==='Pending RS Acceptance').length}</span></div>
+      <div class="info-row"><span>Summaries Submitted</span><span>${summaries.length} (${summaries.filter(s=>s.status==='Approved').length} approved)</span></div>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+      <span style="font-size:12px;color:var(--text-light);">Change Status:</span>
+      <select class="adm-select" onchange="changeProviderStatus('${prov.id}', this.value)">
+        <option value="">Select…</option>
+        <option value="pending">Pending</option>
+        <option value="review">Review</option>
+        <option value="interview">Interview</option>
+        <option value="contract">Contract</option>
+        <option value="active">Active</option>
+      </select>
+    </div>
+  `;
+  document.getElementById('provider-modal').classList.add('open');
+}
+
+function approveDoc(providerId, docIndex) {
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === providerId);
+  if (prov && prov.documents && prov.documents[docIndex]) {
+    prov.documents[docIndex].status = 'Approved';
+    saveProviders(providers);
+    showToast(`Document approved`, 'success');
+    openProviderModal(providerId); // refresh modal
+  }
+}
+
+function rejectDoc(providerId, docIndex) {
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === providerId);
+  if (prov && prov.documents && prov.documents[docIndex]) {
+    prov.documents[docIndex].status = 'Rejected';
+    saveProviders(providers);
+    showToast(`Document returned for revision`, '');
+    openProviderModal(providerId);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  PATIENTS
+// ═══════════════════════════════════════════════════════
+function renderPatients() {
+  const search = (document.getElementById('patient-search')?.value || '').toLowerCase();
+  let patients = getPatients();
+  if (search) patients = patients.filter(p => p.name.toLowerCase().includes(search) || p.phone.includes(search));
+
+  document.getElementById('patients-tbody').innerHTML = patients.map(p => `
+    <tr>
+      <td>
+        <div style="font-weight:700;">${p.name}</div>
+        <div style="font-size:11px;color:var(--text-light);">${p.email}</div>
+      </td>
+      <td style="font-size:12px;">${p.phone}</td>
+      <td style="font-size:12px;max-width:180px;">${p.address || '—'}</td>
+      <td style="font-weight:700; text-align:center;">${p.completedSessionsCount || 0}</td>
+      <td style="font-weight:700; color:${(p.walletBalance||0)>0?'var(--primary)':'var(--dark)'};">${(p.walletBalance||0).toLocaleString()} EGP</td>
+      <td>
+        <button class="btn-sm" onclick="openPatientModal('${p.id}')">View Profile</button>
+      </td>
+    </tr>
+  `).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:24px;">No patients found</td></tr>`;
+}
+
+function openPatientModal(id) {
+  const p = getPatients().find(x => x.id === id);
+  if (!p) return;
+  const apts = getAppointments().filter(a => a.patientId === id);
+
+  document.getElementById('patient-modal-title').textContent = p.name;
+  document.getElementById('patient-modal-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+      <div style="width:52px;height:52px;border-radius:14px;background:#f0fdf4;color:#15803d;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex-shrink:0;">
+        ${p.name.split(' ').map(n=>n[0]).join('').slice(0,2)}
+      </div>
+      <div>
+        <div style="font-size:16px;font-weight:800;color:var(--dark);">${p.name}</div>
+        <div style="font-size:13px;color:var(--text-light);">${p.age} · ${p.phone}</div>
+      </div>
+    </div>
+
+    <div class="info-block">
+      <h4>Contact</h4>
+      <div class="info-row"><span>Email</span><span>${p.email}</span></div>
+      <div class="info-row"><span>Address</span><span style="font-size:12px;text-align:right;max-width:55%;">${p.address||'—'}</span></div>
+      <div class="info-row"><span>Wallet Balance</span><span style="color:var(--primary);font-weight:800;">${(p.walletBalance||0).toLocaleString()} EGP</span></div>
+      <div class="info-row"><span>Sessions Completed</span><span>${p.completedSessionsCount||0}</span></div>
+    </div>
+
+    ${p.history ? `
+    <div class="info-block">
+      <h4>Medical History</h4>
+      <p style="font-size:13px;color:var(--dark);line-height:1.6;">${p.history}</p>
+    </div>` : ''}
+
+    ${p.prescription && p.prescription.text ? `
+    <div style="background:var(--primary-light);border-left:4px solid var(--primary);border-radius:0 12px 12px 0;padding:12px 14px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;color:var(--primary);margin-bottom:4px;">📋 Prescription · ${p.prescription.doctor}</div>
+      <p style="font-size:13px;color:var(--dark);line-height:1.5;font-style:italic;">${p.prescription.text}</p>
+    </div>` : ''}
+
+    ${(p.treatmentPlans||[]).length > 0 ? `
+    <div class="info-block">
+      <h4>Treatment Plans</h4>
+      ${p.treatmentPlans.map(tp => `
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);">
+          <div style="font-size:12px;font-weight:700;color:var(--dark);">${tp.doctorName} · ${tp.date}</div>
+          <div style="font-size:11px;color:var(--text-light);font-style:italic;margin-bottom:2px;">${tp.diagnosis}</div>
+          <div style="font-size:12px;color:var(--text);">${tp.text}</div>
+        </div>
+      `).join('')}
+    </div>` : ''}
+
+    <div class="info-block">
+      <h4>Appointment History (${apts.length})</h4>
+      ${apts.length === 0 ? `<p style="font-size:12px;color:var(--text-light);">No appointments yet</p>` :
+        apts.map(a => {
+          const prov = getProviders().find(x=>x.id===a.providerId)||{};
+          return `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:12px;font-weight:700;">${a.type} · ${a.time}</div>
+                <div style="font-size:11px;color:var(--text-light);">${prov.name||a.providerId} · ${a.price} EGP</div>
+              </div>
+              <span class="badge ${statusBadgeClass(a.status)}">${a.status}</span>
             </div>
           `;
-        });
-        docsHtml += '</div>';
-        uploadContent.innerHTML = docsHtml;
-      }
+        }).join('')}
+    </div>
+  `;
+  document.getElementById('patient-modal').classList.add('open');
+}
 
-      // Enable/disable stage actions depending on current status
-      document.getElementById('stage-review-actions').style.display = p.status === 'review' ? 'flex' : 'none';
-      
-      const intPassBtn = document.querySelector('#stage-interview-actions .btn-primary');
-      if (intPassBtn) {
-        intPassBtn.disabled = p.status !== 'interview';
-        intPassBtn.className = p.status === 'interview' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
-      }
-      const intFailBtn = document.querySelector('#stage-interview-actions .btn-danger');
-      if (intFailBtn) {
-        intFailBtn.disabled = p.status !== 'interview';
-        intFailBtn.className = p.status === 'interview' ? 'btn btn-danger btn-sm' : 'btn btn-secondary btn-sm';
-      }
+// ═══════════════════════════════════════════════════════
+//  FINANCIALS
+// ═══════════════════════════════════════════════════════
+function renderFinancials() {
+  const typeFilter = document.getElementById('txn-type-filter')?.value || 'all';
+  let txns = getTransactions();
+  const allTxns = [...txns];
 
-      const conBtn = document.querySelector('#stage-contract-actions button');
-      conBtn.disabled = p.status !== 'contract';
-      conBtn.className = p.status === 'contract' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+  if (typeFilter !== 'all') txns = txns.filter(t => t.type === typeFilter);
 
-      const launchBtn = document.querySelector('#stage-launch-actions button');
-      if (p.status === 'active') {
-        launchBtn.innerText = 'Deactivate / Delist';
-        launchBtn.className = 'btn btn-danger btn-sm';
-        launchBtn.disabled = false;
-      } else {
-        launchBtn.innerText = 'Go Live & List';
-        launchBtn.className = 'btn btn-primary btn-sm';
-        launchBtn.disabled = p.status !== 'active';
-      }
+  // Revenue summary
+  const totalCollected = allTxns.filter(t=>t.type==='Commission').reduce((s,t)=>s+(t.amount||0),0)
+                        + allTxns.filter(t=>t.type==='Payout').reduce((s,t)=>s+(t.amount||0),0);
+  const totalPaidOut   = allTxns.filter(t=>t.type==='Payout').reduce((s,t)=>s+(t.amount||0),0);
+  const netCommission  = allTxns.filter(t=>t.type==='Commission').reduce((s,t)=>s+(t.amount||0),0);
 
-      openModal('modal-pipeline');
-    }
+  document.getElementById('revenue-bar').innerHTML = `
+    <div class="revenue-item">
+      <div class="revenue-label">Total Collected</div>
+      <div class="revenue-value">${totalCollected.toLocaleString()} EGP</div>
+    </div>
+    <div class="revenue-item">
+      <div class="revenue-label">Total Paid Out</div>
+      <div class="revenue-value teal">${totalPaidOut.toLocaleString()} EGP</div>
+    </div>
+    <div class="revenue-item">
+      <div class="revenue-label">Net Commission (15%)</div>
+      <div class="revenue-value green">${netCommission.toLocaleString()} EGP</div>
+    </div>
+  `;
 
-    // Simulated Actions inside Pipeline Modal
-    function simulateDocUpload() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === activeProviderId);
-      if (!p) return;
+  document.getElementById('txns-tbody').innerHTML = txns.length === 0
+    ? `<tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:24px;">No transactions match filter</td></tr>`
+    : txns.map(t => `
+      <tr>
+        <td><code style="font-size:11px;">${t.id}</code></td>
+        <td>${t.date}</td>
+        <td><span class="badge ${t.type==='Payout'?'badge-approved':t.type==='Commission'?'badge-review':'badge-rejected'}">${t.type}</span></td>
+        <td>${t.entityName}</td>
+        <td style="font-weight:700; color:${t.type==='Payout'?'#15803d':t.type==='Commission'?'#1d4ed8':'#b91c1c'};">${t.amount.toLocaleString()} EGP</td>
+        <td style="font-size:12px;">${t.method || '—'}</td>
+        <td><span class="badge badge-approved">${t.status || 'Completed'}</span></td>
+      </tr>
+    `).join('');
+}
 
-      p.documents = [
-        { name: "National_ID.pdf", status: "Uploaded" },
-        { name: "Medical_License.pdf", status: "Uploaded" },
-        { name: "Specialty_Certificate.pdf", status: "Uploaded" }
-      ];
-      p.status = 'review';
-      saveProviders(providers);
-      openPipelineReview(activeProviderId);
-    }
+// ═══════════════════════════════════════════════════════
+//  PROMOTIONS
+// ═══════════════════════════════════════════════════════
+function renderPromotions() {
+  const codes = getPromoCodes();
+  document.getElementById('promos-tbody').innerHTML = codes.length === 0
+    ? `<tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:24px;">No promo codes yet</td></tr>`
+    : codes.map((c, i) => `
+      <tr>
+        <td><strong>${c.code}</strong></td>
+        <td><span class="badge badge-approved">${c.discount}%</span></td>
+        <td>${c.uses || 0}</td>
+        <td>${c.maxUses || '∞'}</td>
+        <td style="font-size:12px;">${c.expiryDate || '—'}</td>
+        <td><span class="badge ${c.active !== false ? 'badge-active' : 'badge-gray'}">${c.active !== false ? 'Active' : 'Inactive'}</span></td>
+        <td>
+          <button class="btn-sm" onclick="togglePromo(${i})">${c.active !== false ? 'Deactivate' : 'Activate'}</button>
+        </td>
+      </tr>
+    `).join('');
+}
 
-    function approveDocuments() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === activeProviderId);
-      if (!p) return;
+function addPromoCode() {
+  const code  = document.getElementById('new-promo-code').value.trim().toUpperCase();
+  const pct   = parseInt(document.getElementById('new-promo-pct').value) || 0;
+  const limit = parseInt(document.getElementById('new-promo-limit').value) || 0;
+  const expiry= document.getElementById('new-promo-expiry').value;
 
-      p.documents.forEach(d => d.status = 'Approved');
-      p.status = 'interview';
-      saveProviders(providers);
-      openPipelineReview(activeProviderId);
-    }
+  if (!code) { showToast('Enter a promo code', 'error'); return; }
+  if (!pct || pct < 1 || pct > 100) { showToast('Enter a discount between 1–100%', 'error'); return; }
 
-    function rejectDocuments() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === activeProviderId);
-      if (!p) return;
+  const codes = getPromoCodes();
+  if (codes.find(c => c.code === code)) { showToast('Code already exists', 'error'); return; }
 
-      p.documents.forEach(d => d.status = 'Rejected');
-      p.status = 'rejected';
-      saveProviders(providers);
-      openPipelineReview(activeProviderId);
-    }
+  codes.unshift({ code, discount: pct, maxUses: limit || null, expiryDate: expiry || null, uses: 0, active: true });
+  savePromoCodes(codes);
+  ['new-promo-code','new-promo-pct','new-promo-limit','new-promo-expiry'].forEach(id => document.getElementById(id).value = '');
+  showToast(`Promo code "${code}" created!`, 'success');
+  renderPromotions();
+}
 
-    function rejectInterview() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === activeProviderId);
-      if (!p) return;
+function togglePromo(index) {
+  const codes = getPromoCodes();
+  if (codes[index]) {
+    codes[index].active = !(codes[index].active !== false);
+    savePromoCodes(codes);
+    renderPromotions();
+  }
+}
 
-      p.status = 'rejected';
-      saveProviders(providers);
-      openPipelineReview(activeProviderId);
-    }
+// ═══════════════════════════════════════════════════════
+//  REGIONS
+// ═══════════════════════════════════════════════════════
+function renderRegions() {
+  const regions = getRegions();
 
-    function passInterview() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === activeProviderId);
-      if (!p) return;
+  // Populate parent select
+  const sel = document.getElementById('new-sub-region');
+  if (sel) {
+    sel.innerHTML = regions.map(r => `<option value="${r.name}">${r.name}</option>`).join('');
+  }
 
-      p.status = 'contract';
-      p.interviewDate = new Date().toISOString().split('T')[0];
-      saveProviders(providers);
-      openPipelineReview(activeProviderId);
-    }
+  document.getElementById('regions-list').innerHTML = regions.map(r => `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+        📍 ${r.name}
+        <span style="font-size:10px;color:var(--text-light);font-weight:600;">${(r.subregions||[]).length} subregions</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${(r.subregions||[]).map((sub, si) => `
+          <span style="background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;display:flex;align-items:center;gap:6px;">
+            ${sub}
+            <button style="border:none;background:none;cursor:pointer;color:var(--primary);font-size:12px;line-height:1;padding:0;" onclick="removeSubregion('${r.name}', ${si})" title="Remove">✕</button>
+          </span>
+        `).join('')}
+        ${!(r.subregions||[]).length ? `<span style="font-size:12px;color:var(--text-light);">No subregions</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
 
-    function signContract() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === activeProviderId);
-      if (!p) return;
+function addSubregion() {
+  const regionName = document.getElementById('new-sub-region')?.value;
+  const subName = document.getElementById('new-sub-name')?.value.trim();
+  if (!subName) { showToast('Enter a subregion name', 'error'); return; }
 
-      p.contractSigned = true;
-      p.status = 'active'; // ready to toggle active status or auto-activate
-      saveProviders(providers);
-      openPipelineReview(activeProviderId);
-    }
+  const regions = getRegions();
+  const r = regions.find(x => x.name === regionName);
+  if (!r) { showToast('Region not found', 'error'); return; }
+  if (!r.subregions) r.subregions = [];
+  if (r.subregions.includes(subName)) { showToast('Subregion already exists', 'error'); return; }
 
-    function toggleActiveStatus() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === activeProviderId);
-      if (!p) return;
+  r.subregions.push(subName);
+  saveRegions(regions);
+  document.getElementById('new-sub-name').value = '';
+  showToast(`Subregion "${subName}" added to ${regionName}`, 'success');
+  renderRegions();
+}
 
-      if (p.status === 'active') {
-        p.status = 'contract'; // Deactivate back to contract phase
-      } else {
-        p.status = 'active';
-      }
-      saveProviders(providers);
-      openPipelineReview(activeProviderId);
-    }
+function removeSubregion(regionName, subIndex) {
+  const regions = getRegions();
+  const r = regions.find(x => x.name === regionName);
+  if (r && r.subregions) {
+    r.subregions.splice(subIndex, 1);
+    saveRegions(regions);
+    renderRegions();
+  }
+}
 
-    // Modal Add Provider Form Submission
-    function openAddProviderModal() {
-      document.getElementById('form-add-provider').reset();
-      openModal('modal-add-provider');
-    }
+// ═══════════════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════════════
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
 
-    function submitAddProviderForm(e) {
-      e.preventDefault();
-      const name = document.getElementById('new-prov-name').value;
-      const type = document.getElementById('new-prov-type').value;
-      const specialty = document.getElementById('new-prov-specialty').value;
-      const email = document.getElementById('new-prov-email').value;
-      const phone = document.getElementById('new-prov-phone').value;
-      const price = document.getElementById('new-prov-price').value;
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('open'); });
+});
 
-      const providers = getProviders();
-      const newId = `PROV-${String(providers.length + 1).padStart(3, '0')}`;
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+function showToast(msg, type) {
+  const t = document.getElementById('adm-toast');
+  t.textContent = msg;
+  t.className = `show ${type || ''}`;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3400);
+}
 
-      const newProvider = {
-        id: newId,
-        name,
-        type,
-        specialty,
-        email,
-        phone,
-        price,
-        duration: "45 min",
-        status: "pending",
-        documents: [],
-        interviewDate: "",
-        contractSigned: false
-      };
-
-      providers.push(newProvider);
-      saveProviders(providers);
-      closeModal('modal-add-provider');
-      renderAllData();
-    }
-
-    // Modal Add Sub-Admin Profile
-    function openAddSubadminModal() {
-      document.getElementById('form-add-subadmin').reset();
-      openModal('modal-add-subadmin');
-    }
-
-    function submitAddSubadminForm(e) {
-      e.preventDefault();
-      const name = document.getElementById('new-admin-name').value;
-      const email = document.getElementById('new-admin-email').value;
-      const role = document.getElementById('new-admin-role').value;
-
-      const admins = getSubAdmins();
-      const newId = `ADM-${String(admins.length + 1).padStart(3, '0')}`;
-      admins.push({ id: newId, name, email, role });
-
-      saveSubAdmins(admins);
-      closeModal('modal-add-subadmin');
-      renderAllData();
-    }
-
-    function openEditSubadminModal(id) {
-      const admins = getSubAdmins();
-      const s = admins.find(item => item.id === id);
-      if (!s) return;
-
-      document.getElementById('edit-admin-id').value = s.id;
-      document.getElementById('edit-admin-name').value = s.name;
-      document.getElementById('edit-admin-email').value = s.email;
-      document.getElementById('edit-admin-role').value = s.role;
-
-      openModal('modal-edit-subadmin');
-    }
-
-    function submitEditSubadminForm(e) {
-      e.preventDefault();
-      const id = document.getElementById('edit-admin-id').value;
-      const name = document.getElementById('edit-admin-name').value;
-      const email = document.getElementById('edit-admin-email').value;
-      const role = document.getElementById('edit-admin-role').value;
-
-      const admins = getSubAdmins();
-      const idx = admins.findIndex(item => item.id === id);
-      if (idx !== -1) {
-        admins[idx] = { ...admins[idx], name, email, role };
-        saveSubAdmins(admins);
-      }
-      closeModal('modal-edit-subadmin');
-      renderAllData();
-    }
-
-    function deleteSubadmin(id) {
-      if (!confirm("Are you sure you want to remove this sub-admin?")) return;
-      const admins = getSubAdmins();
-      const filtered = admins.filter(item => item.id !== id);
-      saveSubAdmins(filtered);
-      renderAllData();
-    }
-
-    // Modal Add Promo Code
-    function openAddPromoModal() {
-      document.getElementById('form-add-promo').reset();
-      openModal('modal-add-promo');
-    }
-
-    function submitAddPromoForm(e) {
-      e.preventDefault();
-      const code = document.getElementById('new-promo-code').value.toUpperCase();
-      const discount = document.getElementById('new-promo-discount').value;
-      const limit = parseInt(document.getElementById('new-promo-limit').value);
-      const expiry = document.getElementById('new-promo-expiry').value;
-
-      const codes = getPromoCodes();
-      codes.push({
-        code,
-        discount,
-        maxUses: limit,
-        uses: 0,
-        expiry,
-        status: "active"
-      });
-
-      savePromoCodes(codes);
-      closeModal('modal-add-promo');
-      renderAllData();
-    }
-
-    function openEditPromoModal(code) {
-      const codes = getPromoCodes();
-      const c = codes.find(item => item.code === code);
-      if (!c) return;
-
-      document.getElementById('edit-promo-old-code').value = c.code;
-      document.getElementById('edit-promo-code').value = c.code;
-      document.getElementById('edit-promo-discount').value = c.discount;
-      document.getElementById('edit-promo-limit').value = c.maxUses;
-      document.getElementById('edit-promo-uses').value = c.uses || 0;
-      document.getElementById('edit-promo-expiry').value = c.expiry;
-      document.getElementById('edit-promo-status').value = c.status || 'active';
-
-      openModal('modal-edit-promo');
-    }
-
-    function submitEditPromoForm(e) {
-      e.preventDefault();
-      const oldCode = document.getElementById('edit-promo-old-code').value;
-      const code = document.getElementById('edit-promo-code').value.toUpperCase();
-      const discount = document.getElementById('edit-promo-discount').value;
-      const limit = parseInt(document.getElementById('edit-promo-limit').value);
-      const uses = parseInt(document.getElementById('edit-promo-uses').value) || 0;
-      const expiry = document.getElementById('edit-promo-expiry').value;
-      const status = document.getElementById('edit-promo-status').value;
-
-      const codes = getPromoCodes();
-      const idx = codes.findIndex(item => item.code === oldCode);
-      if (idx !== -1) {
-        codes[idx] = { code, discount, maxUses: limit, uses, expiry, status };
-        savePromoCodes(codes);
-      }
-      closeModal('modal-edit-promo');
-      renderAllData();
-    }
-
-    function deletePromoCode(code) {
-      if (!confirm(`Are you sure you want to delete promo code ${code}?`)) return;
-      const codes = getPromoCodes();
-      const filtered = codes.filter(item => item.code !== code);
-      savePromoCodes(filtered);
-      renderAllData();
-    }
-
-    // Handle updates across storage
-    window.addEventListener('storage', renderAllData);
-    
-    // Initial Render
-    window.onload = function() {
-      renderAllData();
-      setInterval(renderAllData, 1500);
-    };
-  </script>
+// ═══════════════════════════════════════════════════════
+//  LIVE SYNC
+// ═══════════════════════════════════════════════════════
+let lastSyncStr = '';
+function silentSync() {
+  const current = JSON.stringify([
+    localStorage.getItem('ahilney_appointments'),
+    localStorage.getItem('ahilney_summaries'),
+    localStorage.getItem('ahilney_providers'),
+    localStorage.getItem('ahilney_transactions'),
+  ]);
+  if (current !== lastSyncStr) {
+    lastSyncStr = current;
+    syncGlobals();
+    renderAll();
+  }
+}
+setInterval(silentSync, 1500);
+</script>
 </body>
 </html>
