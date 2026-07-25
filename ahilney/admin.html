@@ -978,7 +978,7 @@
       renderChatChannelsList();
     }
 
-    // New management tabs rendering and action handlers
+    // New management tabs rendering and action handlers (Requirement 2 & 6)
     function renderPatientsTable() {
       const patients = getPatients();
       const tbody = document.getElementById('patients-table-body');
@@ -994,11 +994,36 @@
           <td style="font-weight:600; color:var(--primary);">${p.walletBalance} EGP</td>
           <td><span class="badge badge-active">${p.completedSessionsCount || 0} completed</span></td>
           <td>
-            <button class="btn btn-secondary btn-sm" onclick="viewPatientDetails('${p.id}')">View History</button>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="viewPatientDetails('${p.id}')">View History</button>
+              <button class="btn btn-warning btn-sm" style="background:#fffbeb; color:#b45309; border-color:#fef3c7;" onclick="promptIssueRefund('${p.id}')">Issue Refund</button>
+              <button class="btn btn-primary btn-sm" onclick="promptAddSessions('${p.id}')">+ Add Sessions</button>
+            </div>
           </td>
         `;
         tbody.appendChild(row);
       });
+    }
+
+    // REQUIREMENT 6: Exclusive Ops Team Financial Actions
+    function promptIssueRefund(patientId) {
+      const amtStr = prompt("Enter Refund Amount (EGP):", "400");
+      if (!amtStr) return;
+      const reason = prompt("Enter Refund Reason:", "RS Rejection / Operational Refund");
+      if (issuePatientRefund(patientId, parseFloat(amtStr), reason)) {
+        alert(`Refund of ${amtStr} EGP issued successfully to patient wallet!`);
+        renderPatientsTable();
+        renderTransactionsTable();
+      }
+    }
+
+    function promptAddSessions(patientId) {
+      const countStr = prompt("Enter number of package sessions to add to patient balance:", "3");
+      if (!countStr) return;
+      if (addPackageSessions(patientId, parseInt(countStr))) {
+        alert(`Added ${countStr} session(s) to patient package balance!`);
+        renderPatientsTable();
+      }
     }
 
     function viewPatientDetails(id) {
@@ -1022,14 +1047,15 @@
         <p style="font-size:13px; margin-top:4px; color:var(--text); margin-bottom:15px;">${p.history}</p>
 
         <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-top:15px;">
-          <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">📄 Verified Treatment Plan (Prescription)</p>
-          <p style="color:var(--dark); font-weight:500; font-style:italic; margin-top:4px;">"${p.prescription.text}"</p>
-          <p style="font-size:11px; margin-top:6px; color:var(--text-light);">Prescribed by: <strong>${p.prescription.doctor}</strong></p>
+          <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">📄 Doctor Treatment Plan Audit Log</p>
+          <p style="color:var(--dark); font-weight:500; font-style:italic; margin-top:4px;">"${p.prescription ? p.prescription.text : ''}"</p>
+          <p style="font-size:11px; margin-top:6px; color:var(--text-light);">Prescribed by: <strong>${p.prescription ? p.prescription.doctor : 'Doctor'}</strong></p>
         </div>
       `;
       openModal('modal-view-patient');
     }
 
+    // REQUIREMENT 2: Treatment Plans Log-Only View (No Ops Approval / Rejection)
     function renderSummariesTable() {
       const appointments = getAppointments();
       const summaries = getSummaries();
@@ -1056,9 +1082,9 @@
             <td>${s.date}</td>
             <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.diagnosis}</td>
             <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:var(--primary);">${s.treatmentPlan}</td>
-            <td><span class="badge badge-${s.status.toLowerCase()}">${s.status}</span></td>
+            <td><span class="badge badge-active">Logged</span></td>
             <td>
-              ${s.status === 'Pending' ? `<button class="btn btn-primary btn-sm" onclick="openReviewSummaryModal('${s.id}')">Audit Summary</button>` : `<button class="btn btn-secondary btn-sm" onclick="openReviewSummaryModal('${s.id}')">View Details</button>`}
+              <button class="btn btn-secondary btn-sm" onclick="openReviewSummaryModal('${s.id}')">Audit Log</button>
             </td>
           `;
         } else {
@@ -1067,11 +1093,11 @@
             <td style="font-weight:600; color:var(--dark);">${provName}</td>
             <td>${patName}</td>
             <td>${apt.time}</td>
-            <td style="color:var(--text-light); font-style:italic;">No summary submitted yet</td>
-            <td style="color:var(--text-light); font-style:italic;">Pending</td>
-            <td><span class="badge badge-review" style="background:#fff7ed; color:#c2410c; border:1px solid #ffedd5;">Awaiting Submission</span></td>
+            <td style="color:var(--text-light); font-style:italic;">No summary logged yet</td>
+            <td style="color:var(--text-light); font-style:italic;">Pending Log</td>
+            <td><span class="badge badge-review" style="background:#f0fdfa; color:var(--primary); border:1px solid var(--primary);">Awaiting Logging</span></td>
             <td>
-              <button class="btn btn-primary btn-sm" style="background:#c2410c; border-color:#c2410c;" onclick="openSimulateSubmissionModal('${apt.id}')">Simulate Submission</button>
+              <button class="btn btn-primary btn-sm" style="background:var(--primary); border-color:var(--primary);" onclick="openSimulateSubmissionModal('${apt.id}')">Simulate Doctor Log</button>
             </td>
           `;
         }
@@ -1091,42 +1117,34 @@
 
       const body = document.getElementById('summary-review-body');
       body.innerHTML = `
-        <div style="margin-bottom:15px;">
-          <strong style="font-size:12px; color:var(--text-light); text-transform:uppercase; display:block;">Medical Practitioner</strong>
-          <span style="font-size:14px; font-weight:600; color:var(--dark);">${prov ? prov.name : 'Unknown Doctor'} (${prov ? prov.type : ''})</span>
+        <div style="background:var(--primary-light); color:var(--primary); padding:10px 12px; border-radius:8px; font-size:11px; font-weight:700; margin-bottom:14px;">
+          ℹ️ Read-Only Treatment Plan Audit Log (No Operations Approval Required)
         </div>
-        <div style="margin-bottom:15px;">
-          <strong style="font-size:12px; color:var(--text-light); text-transform:uppercase; display:block;">Patient</strong>
-          <span style="font-size:14px; font-weight:600; color:var(--dark);">${pat ? pat.name : 'Unknown Patient'}</span>
+        <div style="margin-bottom:12px;">
+          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Doctor / Practitioner</strong>
+          <span style="font-size:13px; font-weight:600; color:var(--dark);">${prov ? prov.name : 'Unknown Doctor'} (${prov ? prov.type : ''})</span>
         </div>
-        <div style="margin-bottom:15px; border-top:1px solid var(--border); padding-top:10px;">
-          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Submitted Chief Complaint</strong>
-          <p style="font-size:13px; color:var(--text); margin-top:4px;">${s.complaint}</p>
+        <div style="margin-bottom:12px;">
+          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Patient</strong>
+          <span style="font-size:13px; font-weight:600; color:var(--dark);">${pat ? pat.name : 'Unknown Patient'}</span>
         </div>
-        <div style="margin-bottom:15px;">
+        <div style="margin-bottom:12px; border-top:1px solid var(--border); padding-top:8px;">
+          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Chief Complaint</strong>
+          <p style="font-size:12px; color:var(--text); margin-top:2px;">${s.complaint}</p>
+        </div>
+        <div style="margin-bottom:12px;">
           <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Clinical Diagnosis</strong>
-          <p style="font-size:13px; color:var(--text); margin-top:4px;">${s.diagnosis}</p>
+          <p style="font-size:12px; color:var(--text); margin-top:2px;">${s.diagnosis}</p>
         </div>
-        <div style="margin-bottom:15px;">
-          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Prescribed Rehab Treatment Plan</strong>
-          <p style="font-size:13px; color:var(--primary); font-weight:600; margin-top:4px;">${s.treatmentPlan}</p>
+        <div style="margin-bottom:12px;">
+          <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Logged Treatment Plan</strong>
+          <p style="font-size:12px; color:var(--primary); font-weight:600; margin-top:2px;">${s.treatmentPlan}</p>
         </div>
       `;
 
-      // Always show Approve & Reject buttons inside modal for re-audits/action changes
-      document.getElementById('summary-reject-btn').style.display = 'block';
-      document.getElementById('summary-approve-btn').style.display = 'block';
-
-      if (s.status !== 'Pending') {
-        document.getElementById('summary-approve-btn').innerText = `Re-Approve Audit`;
-        document.getElementById('summary-reject-btn').innerText = `Reject Summary`;
-      } else {
-        document.getElementById('summary-approve-btn').innerText = `Approve Summary`;
-        document.getElementById('summary-reject-btn').innerText = `Reject Summary`;
-      }
-
-      document.getElementById('summary-approve-btn').onclick = () => auditSummary(s.id, 'Approved');
-      document.getElementById('summary-reject-btn').onclick = () => auditSummary(s.id, 'Rejected');
+      // Hide approve/reject buttons since Ops does not approve or reject doctor treatment plans
+      document.getElementById('summary-reject-btn').style.display = 'none';
+      document.getElementById('summary-approve-btn').style.display = 'none';
 
       openModal('modal-review-summary');
     }

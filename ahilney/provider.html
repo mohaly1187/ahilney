@@ -513,9 +513,59 @@
         `;
         appBody.appendChild(welcome);
 
-        // Header for Sessions
+        // REQUIREMENT 10: RS Incoming Booking Requests Section
+        const allApts = getAppointments().filter(apt => apt.providerId === selectedProvider.id);
+        const pendingRequests = allApts.filter(apt => apt.status === 'Pending RS Acceptance');
+
+        if (pendingRequests.length > 0) {
+          const reqHeader = document.createElement('div');
+          reqHeader.innerHTML = `
+            <div style="background:#fffbeb; border:1px solid #fef3c7; border-radius:10px; padding:10px 12px; margin-top:8px; margin-bottom:12px;">
+              <h4 style="font-weight:800; font-size:12px; color:#b45309; margin:0 0 2px 0;">🔔 Incoming Booking Requests (${pendingRequests.length})</h4>
+              <p style="font-size:10px; color:#92400e; margin:0;">Please review patient details and choose Accept or Reject.</p>
+            </div>
+          `;
+          appBody.appendChild(reqHeader);
+
+          const reqListContainer = document.createElement('div');
+          reqListContainer.style.display = 'flex';
+          reqListContainer.style.flexDirection = 'column';
+          reqListContainer.style.gap = '10px';
+          reqListContainer.style.marginBottom = '16px';
+
+          pendingRequests.forEach(apt => {
+            const patient = PATIENTS_DATA[apt.patientId] || { name: 'Patient', age: '30' };
+            const reqCard = document.createElement('div');
+            reqCard.className = 'mobile-card';
+            reqCard.style.border = '1px solid #fde68a';
+            reqCard.style.background = '#fffdf5';
+            
+            reqCard.innerHTML = `
+              <div class="mobile-card-header">
+                <span class="badge badge-pending" style="font-size:9px;">Pending Acceptance</span>
+                <span style="font-size:11px; font-weight:700; color:var(--primary);">${apt.time}</span>
+              </div>
+              <div class="patient-info-row">
+                <div class="patient-img-placeholder">${patient.name.split(' ').map(n => n[0]).join('')}</div>
+                <div class="patient-name-wrapper">
+                  <h4>${patient.name}</h4>
+                  <p style="margin:0;">${apt.type} • Fee: ${apt.price} EGP</p>
+                  <p style="font-size:10px; color:var(--text-light); margin-top:2px;">Plan: ${apt.treatmentPlanText || 'External/Doctor Plan'}</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; border-top:1px solid #fef3c7; padding-top:10px; margin-top:8px;">
+                <button class="btn btn-primary btn-sm" style="flex:1; height:32px; font-size:11px; font-weight:700;" onclick="acceptRSBooking('${apt.id}')">✓ Accept Booking</button>
+                <button class="btn btn-danger btn-sm" style="flex:1; height:32px; font-size:11px; font-weight:700;" onclick="rejectRSBooking('${apt.id}')">✗ Reject</button>
+              </div>
+            `;
+            reqListContainer.appendChild(reqCard);
+          });
+          appBody.appendChild(reqListContainer);
+        }
+
+        // Header for Confirmed / Upcoming Sessions
         const sessHeader = document.createElement('div');
-        sessHeader.innerHTML = `<h4 style="font-weight:700; font-size:13px; color:var(--dark); margin-top:8px;">Upcoming Appointments</h4>`;
+        sessHeader.innerHTML = `<h4 style="font-weight:700; font-size:13px; color:var(--dark); margin-top:8px;">Confirmed Appointments</h4>`;
         appBody.appendChild(sessHeader);
 
         // Dynamic Appointments List
@@ -524,9 +574,9 @@
         listContainer.style.flexDirection = 'column';
         listContainer.style.gap = '12px';
 
-        const list = getAppointments().filter(apt => apt.providerId === selectedProvider.id && (apt.status === 'Upcoming' || apt.status === 'Need Summary' || apt.status === 'Awaiting Audit' || apt.status === 'Finished'));
+        const list = getAppointments().filter(apt => apt.providerId === selectedProvider.id && (apt.status === 'Confirmed' || apt.status === 'Upcoming' || apt.status === 'Need Summary' || apt.status === 'Awaiting Audit' || apt.status === 'Finished'));
         list.forEach(apt => {
-          const patient = PATIENTS_DATA[apt.patientId];
+          const patient = PATIENTS_DATA[apt.patientId] || { name: 'Patient', age: '30' };
           const card = document.createElement('div');
           card.className = 'mobile-card';
           card.style.cursor = 'pointer';
@@ -534,7 +584,7 @@
           
           let actionLabel = selectedProvider.type === 'Doctor' 
             ? (apt.type === 'Online Consultation' ? 'Start Video Call' : 'Clinic Visit')
-            : (apt.type === 'Home Visit' ? 'View Map & Address' : 'Clinic Visit');
+            : (apt.type.includes('Home') ? 'View Map & Address' : 'Clinic Visit');
           
           const isPkg = apt.packageSize && apt.packageSize > 1;
           const progressLabelHtml = isPkg ? `
@@ -552,20 +602,13 @@
               <div class="patient-img-placeholder">${patient.name.split(' ').map(n => n[0]).join('')}</div>
               <div class="patient-name-wrapper">
                 <h4>${patient.name}</h4>
-                <p style="margin:0;">${patient.age} years</p>
+                <p style="margin:0;">${patient.age || '30'} years</p>
                 ${progressLabelHtml}
               </div>
             </div>
             <div style="border-top:1px solid var(--border); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:11px; font-weight:700; color:var(--text-light);">Appointment Details</span>
+              <span style="font-size:11px; font-weight:700; color:var(--text-light);">Status: ${apt.status}</span>
               <span style="font-size:11px; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:4px;">
-                ${apt.type === 'Online Consultation' ? `
-                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                ` : apt.type === 'Home Visit' ? `
-                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                ` : `
-                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                `}
                 ${actionLabel}
               </span>
             </div>
@@ -733,26 +776,54 @@
         const profileDiv = document.createElement('div');
         profileDiv.style.padding = '12px';
         profileDiv.innerHTML = `
-          <div style="text-align:center; margin-bottom:24px;">
-            <div class="provider-welcome-avatar" style="width:64px; height:64px; font-size:24px; margin:0 auto 12px auto; display:flex; align-items:center; justify-content:center; background:var(--light); border-radius:50%; font-weight:700; color:var(--primary);">${initials}</div>
+          <div style="text-align:center; margin-bottom:16px;">
+            <div class="provider-welcome-avatar" style="width:56px; height:56px; font-size:20px; margin:0 auto 8px auto; display:flex; align-items:center; justify-content:center; background:var(--light); border-radius:50%; font-weight:700; color:var(--primary);">${initials}</div>
             <h3 style="font-weight:800; color:var(--dark); margin:0;">${selectedProvider.name}</h3>
-            <p style="font-size:12px; color:var(--text-light); margin-top:4px;">${selectedProvider.specialty}</p>
+            <p style="font-size:11px; color:var(--text-light); margin-top:2px;">${selectedProvider.specialty}</p>
           </div>
 
-          <div style="background:var(--white); border-radius:12px; border:1px solid var(--border); padding:16px; display:flex; flex-direction:column; gap:12px;">
+          <div style="background:var(--white); border-radius:12px; border:1px solid var(--border); padding:12px; display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
             <div>
-              <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Email Address</span>
-              <p style="font-size:13px; font-weight:600; color:var(--dark); margin-top:2px;">${selectedProvider.email}</p>
-            </div>
-            <div>
-              <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Phone Number</span>
-              <p style="font-size:13px; font-weight:600; color:var(--dark); margin-top:2px;">${selectedProvider.phone}</p>
+              <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Email & Phone</span>
+              <p style="font-size:12px; font-weight:600; color:var(--dark); margin-top:2px;">${selectedProvider.email} • ${selectedProvider.phone}</p>
             </div>
             <div>
               <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Session Price</span>
-              <p style="font-size:13px; font-weight:600; color:var(--primary); margin-top:2px;">${selectedProvider.price} per ${selectedProvider.duration}</p>
+              <p style="font-size:12px; font-weight:600; color:var(--primary); margin-top:2px;">${selectedProvider.price} per ${selectedProvider.duration}</p>
             </div>
           </div>
+
+          <!-- REQUIREMENT 7: Multi-Select & Interactive Map for RS Regions -->
+          ${selectedProvider.type === 'RS' ? `
+            <div style="background:var(--light); border-radius:12px; border:1px solid var(--border); padding:12px; margin-bottom:14px;">
+              <h4 style="font-weight:700; font-size:12px; color:var(--dark); margin-bottom:4px;">🇪🇬 Egypt Work Regions & Map Coverage</h4>
+              <p style="font-size:10px; color:var(--text-light); margin-bottom:10px;">Select the governorates and subregions you cover for Home Care visits.</p>
+              
+              <div class="region-chips-grid">
+                ${EGYPT_SUBREGIONS.map(reg => {
+                  const isChecked = selectedProvider.regionsCovered && selectedProvider.regionsCovered.includes(reg.name);
+                  return `
+                    <button class="region-chip-btn ${isChecked ? 'active' : ''}" onclick="toggleRSCoverageRegion('${reg.name}')">
+                      ${isChecked ? '✓ ' : '+ '}${reg.name}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              <!-- Interactive Visual Map Display -->
+              <div style="margin-top:12px; background:var(--white); border:1px solid var(--border); border-radius:10px; padding:10px; text-align:center;">
+                <span style="font-size:10px; font-weight:700; color:var(--text-light); text-transform:uppercase; display:block; margin-bottom:6px;">Interactive Region Coverage Preview</span>
+                <svg width="100%" height="80" viewBox="0 0 300 80" style="background:#f0fdfa; border-radius:8px;">
+                  <circle cx="150" cy="40" r="35" fill="rgba(13,148,136,0.15)" stroke="var(--primary)" stroke-dasharray="3,3" />
+                  <circle cx="150" cy="40" r="6" fill="var(--primary)" />
+                  <text x="150" y="60" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--primary)">${selectedProvider.name} Coverage Zone</text>
+                </svg>
+                <span style="font-size:10px; color:var(--primary); font-weight:700; display:block; margin-top:6px;">Active Districts: ${(selectedProvider.regionsCovered || []).join(', ') || 'None'}</span>
+              </div>
+
+              <button class="btn btn-primary btn-sm" style="width:100%; height:32px; margin-top:10px; font-size:11px; font-weight:700;" onclick="saveRSCoverageRegions()">Save Region Coverage</button>
+            </div>
+          ` : ''}
         `;
         appBody.appendChild(profileDiv);
       }
@@ -1234,6 +1305,56 @@
       alert(`Withdrawal request for ${amt} EGP submitted to Ahilney clinical panel!`);
       closeWithdrawModal();
       renderScreenContent();
+    }
+
+    // REQUIREMENT 10: RS Booking Acceptance & Rejection Workflow
+    function acceptRSBooking(aptId) {
+      const appointments = getAppointments();
+      const apt = appointments.find(a => a.id === aptId);
+      if (!apt) return;
+
+      apt.status = 'Confirmed';
+      saveAppointments(appointments);
+      alert(`Booking ${aptId} ACCEPTED! Patient has been notified.`);
+      renderScreenContent();
+    }
+
+    function rejectRSBooking(aptId) {
+      const reason = prompt("Please provide a reason for rejecting this booking request:", "Schedule conflict / Out of range");
+      if (reason === null) return;
+
+      const appointments = getAppointments();
+      const apt = appointments.find(a => a.id === aptId);
+      if (!apt) return;
+
+      apt.status = 'Rejected by RS';
+      apt.rejectionReason = reason;
+      saveAppointments(appointments);
+
+      alert(`Booking ${aptId} REJECTED. Flagged for Ahilney Operations Team to process refund.`);
+      renderScreenContent();
+    }
+
+    // REQUIREMENT 7: RS Coverage Regions Toggle & Save
+    function toggleRSCoverageRegion(regionName) {
+      if (!selectedProvider.regionsCovered) selectedProvider.regionsCovered = [];
+      const idx = selectedProvider.regionsCovered.indexOf(regionName);
+      if (idx > -1) {
+        selectedProvider.regionsCovered.splice(idx, 1);
+      } else {
+        selectedProvider.regionsCovered.push(regionName);
+      }
+      renderScreenContent();
+    }
+
+    function saveRSCoverageRegions() {
+      const providers = getProviders();
+      const prov = providers.find(p => p.id === selectedProvider.id);
+      if (prov) {
+        prov.regionsCovered = selectedProvider.regionsCovered || [];
+        saveProviders(providers);
+        alert(`Updated coverage regions saved: ${(prov.regionsCovered).join(', ')}`);
+      }
     }
 
     let lastProvidersStr = "";
