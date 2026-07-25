@@ -1308,3 +1308,218 @@ input:checked + .toggle-slider:before {
   font-size: 11px;
   opacity: 0.9;
 }
+
+/* ================= NEW PROTOTYPE FEATURE STYLES ================= */
+
+/* Doctor Specializations Filter Bar (Req 11) */
+.spec-filter-container {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 10px 0;
+  margin-bottom: 12px;
+}
+
+.spec-pill {
+  white-space: nowrap;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--light);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.spec-pill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.spec-pill.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Home Care & Rehab Center Services Catalog (Req 12) */
+.services-grid-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.service-card-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.service-card-item:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.service-card-item.selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.service-card-icon {
+  font-size: 22px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.service-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1.3;
+}
+
+.service-badge-exclusive {
+  font-size: 9px;
+  font-weight: 800;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 2px 6px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+/* Geolocation Permission Banner & Fallback (Req 8) */
+.location-banner {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: #0369a1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.location-banner-refused {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+/* Proximity Distance Badge (Req 9) */
+.distance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(13, 148, 136, 0.1);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+/* Terms & Conditions Notice Box & Checkbox (Req 4) */
+.tc-notice-box {
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 12px 0;
+  font-size: 11px;
+  color: #8c6b00;
+}
+
+.tc-checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.tc-checkbox-group input[type="checkbox"] {
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  cursor: pointer;
+}
+
+/* Interactive Egypt Region Selector Chips (Req 7) */
+.region-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.region-chip-btn {
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: var(--light);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.region-chip-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Modal overlays for OTP and warnings */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.7);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.custom-modal-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+

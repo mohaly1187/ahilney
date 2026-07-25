@@ -1,21 +1,74 @@
 // Ahilney Prototype State Management
 
+// 1. Doctor Specializations List (Requirement 11)
+const DOCTOR_SPECIALIZATIONS = [
+  "Orthopedic Physician",
+  "Orthopedic Surgeon",
+  "Neurosurgery / Neurology",
+  "Nutrition Specialist",
+  "Psychiatry / Psychology",
+  "Physical Medicine, Rheumatology & Rehabilitation",
+  "Pediatrics"
+];
+
+// 2. Services Catalog (Requirement 12)
+// Universal services can be done at Home or Rehab Center; Hydrotherapy is Rehab Center exclusive.
+const SERVICES_CATALOG = [
+  { id: "SRV-01", name: "Physical Therapy (PT)", supportsHome: true, supportsCenter: true, icon: "🧘‍♂️", category: "Therapy" },
+  { id: "SRV-02", name: "Post-Injury Rehabilitation", supportsHome: true, supportsCenter: true, icon: "🩹", category: "Rehab" },
+  { id: "SRV-03", name: "Elderly Rehabilitation", supportsHome: true, supportsCenter: true, icon: "👵", category: "Geriatric" },
+  { id: "SRV-04", name: "Special Needs Rehabilitation", supportsHome: true, supportsCenter: true, icon: "♿", category: "Specialized" },
+  { id: "SRV-05", name: "Pediatric Rehabilitation", supportsHome: true, supportsCenter: true, icon: "👶", category: "Pediatrics" },
+  { id: "SRV-06", name: "Nutritional Rehabilitation", supportsHome: true, supportsCenter: true, icon: "🥗", category: "Wellness" },
+  { id: "SRV-07", name: "Manual Therapy (Chiropractic / Osteopathy)", supportsHome: true, supportsCenter: true, icon: "👐", category: "Therapy" },
+  { id: "SRV-08", name: "Basic Recovery & Wellness Services", supportsHome: true, supportsCenter: true, icon: "⚡", category: "Wellness" },
+  { id: "SRV-09", name: "Hydrotherapy", supportsHome: false, supportsCenter: true, icon: "🏊‍♂️", category: "Center Exclusive", note: "Rehab Center Only" }
+];
+
+// 3. Egypt Subregions with Geolocation Coordinates (Requirement 7, 8, 9)
+const EGYPT_SUBREGIONS = [
+  { name: "New Cairo", lat: 30.0276, lng: 31.4913 },
+  { name: "Al-Raml", lat: 31.2333, lng: 29.9667 },
+  { name: "Heliopolis", lat: 30.0889, lng: 31.3153 },
+  { name: "Maadi", lat: 29.9602, lng: 31.2569 },
+  { name: "Dokki", lat: 30.0381, lng: 31.2118 },
+  { name: "6th of October", lat: 29.9723, lng: 30.9442 },
+  { name: "Sheikh Zayed", lat: 30.0468, lng: 30.9856 },
+  { name: "Nasr City", lat: 30.0561, lng: 31.3301 },
+  { name: "Alexandria", lat: 31.2001, lng: 29.9187 }
+];
+
+// Distance Calculation Helper (Haversine Formula in km)
+function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return 5.0; // fallback mock distance
+  const R = 6371; // Radius of earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c * 10) / 10;
+}
+
 // Default mock data for Providers (Doctors & Rehab Specialists)
 const DEFAULT_PROVIDERS = [
   {
     id: "PROV-001",
     name: "Dr. Sarah Jenkins",
     type: "Doctor",
-    specialty: "Sports Medicine & Cardio Rehab",
+    specialty: "Orthopedic Physician",
     email: "sarah.j@ahilney.com",
     password: "password",
     phone: "+201011223344",
     price: "450 EGP",
     duration: "45 min",
     sessionDuration: 45,
-    status: "active", // pending, review, interview, contract, active, rejected
+    status: "active",
     payoutDetails: "Instapay: sarah.j@instapay",
-    regionsCovered: [],
+    regionsCovered: ["New Cairo", "Heliopolis"],
+    lat: 30.0276,
+    lng: 31.4913,
     documents: [
       { name: "National_ID.pdf", status: "Approved" },
       { name: "Medical_License.pdf", status: "Approved" },
@@ -28,83 +81,91 @@ const DEFAULT_PROVIDERS = [
     id: "PROV-002",
     name: "Dr. Marcus Vance",
     type: "Doctor",
-    specialty: "Orthopedic Rehabilitation",
+    specialty: "Orthopedic Surgeon",
     email: "marcus.v@ahilney.com",
     password: "password",
     phone: "+201099887766",
     price: "500 EGP",
     duration: "30 min",
     sessionDuration: 30,
-    status: "interview",
+    status: "active",
     payoutDetails: "Bank: HSBC EG789012345",
-    regionsCovered: [],
+    regionsCovered: ["Maadi", "Dokki"],
+    lat: 30.0889,
+    lng: 31.3153,
     documents: [
       { name: "National_ID.pdf", status: "Approved" },
       { name: "Orthopedic_Board_Certificate.pdf", status: "Approved" }
     ],
     interviewDate: "2026-07-02",
-    contractSigned: false
+    contractSigned: true
   },
   {
     id: "PROV-003",
     name: "Amira Kanaan",
     type: "RS", // Rehab Specialist
-    specialty: "Neurological Physical Therapist",
+    specialty: "Physical Therapy (PT)",
     email: "amira.k@ahilney.com",
     password: "password",
     phone: "+201055667788",
     price: "350 EGP",
     duration: "60 min",
     sessionDuration: 60,
-    status: "review",
+    status: "active",
     payoutDetails: "Instapay: amira.k@instapay",
     regionsCovered: ["New Cairo", "Maadi"],
+    lat: 30.0150,
+    lng: 31.4800,
     documents: [
-      { name: "National_ID.pdf", status: "Uploaded" },
-      { name: "PT_Bachelor_Degree.pdf", status: "Uploaded" }
+      { name: "National_ID.pdf", status: "Approved" },
+      { name: "PT_Bachelor_Degree.pdf", status: "Approved" }
     ],
-    interviewDate: "",
-    contractSigned: false
+    interviewDate: "2026-06-20",
+    contractSigned: true
   },
   {
     id: "PROV-004",
     name: "Karim Abdel-Hadi",
     type: "RS",
-    specialty: "Musculoskeletal & Injury Rehab",
+    specialty: "Post-Injury Rehabilitation",
     email: "karim.a@ahilney.com",
     password: "password",
     phone: "+201022334455",
     price: "400 EGP",
     duration: "50 min",
     sessionDuration: 50,
-    status: "contract",
+    status: "active",
     payoutDetails: "Wallet: Vodafone Cash 01222334455",
-    regionsCovered: ["New Cairo", "Al-Raml", "Maadi"],
+    regionsCovered: ["New Cairo", "Al-Raml", "Maadi", "Nasr City"],
+    lat: 30.0350,
+    lng: 31.4600,
     documents: [
       { name: "National_ID.pdf", status: "Approved" },
       { name: "Rehab_Science_Master.pdf", status: "Approved" },
       { name: "Clinic_Permit.pdf", status: "Approved" }
     ],
     interviewDate: "2026-06-28",
-    contractSigned: false
+    contractSigned: true
   },
   {
     id: "PROV-005",
     name: "Hassan Al-Saeed",
     type: "RS",
-    specialty: "Pediatric Physical Therapist",
+    specialty: "Pediatric Rehabilitation",
     email: "hassan.s@ahilney.com",
     password: "password",
     phone: "+201077889900",
     price: "300 EGP",
     duration: "45 min",
     sessionDuration: 45,
-    status: "pending",
+    status: "active",
     payoutDetails: "Bank: CIB EG44556677",
-    regionsCovered: ["Heliopolis"],
+    regionsCovered: ["Heliopolis", "Dokki", "Nasr City"],
+    lat: 30.0900,
+    lng: 31.3200,
     documents: [],
     interviewDate: "",
-    contractSigned: false
+    contractSigned: true
   }
 ];
 
@@ -117,6 +178,7 @@ function getProviders() {
   } else {
     providers = JSON.parse(data);
   }
+  
   
   let migrated = false;
   providers.forEach(p => {
@@ -282,7 +344,7 @@ const DEFAULT_PATIENTS = [
         diagnosis: "Post-ACL stiffness and weak hamstring response.",
         text: "Active range-of-motion extension exercises, Quad/Hamstring isometric contractions, Proprioceptive balance training.",
         date: "2026-06-25",
-        status: "Approved"
+        status: "Logged"
       }
     ],
     walletBalance: 450,
@@ -307,7 +369,7 @@ const DEFAULT_PATIENTS = [
         diagnosis: "Rotator cuff tendonitis in right shoulder.",
         text: "Manual therapy mobilization combined with scapular stabilization exercises. Limit lifting heavier than 2kg for the next 3 weeks.",
         date: "2026-06-26",
-        status: "Approved"
+        status: "Logged"
       }
     ],
     walletBalance: 1200,
@@ -332,7 +394,7 @@ const DEFAULT_PATIENTS = [
         diagnosis: "Lower back pain (L4-L5 disc protrusion).",
         text: "Core stabilization program, McKenzie progression exercises, and posture correction education. Avoid lumbar flexion under load.",
         date: "2026-06-27",
-        status: "Approved"
+        status: "Logged"
       }
     ],
     walletBalance: 0,
@@ -357,7 +419,7 @@ const DEFAULT_PATIENTS = [
         diagnosis: "Total hip replacement (left side)",
         text: "Gait retraining, progressive hip abduction strengthening, and functional balance exercises. Strictly observe hip precautions (no flexion > 90 deg).",
         date: "2026-06-28",
-        status: "Approved"
+        status: "Logged"
       }
     ],
     walletBalance: 1500,
@@ -368,10 +430,46 @@ const DEFAULT_PATIENTS = [
 const DEFAULT_APPOINTMENTS = [
   { id: "APT-101", patientId: "P-001", providerId: "PROV-001", time: "02:00 PM Today", type: "Online Consultation", status: "Finished", price: 450 },
   { id: "APT-102", patientId: "P-002", providerId: "PROV-001", time: "04:30 PM Today", type: "Online Consultation", status: "Upcoming", price: 450 },
-  { id: "APT-201", patientId: "P-003", providerId: "PROV-004", time: "10:00 AM Today", type: "Home Visit", status: "Upcoming", price: 400 },
-  { id: "APT-202", patientId: "P-001", providerId: "PROV-004", time: "01:00 PM Today", type: "Home Visit", status: "Upcoming", price: 400 },
-  { id: "APT-203", patientId: "P-004", providerId: "PROV-004", time: "03:30 PM Today", type: "Home Visit", status: "Upcoming", price: 400 }
+  { id: "APT-201", patientId: "P-003", providerId: "PROV-004", time: "10:00 AM Today", type: "Home Visit", status: "Pending RS Acceptance", price: 400, serviceName: "Post-Injury Rehabilitation" },
+  { id: "APT-202", patientId: "P-001", providerId: "PROV-004", time: "01:00 PM Today", type: "Home Visit", status: "Confirmed", price: 400, serviceName: "Physical Therapy (PT)" },
+  { id: "APT-203", patientId: "P-004", providerId: "PROV-004", time: "03:30 PM Today", type: "Home Visit", status: "Upcoming", price: 400, serviceName: "Elderly Rehabilitation" }
 ];
+
+// Operations Team Exclusive Financial Functions (Requirement 6)
+function issuePatientRefund(patientId, amount, reason) {
+  const patients = getPatients();
+  const patient = patients.find(p => p.id === patientId);
+  if (!patient) return false;
+
+  const refundAmt = parseFloat(amount) || 0;
+  patient.walletBalance = (patient.walletBalance || 0) + refundAmt;
+  savePatients(patients);
+
+  // Log Transaction
+  const txns = getTransactions();
+  txns.unshift({
+    id: `TXN-REF-${Date.now().toString().slice(-4)}`,
+    date: new Date().toISOString().split("T")[0],
+    type: "Refund Issued",
+    entityName: `Refund for ${patient.name} (${reason || 'Ops Adjustment'})`,
+    amount: refundAmt,
+    status: "Completed",
+    method: "Wallet Credit"
+  });
+  saveTransactions(txns);
+  return true;
+}
+
+function addPackageSessions(patientId, count) {
+  const patients = getPatients();
+  const patient = patients.find(p => p.id === patientId);
+  if (!patient) return false;
+
+  const sessionCount = parseInt(count) || 1;
+  patient.packageSessionsRemaining = (patient.packageSessionsRemaining || 0) + sessionCount;
+  savePatients(patients);
+  return true;
+}
 
 const DEFAULT_REGIONS = [
   {
