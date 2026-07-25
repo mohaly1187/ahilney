@@ -1241,7 +1241,7 @@
           <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span> (${p.reviewCount || 15})</td>
           <td><span class="badge badge-${p.status}">${p.status}</span></td>
           <td>
-            <button class="btn btn-secondary btn-sm" onclick="openReviewModal('${p.id}')">View Details</button>
+            <button class="btn btn-secondary btn-sm" onclick="openPipelineReview('${p.id}')">View Details</button>
           </td>
         `;
         tbody.appendChild(row);
@@ -1265,7 +1265,7 @@
           <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span> (${p.reviewCount || 15})</td>
           <td><span class="badge badge-${p.status}">${p.status}</span></td>
           <td>
-            <button class="btn btn-secondary btn-sm" onclick="openReviewModal('${p.id}')">View Details</button>
+            <button class="btn btn-secondary btn-sm" onclick="openPipelineReview('${p.id}')">View Details</button>
           </td>
         `;
         tbody.appendChild(row);
