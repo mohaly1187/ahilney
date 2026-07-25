@@ -7,13 +7,18 @@ A home physical therapy and telehealth consulting platform for Egypt — three a
 | Layer | Stack | Port |
 |---|---|---|
 | **Backend API** | Node.js + Express + PostgreSQL | 3000 |
-| **Prototype / Admin (HTML)** | Static HTML/JS served by Python | 5000 |
+| **Admin Dashboard** | Vite + React + Tailwind CSS | 5173 |
+| **Prototype (reference only)** | Static HTML/JS served by Python | 5000 |
 
 ## Running
 
-Both workflows start automatically:
-- **"Start application"** — serves the prototype HTML files on port 5000
-- **"Ahilney API"** — runs the real Express API on port 3000
+All three workflows start automatically:
+- **"Admin Dashboard"** — Vite + React admin app on port 5173 (main production UI)
+- **"Ahilney API"** — Express API on port 3000
+- **"Start application"** — serves the prototype HTML files on port 5000 (reference only)
+
+### Admin login
+Open port 5173 in preview. Log in with `sherif@ahilney.com` / `admin123`.
 
 ## API
 
@@ -83,9 +88,35 @@ api/
         └── shared.js   # Public: providers list, regions, services, promos
 ```
 
+## Admin Dashboard source layout
+
+```
+admin-app/
+├── vite.config.js        # Proxy /api → localhost:3000
+├── src/
+│   ├── api/client.js     # Fetch wrapper, auth token, all API methods
+│   ├── hooks/useAuth.js  # JWT login/logout, localStorage
+│   ├── components/
+│   │   ├── Layout.jsx    # Shell: dark sidebar + topbar + <Outlet />
+│   │   ├── Badge.jsx     # Status badge (color per status string)
+│   │   ├── Modal.jsx     # Reusable overlay modal
+│   │   ├── Toast.jsx     # Toast notification item
+│   │   └── ToastContext.jsx # Global toast provider (useToast hook)
+│   └── pages/
+│       ├── Login.jsx         # Admin email + password auth
+│       ├── Dashboard.jsx     # Stat cards + recent feeds, 30s polling
+│       ├── SessionAudit.jsx  # Approve/reject session summaries + payout
+│       ├── Appointments.jsx  # Full table with filters + manual status override
+│       ├── Providers.jsx     # Search/filter table + provider modal
+│       ├── Patients.jsx      # Patient table + detail modal + refund
+│       ├── Financials.jsx    # Revenue bar + transaction table + CSV export
+│       ├── Promotions.jsx    # Promo code CRUD
+│       └── Regions.jsx       # Subregion add/remove
+```
+
 ## Prototype (legacy reference)
 
-The original localStorage prototype lives in `ahilney-prototype/`. It is kept as a design reference for the three real apps being built (Tasks #11, #12, #13).
+The original localStorage prototype lives in `ahilney-prototype/`. It is kept as a design reference for the mobile apps being built (Tasks #12, #13).
 
 ## User preferences
 
