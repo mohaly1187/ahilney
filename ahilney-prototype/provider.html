@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahilney Provider App Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  
+  <div style="max-width: 1200px; margin: 40px auto; padding: 0 20px; font-family: var(--font);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div>
+        <h2 style="font-weight: 800; color: var(--dark);">Ahilney Provider App Simulator</h2>
+        <p style="font-size: 14px; color: var(--text-light); margin-top: 4px;">Interact with the mobile app interface of Doctors & Rehab Specialists (RS).</p>
+      </div>
+      
+      <!-- Simulator controls -->
+      <div style="display: flex; gap: 16px; align-items: center; background: var(--white); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+        <!-- Active Provider Profile Selector -->
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: var(--text-light); display: block; margin-bottom: 4px; text-transform: uppercase;">Simulate Provider Profile</label>
+          <select id="sim-provider-select" class="select-filter" style="height: 36px;" onchange="selectProviderProfile()">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- Simulation Tool Trigger -->
+        <div>
+          <label style="font-size: 11px; font-weight: 700; color: var(--text-light); display: block; margin-bottom: 4px; text-transform: uppercase;">Simulation Events</label>
+          <button class="btn btn-secondary btn-sm" onclick="simulatePatientBooking()" style="font-size:11px; font-weight:700;">Simulate Patient Booking</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <div style="display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; max-width: 900px; margin: 0 auto;">
+      
+      <!-- LEFT INFO: Workflow Walkthrough -->
+      <div style="background: var(--white); border-radius: 20px; border: 1px solid var(--border); padding: 24px; box-shadow: var(--shadow-sm);">
+        <h3 style="font-weight: 700; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 113.536 0V21h2v-2.243a8.013 8.013 0 01-1.077-.323z"/></svg>
+          Interactive Prototype Scenarios
+        </h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 16px; font-size: 13px; color: var(--text);">
+          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: var(--shadow-sm);">
+            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
+              <span style="background:var(--primary-light); color:var(--primary); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">SYNC</span>
+              Real-time Admin/Provider State Sync
+            </strong>
+            Try opening the <strong>Admin Dashboard (`admin.html`)</strong> in a second tab. Select the same doctor/RS (e.g. <em>Dr. Marcus Vance</em>) on both tabs, change their verification status in the Admin Panel (e.g., mark as "Active"), and watch this app simulator instantly update!
+          </div>
+
+          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--secondary); box-shadow: var(--shadow-sm);">
+            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
+              <span style="background:var(--secondary-light); color:var(--secondary); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">CLINICAL</span>
+              Rehab Specialist (RS) Prescription Rule
+            </strong>
+            Switch the simulated profile to <strong>Karim Abdel-Hadi (RS)</strong>. Under the Appointments list, click on a <strong>Home Visit</strong> appointment (e.g. <em>Ahmed Wael</em>). You will inspect the mandatory doctor's prescription and treatment plan uploaded by the patient.
+          </div>
+
+          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--info); box-shadow: var(--shadow-sm);">
+            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
+              <span style="background:rgba(14, 165, 233, 0.1); color:var(--info); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">SCHEDULING</span>
+              Work Scheduling
+            </strong>
+            Click the calendar tab (middle item on the phone navigation bar). Toggle different time slots for work availability, then click <strong>"Confirm"</strong> to save.
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER: Interactive Phone Simulator -->
+      <div class="phone-simulation-container">
+        <div class="phone-mockup">
+          <div class="phone-notch">
+            <div class="phone-camera"></div>
+            <div class="phone-speaker"></div>
+          </div>
+          <div class="phone-screen">
+            <!-- Phone Status Bar -->
+            <div class="phone-status-bar">
+              <span class="status-bar-time">09:41</span>
+              <div class="status-bar-icons">
+                <svg width="15" height="11" viewBox="0 0 17 11">
+                  <rect x="0" y="8" width="2" height="3" rx="0.5" fill="currentColor" />
+                  <rect x="3" y="6" width="2" height="5" rx="0.5" fill="currentColor" />
+                  <rect x="6" y="4" width="2" height="7" rx="0.5" fill="currentColor" />
+                  <rect x="9" y="2" width="2" height="9" rx="0.5" fill="currentColor" />
+                  <rect x="12" y="0" width="2" height="11" rx="0.5" fill="currentColor" />
+                </svg>
+                <svg width="14" height="11" viewBox="0 0 15 11">
+                  <path d="M7.5 11a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-3.5-3.5a5 5 0 0 1 7 0 .5.5 0 0 0 .7-.7 6 6 0 0 0-8.4 0 .5.5 0 0 0 .7.7zm-2.8-2.8a9 9 0 0 1 12.6 0 .5.5 0 0 0 .7-.7 10 10 0 0 0-14 0 .5.5 0 0 0 .7.7z" fill="currentColor" />
+                </svg>
+                <svg width="18" height="11" viewBox="0 0 22 11">
+                  <rect x="0" y="0" width="20" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1" />
+                  <rect x="2" y="2" width="13" height="7" rx="1.5" fill="currentColor" />
+                  <path d="M21 3.5v4" stroke="currentColor" stroke-linecap="round" stroke-width="1" />
+                </svg>
+              </div>
+            </div>
+            
+            <!-- Mobile App Header -->
+            <header class="app-header" style="padding: 12px 20px 16px 20px;">
+              <span class="app-header-title" id="app-header-title">Ahilney Provider</span>
+              <div class="app-header-icons">
+                <button class="app-header-icon-btn" onclick="toggleMobileNotifications()">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  <span style="position:absolute; top:-2px; right:-2px; background:var(--danger); width:8px; height:8px; border-radius:50%; display:none;" id="mobile-notif-dot"></span>
+                </button>
+              </div>
+            </header>
+
+            <!-- Phone Screen Dynamic Viewports -->
+            <div class="app-body" id="app-body-content">
+              <!-- Content populated dynamically based on active tab & profile state -->
+            </div>
+
+            <!-- Mobile Notification Drawer Panel inside device -->
+            <div class="notification-panel-overlay" id="mobile-notif-overlay" onclick="toggleMobileNotifications()">
+              <div class="notification-panel" onclick="event.stopPropagation()">
+                <div class="notification-panel-header">
+                  <span class="notification-panel-title">Notifications</span>
+                  <span class="clear-all-notifications" onclick="clearMobileNotifications()">Clear All</span>
+                </div>
+                <div id="mobile-notifications-list">
+                  <!-- Dynamic Notifications -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile App Bottom Navigation -->
+            <nav class="mobile-nav" id="mobile-app-nav">
+              <div class="mobile-nav-item active" id="nav-home" onclick="setMobileTab('home')">
+                <svg viewBox="0 0 24 24"><path d="M10 20H5a1 1 0 0 1-1-1v-6.586l8-8 8 8V19a1 1 0 0 1-1 1h-5v-6H10v6zm2-14.414l-6 6V18h3v-6h6v6h3v-6.414l-6-6z"/></svg>
+                <span>Sessions</span>
+              </div>
+              <div class="mobile-nav-item" id="nav-schedule" onclick="setMobileTab('schedule')">
+                <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+                <span>Schedule</span>
+              </div>
+              <div class="mobile-nav-item" id="nav-wallet" onclick="setMobileTab('wallet')">
+                <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                <span>Wallet</span>
+              </div>
+              <div class="mobile-nav-item" id="nav-profile" onclick="setMobileTab('profile')">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>Profile</span>
+              </div>
+            </nav>
+
+            <!-- RIGHT PANEL: Interactive Patient Profile Card Detail (Nested in phone screen) -->
+            <div id="details-panel" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999; background: var(--white); padding: 42px 16px 16px 16px; overflow-y: auto; display: none;">
+              <!-- Filled dynamically on card click -->
+            </div>
+
+            <!-- ================= OVERLAY: SESSION ROOM (Nested in phone screen) ================= -->
+            <div id="session-room-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:var(--white); z-index:1000; flex-direction:column; overflow:hidden; font-family:var(--font);">
+              <div style="background:var(--white); width:100%; height:100%; display:flex; flex-direction:column; overflow:hidden; position:relative;">
+                <!-- Video Screen area -->
+                <div style="height:45%; background:#1a1a1a; position:relative; display:flex; align-items:center; justify-content:center; color:white;">
+                  <div style="text-align:center;">
+                    <div style="width:70px; height:70px; border-radius:50%; background:var(--primary); display:flex; align-items:center; justify-content:center; margin:0 auto 12px auto; font-weight:700; font-size:24px;" id="sess-avatar">AW</div>
+                    <h4 style="font-weight:700; margin:0;" id="sess-patient-name">Ahmed Wael</h4>
+                    <span style="font-size:11px; opacity:0.8;" id="sess-timer">00:00</span>
+                  </div>
+                  <button onclick="endActiveSession()" style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); background:var(--danger); border:none; color:white; padding:10px 20px; border-radius:30px; font-weight:700; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:8px;">
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle;"><path d="M6 19h12V5H6v14z"/></svg>
+                    End Session & Review
+                  </button>
+                </div>
+                <!-- Live Chat window -->
+                <div style="flex:1; display:flex; flex-direction:column; background:var(--light);">
+                  <div style="padding:10px; border-bottom:1px solid var(--border); font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">Live Session Chat Log</div>
+                  <div style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;" id="sess-chat-log">
+                    <!-- Chat logs dynamically populated -->
+                  </div>
+                  <div style="padding:10px; border-top:1px solid var(--border); background:white; display:flex; gap:10px;">
+                    <input type="text" id="sess-chat-input" placeholder="Type a message..." style="flex:1; border:1px solid var(--border); border-radius:20px; padding:6px 12px; font-size:13px;" onkeypress="if(event.key==='Enter') sendSessChatMsg()">
+                    <button onclick="sendSessChatMsg()" style="background:var(--primary); border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:white; cursor:pointer;">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ================= OVERLAY: POST-SESSION SUMMARY FORM (Nested in phone screen) ================= -->
+            <div id="session-summary-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:var(--white); z-index:1001; flex-direction:column; padding:42px 16px 16px 16px; overflow-y:auto; font-family:var(--font);">
+              <div style="background:var(--white); width:100%; display:flex; flex-direction:column; gap:16px;">
+                <h3 style="font-weight:800; color:var(--dark); margin:0;">Create Session Summary</h3>
+                <p style="font-size:12px; color:var(--text-light); margin:0;">Clinical review submission is required. The medical panel reviews summaries before release.</p>
+                <form id="form-sess-summary" onsubmit="submitSessSummary(event)" style="display:flex; flex-direction:column; gap:12px;">
+                  <input type="hidden" id="sum-apt-id">
+                  <input type="hidden" id="sum-patient-id">
+                  <div class="form-group">
+                    <label class="form-label" style="font-size:11px;">Patient Chief Complaint</label>
+                    <input type="text" class="form-control" id="sum-complaint" required placeholder="e.g. Knee extension limitation and swelling">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" style="font-size:11px;">Clinical Diagnosis</label>
+                    <input type="text" class="form-control" id="sum-diagnosis" required placeholder="e.g. Post-ACL surgical joint stiffness">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" style="font-size:11px;">Rehab Plan & Prescription Details</label>
+                    <textarea class="form-control" id="sum-plan" required rows="3" placeholder="e.g. Daily range extension exercises, patellar glides, quad strengthening" style="resize:none; padding:8px;"></textarea>
+                  </div>
+                  <div style="display:flex; gap:10px; margin-top:8px;">
+                    <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="closeSummaryOverlay()">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm" style="flex:1;">Submit Summary</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- ================= OVERLAY: WITHDRAWAL REQUEST FORM (Nested inside phone screen container) ================= -->
+            <div id="withdrawal-modal-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1001; justify-content:center; align-items:center; font-family:var(--font);">
+              <div style="background:var(--white); width:90%; max-width:320px; border-radius:24px; padding:20px; box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:16px;">
+                <h3 style="font-weight:800; color:var(--dark); margin:0; font-size:16px;">Request Balance Withdrawal</h3>
+                <p style="font-size:11px; color:var(--text-light); margin:0;">Choose your payout method and provide destination details for review.</p>
+                <form id="form-withdrawal" onsubmit="submitWithdrawalRequest(event)" style="display:flex; flex-direction:column; gap:12px;">
+                  <div class="form-group">
+                    <label class="form-label" style="font-size:11px;">Amount (EGP)</label>
+                    <input type="number" class="form-control" id="withdraw-amount" required placeholder="e.g. 500" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" style="font-size:11px;">Payout Method</label>
+                    <select class="form-control" id="withdraw-method" required onchange="updateWithdrawDetailsPlaceholder(this.value)">
+                      <option value="Instapay">Instapay Address</option>
+                      <option value="Bank Transfer">Bank Account Transfer</option>
+                      <option value="Digital Wallet">Mobile Cash Wallet (e.g. Vodafone Cash)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" style="font-size:11px;" id="withdraw-details-label">Instapay Username / Link</label>
+                    <input type="text" class="form-control" id="withdraw-details" required placeholder="e.g. name@instapay">
+                  </div>
+                  <div style="display:flex; gap:10px; margin-top:8px;">
+                    <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="closeWithdrawModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm" style="flex:1;">Submit Payout Request</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+  <script src="app.js"></script>
+  <script>
+    let activeMobileTab = 'home';
+    let selectedProvider = null;
+    let selectedPatientId = null;
+    let providerLoggedIn = true; // Auto-logged in by default for demonstration
+
+    function logOutProvider() {
+      providerLoggedIn = false;
+      renderScreenContent();
+    }
+
+    function handleProviderLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
+      const errorDiv = document.getElementById('login-error-msg');
+      
+      const providers = getProviders();
+      const found = providers.find(p => p.email.toLowerCase() === email.toLowerCase());
+      
+      if (found && found.password === pass) {
+        providerLoggedIn = true;
+        selectedProvider = found;
+        document.getElementById('sim-provider-select').value = found.id;
+        renderScreenContent();
+      } else {
+        errorDiv.style.display = 'block';
+        errorDiv.innerText = "Invalid credentials. Try: sarah.j@ahilney.com / password";
+      }
+    }
+
+    function mockSSOLogin(providerName) {
+      const providers = getProviders();
+      // Auto login as corresponding provider or default to Dr. Sarah
+      const found = providers.find(p => p.id === 'PROV-001');
+      providerLoggedIn = true;
+      selectedProvider = found;
+      document.getElementById('sim-provider-select').value = found.id;
+      alert(`Simulated SSO Login via ${providerName} Successful!`);
+      renderScreenContent();
+    }
+
+    function uploadCredentialsFromApp() {
+      const providers = getProviders();
+      const p = providers.find(item => item.id === selectedProvider.id);
+      if (p) {
+        p.documents = [
+          { name: "National_ID.pdf", status: "Uploaded" },
+          { name: "Medical_License.pdf", status: "Uploaded" }
+        ];
+        p.status = 'review';
+        saveProviders(providers);
+        selectedProvider = p;
+        alert("Credentials uploaded successfully! Awaiting Operational Team Audit.");
+        renderScreenContent();
+      }
+    }
+
+    function signContractFromApp() {
+      const providers = getProviders();
+      const p = providers.find(item => item.id === selectedProvider.id);
+      if (p) {
+        p.status = 'active';
+        p.contractSigned = true;
+        saveProviders(providers);
+        selectedProvider = p;
+        alert("Contract Signed! Your listing is now live in the Patient app.");
+        renderScreenContent();
+      }
+    }
+
+    // Load simulator dropdown profiles
+    function renderProfileSelector() {
+      const providers = getProviders();
+      const selectEl = document.getElementById('sim-provider-select');
+      
+      selectEl.innerHTML = '';
+      providers.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.innerText = `${p.name} (${p.status.toUpperCase()} - ${p.type})`;
+        selectEl.appendChild(option);
+      });
+      
+      if (!selectedProvider) {
+        selectedProvider = providers[0];
+      } else {
+        selectedProvider = providers.find(item => item.id === selectedProvider.id) || providers[0];
+      }
+      selectEl.value = selectedProvider.id;
+    }
+
+    function selectProviderProfile() {
+      const providers = getProviders();
+      const selectVal = document.getElementById('sim-provider-select').value;
+      selectedProvider = providers.find(item => item.id === selectVal);
+      selectedPatientId = null;
+      providerLoggedIn = true; // Auto login when simulator dropdown is toggled
+      document.getElementById('details-panel').style.display = 'none';
+      renderScreenContent();
+    }
+
+    // Tab switcher inside phone layout
+    function setMobileTab(tabId) {
+      activeMobileTab = tabId;
+      document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById(`nav-${tabId}`).classList.add('active');
+      renderScreenContent();
+    }
+
+    // Render Phone Screens
+    function renderScreenContent() {
+      if (!selectedProvider) return;
+      const appBody = document.getElementById('app-body-content');
+      const mobileNav = document.getElementById('mobile-app-nav');
+      appBody.innerHTML = '';
+
+      // 1. Authentication Screening
+      if (!providerLoggedIn) {
+        mobileNav.style.display = 'none';
+        
+        const loginEl = document.createElement('div');
+        loginEl.style.padding = '20px 14px';
+        loginEl.style.display = 'flex';
+        loginEl.style.flexDirection = 'column';
+        loginEl.style.justifyContent = 'center';
+        loginEl.style.height = '100%';
+        loginEl.style.fontFamily = 'var(--font)';
+        
+        loginEl.innerHTML = `
+          <div style="text-align:center; margin-bottom:20px;">
+            <div style="background:var(--primary-light); color:var(--primary); width:48px; height:48px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:8px; font-weight:800; font-size:20px;">A</div>
+            <h3 style="font-size:18px; font-weight:800; color:var(--dark); margin:0 0 2px 0;">Ahilney Portal</h3>
+            <p style="font-size:11px; color:var(--text-light); margin:0;">Access your clinical portal & schedule</p>
+          </div>
+
+          <form id="provider-login-form" onsubmit="handleProviderLogin(event)" style="display:flex; flex-direction:column; gap:10px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size:10px; margin-bottom:4px;">Professional Email</label>
+              <input type="email" id="login-email" class="form-control" placeholder="e.g. sarah.j@ahilney.com" required style="height:34px; border-radius:8px; font-size:12px;">
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size:10px; margin-bottom:4px;">Password</label>
+              <input type="password" id="login-pass" class="form-control" placeholder="••••••••" required style="height:34px; border-radius:8px; font-size:12px;">
+            </div>
+            
+            <div id="login-error-msg" style="display:none; color:var(--danger); font-size:10px; font-weight:600; text-align:center; margin-top:2px;"></div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; height:36px; margin-top:6px; font-weight:700; border-radius:8px; font-size:12px;">Log In</button>
+          </form>
+
+          <div style="display:flex; align-items:center; margin:16px 0; gap:8px;">
+            <hr style="flex:1; border:none; border-top:1px solid var(--border);">
+            <span style="font-size:10px; color:var(--text-light); font-weight:500;">or login with</span>
+            <hr style="flex:1; border:none; border-top:1px solid var(--border);">
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary" onclick="mockSSOLogin('Google')" style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; height:34px; border-radius:8px; font-size:11px; font-weight:600;">
+              <svg width="12" height="12" viewBox="0 0 24 24"><path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114A5.99 5.99 0 0 1 8 12.5a5.99 5.99 0 0 1 5.99-6c1.517 0 2.9.569 3.96 1.502l3.1-3.1A10.15 10.15 0 0 0 13.99 2C8.47 2 4 6.47 4 12s4.47 10 9.99 10c5.38 0 9.77-3.95 9.99-9.286v-2.43H12.24Z"/></svg>
+              Google
+            </button>
+            <button class="btn btn-secondary" onclick="mockSSOLogin('Microsoft')" style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; height:34px; border-radius:8px; font-size:11px; font-weight:600;">
+              <svg width="12" height="12" viewBox="0 0 23 23"><path fill="#f35325" d="M0 0h11v11H0z"/><path fill="#81bc06" d="M12 0h11v11H12z"/><path fill="#05a6f0" d="M0 12h11v11H0z"/><path fill="#ffba08" d="M12 12h11v11H12z"/></svg>
+              Microsoft
+            </button>
+          </div>
+        `;
+        appBody.appendChild(loginEl);
+        return;
+      }
+
+      // 2. Onboarding Restriction check
+      if (selectedProvider.status !== 'active') {
+        mobileNav.style.display = 'none';
+
+        const onboardingEl = document.createElement('div');
+        onboardingEl.style.padding = '16px';
+        onboardingEl.style.fontFamily = 'var(--font)';
+        
+        let docsStatus = selectedProvider.documents.length === 0 ? 'Pending' : 'Uploaded';
+        if (selectedProvider.status !== 'pending') docsStatus = 'Approved';
+
+        let s1Icon = docsStatus === 'Approved' ? '✓' : 'ℹ';
+        let s2Icon = ['pending', 'review'].includes(selectedProvider.status) ? 'ℹ' : '✓';
+        let s3Icon = ['pending', 'review', 'interview'].includes(selectedProvider.status) ? 'ℹ' : '✓';
+        let s4Icon = selectedProvider.status === 'active' ? '✓' : 'ℹ';
+
+        onboardingEl.innerHTML = `
+          <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+            <h3 style="font-size:16px; font-weight:800; color:var(--dark); margin:0 0 2px 0;">Onboarding Pipeline</h3>
+            <p style="font-size:11px; color:var(--text-light); margin:0;">Complete all stages to activate your doctor listing.</p>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; gap:10px; align-items:center;">
+              <span class="badge ${docsStatus === 'Approved' ? 'badge-active' : 'badge-pending'}" style="width:20px; height:20px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; font-weight:700;">${s1Icon}</span>
+              <div style="flex:1;">
+                <h4 style="font-size:12px; font-weight:700; color:var(--dark);">Stage 1: Documents Upload</h4>
+                <p style="font-size:10px; color:var(--text-light); margin:0;">Credentials & medical practice permit.</p>
+                ${selectedProvider.documents.length === 0 ? `
+                  <button class="btn btn-primary btn-sm" style="margin-top:6px; height:26px; font-size:10px; padding:0 8px;" onclick="uploadCredentialsFromApp()">Simulate Credentials Upload</button>
+                ` : `<span style="font-size:10px; font-weight:700; color:var(--primary); display:block; margin-top:4px;">${selectedProvider.documents.length} files uploaded</span>`}
+              </div>
+            </div>
+
+            <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; gap:10px; align-items:center;">
+              <span class="badge ${selectedProvider.status === 'pending' ? 'badge-pending' : 'badge-active'}" style="width:20px; height:20px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; font-weight:700;">${s2Icon}</span>
+              <div style="flex:1;">
+                <h4 style="font-size:12px; font-weight:700; color:var(--dark);">Stage 2: Operations Audit</h4>
+                <p style="font-size:10px; color:var(--text-light); margin:0;">Documents validity & board checks.</p>
+              </div>
+            </div>
+
+            <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; gap:10px; align-items:center;">
+              <span class="badge ${['pending', 'review', 'interview'].includes(selectedProvider.status) ? 'badge-pending' : 'badge-active'}" style="width:20px; height:20px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; font-weight:700;">${s3Icon}</span>
+              <div style="flex:1;">
+                <h4 style="font-size:12px; font-weight:700; color:var(--dark);">Stage 3: Medical Interview</h4>
+                <p style="font-size:10px; color:var(--text-light); margin:0;">
+                  ${selectedProvider.status === 'interview' ? `Scheduled for: <strong>${selectedProvider.interviewDate}</strong>` : 'Clinical panel review.'}
+                </p>
+              </div>
+            </div>
+
+            <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; gap:10px; align-items:center;">
+              <span class="badge ${selectedProvider.status === 'contract' ? 'badge-interview' : selectedProvider.status === 'active' ? 'badge-active' : 'badge-pending'}" style="width:20px; height:20px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; font-weight:700;">${s4Icon}</span>
+              <div style="flex:1;">
+                <h4 style="font-size:12px; font-weight:700; color:var(--dark);">Stage 4: Contract Signing</h4>
+                <p style="font-size:10px; color:var(--text-light); margin:0;">Agree to service commissions & terms.</p>
+                ${selectedProvider.status === 'contract' ? `
+                  <button class="btn btn-primary btn-sm" style="margin-top:6px; height:26px; font-size:10px; padding:0 8px;" onclick="signContractFromApp()">Sign Agreement & Launch</button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+          
+          <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:20px;" onclick="logOutProvider()">Log Out</button>
+        `;
+        appBody.appendChild(onboardingEl);
+        return;
+      }
+
+      // 3. Normal Active App tabs
+      mobileNav.style.display = 'flex';
+
+      // Render verification status banner
+      const banner = document.createElement('div');
+      banner.className = 'verification-banner verification-banner-active';
+      banner.innerHTML = `<span class="verification-banner-icon" style="display:flex; align-items:center;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span><div class="verification-banner-text"><h4>Listed & Active</h4><p>Your profile is live in the Patient app.</p></div>`;
+      appBody.appendChild(banner);
+
+      if (activeMobileTab === 'home') {
+        // Welcome Card
+        const welcome = document.createElement('div');
+        welcome.className = 'provider-welcome-card';
+        const initials = selectedProvider.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+        welcome.innerHTML = `
+          <div class="provider-welcome-avatar">${initials}</div>
+          <div class="provider-welcome-details">
+            <h3>Good Afternoon, ${selectedProvider.name}</h3>
+            <p>${selectedProvider.specialty}</p>
+          </div>
+        `;
+        appBody.appendChild(welcome);
+
+        // REQUIREMENT 10: RS Incoming Booking Requests Section
+        const allApts = getAppointments().filter(apt => apt.providerId === selectedProvider.id);
+        const pendingRequests = allApts.filter(apt => apt.status === 'Pending RS Acceptance');
+
+        if (pendingRequests.length > 0) {
+          const reqHeader = document.createElement('div');
+          reqHeader.innerHTML = `
+            <div style="background:#fffbeb; border:1px solid #fef3c7; border-radius:10px; padding:10px 12px; margin-top:8px; margin-bottom:12px;">
+              <h4 style="font-weight:800; font-size:12px; color:#b45309; margin:0 0 2px 0;">🔔 Incoming Booking Requests (${pendingRequests.length})</h4>
+              <p style="font-size:10px; color:#92400e; margin:0;">Please review patient details and choose Accept or Reject.</p>
+            </div>
+          `;
+          appBody.appendChild(reqHeader);
+
+          const reqListContainer = document.createElement('div');
+          reqListContainer.style.display = 'flex';
+          reqListContainer.style.flexDirection = 'column';
+          reqListContainer.style.gap = '10px';
+          reqListContainer.style.marginBottom = '16px';
+
+          pendingRequests.forEach(apt => {
+            const patient = PATIENTS_DATA[apt.patientId] || { name: 'Patient', age: '30' };
+            const reqCard = document.createElement('div');
+            reqCard.className = 'mobile-card';
+            reqCard.style.border = '1px solid #fde68a';
+            reqCard.style.background = '#fffdf5';
+            
+            reqCard.innerHTML = `
+              <div class="mobile-card-header">
+                <span class="badge badge-pending" style="font-size:9px;">Pending Acceptance</span>
+                <span style="font-size:11px; font-weight:700; color:var(--primary);">${apt.time}</span>
+              </div>
+              <div class="patient-info-row">
+                <div class="patient-img-placeholder">${patient.name.split(' ').map(n => n[0]).join('')}</div>
+                <div class="patient-name-wrapper">
+                  <h4>${patient.name}</h4>
+                  <p style="margin:0;">${apt.type} • Fee: ${apt.price} EGP</p>
+                  <p style="font-size:10px; color:var(--text-light); margin-top:2px;">Plan: ${apt.treatmentPlanText || 'External/Doctor Plan'}</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; border-top:1px solid #fef3c7; padding-top:10px; margin-top:8px;">
+                <button class="btn btn-primary btn-sm" style="flex:1; height:32px; font-size:11px; font-weight:700;" onclick="acceptRSBooking('${apt.id}')">✓ Accept Booking</button>
+                <button class="btn btn-danger btn-sm" style="flex:1; height:32px; font-size:11px; font-weight:700;" onclick="rejectRSBooking('${apt.id}')">✗ Reject</button>
+              </div>
+            `;
+            reqListContainer.appendChild(reqCard);
+          });
+          appBody.appendChild(reqListContainer);
+        }
+
+        // Header for Confirmed / Upcoming Sessions
+        const sessHeader = document.createElement('div');
+        sessHeader.innerHTML = `<h4 style="font-weight:700; font-size:13px; color:var(--dark); margin-top:8px;">Confirmed Appointments</h4>`;
+        appBody.appendChild(sessHeader);
+
+        // Dynamic Appointments List
+        const listContainer = document.createElement('div');
+        listContainer.style.display = 'flex';
+        listContainer.style.flexDirection = 'column';
+        listContainer.style.gap = '12px';
+
+        const list = getAppointments().filter(apt => apt.providerId === selectedProvider.id && (apt.status === 'Confirmed' || apt.status === 'Upcoming' || apt.status === 'Need Summary' || apt.status === 'Awaiting Audit' || apt.status === 'Finished'));
+        list.forEach(apt => {
+          const patient = PATIENTS_DATA[apt.patientId] || { name: 'Patient', age: '30' };
+          const card = document.createElement('div');
+          card.className = 'mobile-card';
+          card.style.cursor = 'pointer';
+          card.onclick = () => viewPatientCard(apt.patientId, apt);
+          
+          let actionLabel = selectedProvider.type === 'Doctor' 
+            ? (apt.type === 'Online Consultation' ? 'Start Video Call' : 'Clinic Visit')
+            : (apt.type.includes('Home') ? 'View Map & Address' : 'Clinic Visit');
+          
+          const isPkg = apt.packageSize && apt.packageSize > 1;
+          const progressLabelHtml = isPkg ? `
+            <span style="font-size:9px; font-weight:700; color:var(--primary); background:rgba(76, 175, 80, 0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(76, 175, 80, 0.2); display:inline-block; margin-top:2px;">
+              Session Progress: ${apt.completedSessions || 0} of ${apt.packageSize} Completed
+            </span>
+          ` : '';
+
+          card.innerHTML = `
+            <div class="mobile-card-header">
+              <span class="badge ${apt.type.includes('Online') ? 'badge-interview' : apt.type.includes('Home') ? 'badge-contract' : 'badge-active'}">${apt.type}</span>
+              <span style="font-size:11px; font-weight:700; color:var(--primary);">${apt.time}</span>
+            </div>
+            <div class="patient-info-row">
+              <div class="patient-img-placeholder">${patient.name.split(' ').map(n => n[0]).join('')}</div>
+              <div class="patient-name-wrapper">
+                <h4>${patient.name}</h4>
+                <p style="margin:0;">${patient.age || '30'} years</p>
+                ${progressLabelHtml}
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--border); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:11px; font-weight:700; color:var(--text-light);">Status: ${apt.status}</span>
+              <span style="font-size:11px; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:4px;">
+                ${actionLabel}
+              </span>
+            </div>
+          `;
+          listContainer.appendChild(card);
+        });
+
+        appBody.appendChild(listContainer);
+
+      } else if (activeMobileTab === 'schedule') {
+        if (!window.tempShifts || window.lastScheduleDayLoaded !== currentScheduleDay || window.lastProviderLoaded !== selectedProvider.id) {
+          window.tempShifts = JSON.parse(JSON.stringify(selectedProvider.shifts[currentScheduleDay] || []));
+          window.lastScheduleDayLoaded = currentScheduleDay;
+          window.lastProviderLoaded = selectedProvider.id;
+        }
+
+        // Scheduler View
+        const scheduler = document.createElement('div');
+        scheduler.className = 'slots-container';
+        scheduler.style.padding = '12px';
+        scheduler.style.fontFamily = 'var(--font)';
+        
+        let daysHtml = '<div class="days-tabs" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:12px;">';
+        ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].forEach((day) => {
+          const isAct = day === currentScheduleDay;
+          daysHtml += `<div class="day-tab ${isAct ? 'active' : ''}" onclick="selectScheduleDay('${day}')" style="flex:1; text-align:center; padding:6px; font-size:11px; border-radius:6px; cursor:pointer; background:${isAct ? 'var(--primary)' : 'var(--light)'}; color:${isAct ? 'white' : 'var(--dark)'}; font-weight:700; border:1px solid ${isAct ? 'var(--primary)' : 'var(--border)'};">${day}</div>`;
+        });
+        daysHtml += '</div>';
+
+        scheduler.innerHTML = `
+          <h4 class="slots-title" style="font-size:13px; font-weight:700; color:var(--dark); margin-bottom:12px;">Work Schedule Shift Builder</h4>
+          ${daysHtml}
+          
+          <div id="dynamic-shifts-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
+            <!-- Rendered by renderDynamicShiftsList() -->
+          </div>
+          
+          <button class="btn btn-secondary btn-sm" style="width:100%; border:1px dashed var(--primary); color:var(--primary); background:white; font-weight:700; height:34px; margin-bottom:15px; border-radius:8px;" onclick="addTempShiftSlot()">+ Add Work Shift Slot</button>
+
+          <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-bottom:15px;">
+            <p style="font-weight:700; font-size:11px; color:var(--text-light); text-transform:uppercase; margin-bottom:8px;">Fees & Slot Settings</p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                <label style="font-size:11px; font-weight:700; color:var(--dark); margin:0;">Fee per Session (EGP)</label>
+                <input type="number" id="provider-fee-input" class="form-control" style="font-size:11px; height:28px; width:110px; padding:2px;" value="${parseInt(selectedProvider.price) || 300}" min="1">
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                <label style="font-size:11px; font-weight:700; color:var(--dark); margin:0;">Slot Duration</label>
+                <select id="slot-duration-select" class="form-control" style="font-size:11px; height:28px; width:110px; padding:2px;">
+                  <option value="30" ${selectedProvider.sessionDuration === 30 ? 'selected' : ''}>30 minutes</option>
+                  <option value="45" ${selectedProvider.sessionDuration === 45 ? 'selected' : ''}>45 minutes</option>
+                  <option value="60" ${selectedProvider.sessionDuration === 60 ? 'selected' : ''}>60 minutes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%; height:36px; font-size:12px;" onclick="confirmShiftsUpdate()">Confirm Shifts Schedule</button>
+        `;
+        appBody.appendChild(scheduler);
+        renderDynamicShiftsList();
+
+      } else if (activeMobileTab === 'wallet') {
+        const appointments = getAppointments().filter(a => a.providerId === selectedProvider.id && a.status === 'Finished');
+        const txns = getTransactions().filter(t => t.entityName === selectedProvider.name);
+        
+        const grossEarnings = appointments.reduce((acc, curr) => acc + (curr.price || 400), 0);
+        const commissionDeducted = Math.round(grossEarnings * 0.15);
+        const netEarnings = grossEarnings - commissionDeducted;
+
+        const withdrawnAmount = txns.reduce((acc, curr) => {
+          if (curr.type === 'Withdrawal' && (curr.status === 'Completed' || curr.status === 'Pending')) {
+            return acc + curr.amount;
+          }
+          return acc;
+        }, 0);
+        const availableBalance = Math.max(0, netEarnings - withdrawnAmount);
+
+        const walletDiv = document.createElement('div');
+        walletDiv.style.padding = '12px';
+        walletDiv.style.fontFamily = 'var(--font)';
+        walletDiv.innerHTML = `
+          <div style="background:var(--primary); color:white; border-radius:15px; padding:16px; margin-bottom:15px; box-shadow:var(--shadow-sm);">
+            <p style="font-size:10px; font-weight:700; text-transform:uppercase; opacity:0.8; margin-bottom:4px;">Available Balance</p>
+            <h2 style="font-size:28px; font-weight:800; margin:0;">${availableBalance} EGP</h2>
+            <button class="btn btn-secondary btn-sm" style="margin-top:12px; width:100%; border:none; background:white; color:var(--primary); font-weight:700; height:32px; border-radius:8px;" onclick="openWithdrawModal()">Request Withdrawal</button>
+          </div>
+
+          <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:15px; display:flex; justify-content:space-between; text-align:center;">
+            <div>
+              <span style="font-size:9px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Gross</span>
+              <p style="font-size:13px; font-weight:700; color:var(--dark); margin:2px 0 0 0;">${grossEarnings} EGP</p>
+            </div>
+            <div style="border-right:1px solid var(--border);"></div>
+            <div>
+              <span style="font-size:9px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Fee (15%)</span>
+              <p style="font-size:13px; font-weight:700; color:var(--danger); margin:2px 0 0 0;">-${commissionDeducted} EGP</p>
+            </div>
+            <div style="border-right:1px solid var(--border);"></div>
+            <div>
+              <span style="font-size:9px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Net Revenue</span>
+              <p style="font-size:13px; font-weight:700; color:var(--primary); margin:2px 0 0 0;">${netEarnings} EGP</p>
+            </div>
+          </div>
+
+          <h4 style="font-weight:700; font-size:12px; color:var(--dark); margin-bottom:8px;">Payout & Earnings Breakdown</h4>
+          <div style="display:flex; flex-direction:column; gap:8px;" id="provider-txns-list">
+            <!-- completed sessions list or withdrawals list -->
+          </div>
+        `;
+        appBody.appendChild(walletDiv);
+
+        const txnsList = document.getElementById('provider-txns-list');
+        if (txnsList) {
+          if (appointments.length === 0 && txns.length === 0) {
+            txnsList.innerHTML = `<p style="font-size:11px; color:var(--text-light); text-align:center; padding:16px 0;">No history yet</p>`;
+          } else {
+            appointments.forEach(apt => {
+              const item = document.createElement('div');
+              item.style.background = 'var(--white)';
+              item.style.padding = '8px 10px';
+              item.style.borderRadius = '8px';
+              item.style.border = '1px solid var(--border)';
+              item.style.display = 'flex';
+              item.style.justifyContent = 'space-between';
+              item.style.alignItems = 'center';
+              item.style.fontSize = '11px';
+
+              item.innerHTML = `
+                <div>
+                  <span style="font-weight:700; color:var(--dark);">Session Credit (${apt.id})</span>
+                  <p style="font-size:9px; color:var(--text-light); margin-top:2px;">Finished • Gross: ${apt.price} EGP ${apt.rating ? ' • ⭐ ' + apt.rating : ''}</p>
+                </div>
+                <span style="font-weight:700; color:var(--primary);">+${apt.price - Math.round(apt.price * 0.15)} EGP</span>
+              `;
+              txnsList.appendChild(item);
+            });
+
+            txns.forEach(t => {
+              const item = document.createElement('div');
+              item.style.background = 'var(--white)';
+              item.style.padding = '8px 10px';
+              item.style.borderRadius = '8px';
+              item.style.border = '1px solid var(--border)';
+              item.style.display = 'flex';
+              item.style.justifyContent = 'space-between';
+              item.style.alignItems = 'center';
+              item.style.fontSize = '11px';
+
+              let statusColor = t.status === 'Completed' ? 'var(--primary)' : t.status === 'Pending' ? 'var(--warning)' : 'var(--danger)';
+              item.innerHTML = `
+                <div>
+                  <span style="font-weight:700; color:var(--dark);">${t.type} (${t.method})</span>
+                  <p style="font-size:9px; color:${statusColor}; margin-top:2px; font-weight:700;">${t.status}</p>
+                </div>
+                <span style="font-weight:700; color:var(--danger);">${t.status === 'Rejected' ? '(Cancelled)' : `-${t.amount} EGP`}</span>
+              `;
+              txnsList.appendChild(item);
+            });
+          }
+        }
+
+      } else if (activeMobileTab === 'profile') {
+        const initials = selectedProvider.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+        const profileDiv = document.createElement('div');
+        profileDiv.style.padding = '12px';
+        profileDiv.innerHTML = `
+          <div style="text-align:center; margin-bottom:16px;">
+            <div class="provider-welcome-avatar" style="width:56px; height:56px; font-size:20px; margin:0 auto 8px auto; display:flex; align-items:center; justify-content:center; background:var(--light); border-radius:50%; font-weight:700; color:var(--primary);">${initials}</div>
+            <h3 style="font-weight:800; color:var(--dark); margin:0;">${selectedProvider.name}</h3>
+            <p style="font-size:11px; color:var(--text-light); margin-top:2px;">${selectedProvider.specialty}</p>
+            <div style="margin-top:6px; display:inline-block; background:rgba(251, 191, 36, 0.15); border:1px solid #fde68a; color:#b45309; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">
+              ⭐ ${selectedProvider.rating || 4.8} (${selectedProvider.reviewCount || 15} reviews)
+            </div>
+          </div>
+
+          <div style="background:var(--white); border-radius:12px; border:1px solid var(--border); padding:12px; display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+            <div>
+              <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Email & Phone</span>
+              <p style="font-size:12px; font-weight:600; color:var(--dark); margin-top:2px;">${selectedProvider.email} • ${selectedProvider.phone}</p>
+            </div>
+            <div>
+              <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Session Price</span>
+              <p style="font-size:12px; font-weight:600; color:var(--primary); margin-top:2px;">${selectedProvider.price} per ${selectedProvider.duration}</p>
+            </div>
+          </div>
+
+          <!-- REQUIREMENT 7: Multi-Select & Interactive Map for RS Regions -->
+          ${selectedProvider.type === 'RS' ? `
+            <div style="background:var(--light); border-radius:12px; border:1px solid var(--border); padding:12px; margin-bottom:14px;">
+              <h4 style="font-weight:700; font-size:12px; color:var(--dark); margin-bottom:4px;">🇪🇬 Egypt Work Regions & Map Coverage</h4>
+              <p style="font-size:10px; color:var(--text-light); margin-bottom:10px;">Select the governorates and subregions you cover for Home Care visits.</p>
+              
+              <div class="region-chips-grid">
+                ${EGYPT_SUBREGIONS.map(reg => {
+                  const isChecked = selectedProvider.regionsCovered && selectedProvider.regionsCovered.includes(reg.name);
+                  return `
+                    <button class="region-chip-btn ${isChecked ? 'active' : ''}" onclick="toggleRSCoverageRegion('${reg.name}')">
+                      ${isChecked ? '✓ ' : '+ '}${reg.name}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              <!-- Interactive Visual Map Display -->
+              <div style="margin-top:12px; background:var(--white); border:1px solid var(--border); border-radius:10px; padding:10px; text-align:center;">
+                <span style="font-size:10px; font-weight:700; color:var(--text-light); text-transform:uppercase; display:block; margin-bottom:6px;">Interactive Region Coverage Preview</span>
+                <svg width="100%" height="80" viewBox="0 0 300 80" style="background:#f0fdfa; border-radius:8px;">
+                  <circle cx="150" cy="40" r="35" fill="rgba(13,148,136,0.15)" stroke="var(--primary)" stroke-dasharray="3,3" />
+                  <circle cx="150" cy="40" r="6" fill="var(--primary)" />
+                  <text x="150" y="60" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--primary)">${selectedProvider.name} Coverage Zone</text>
+                </svg>
+                <span style="font-size:10px; color:var(--primary); font-weight:700; display:block; margin-top:6px;">Active Districts: ${(selectedProvider.regionsCovered || []).join(', ') || 'None'}</span>
+              </div>
+
+              <button class="btn btn-primary btn-sm" style="width:100%; height:32px; margin-top:10px; font-size:11px; font-weight:700;" onclick="saveRSCoverageRegions()">Save Region Coverage</button>
+            </div>
+          ` : ''}
+        `;
+        appBody.appendChild(profileDiv);
+      }
+
+      // Check for notifications unread dot
+      const notifs = getNotifications(selectedProvider.id);
+      document.getElementById('mobile-notif-dot').style.display = notifs.length > 0 ? 'block' : 'none';
+    }
+
+    // Render Available Slots in Grid
+    function renderSlotsGrid() {
+      const grid = document.getElementById('sim-slots-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      
+      const slots = getSlots(selectedProvider.id);
+      slots.forEach((s, idx) => {
+        const item = document.createElement('div');
+        item.className = `slot-item ${s.selected ? 'selected' : ''}`;
+        item.innerText = s.time;
+        item.onclick = () => {
+          s.selected = !s.selected;
+          item.classList.toggle('selected');
+        };
+        grid.appendChild(item);
+      });
+    }
+
+    function confirmSlotsUpdate() {
+      const grid = document.getElementById('sim-slots-grid');
+      const slots = [];
+      grid.childNodes.forEach(node => {
+        slots.push({
+          time: node.innerText,
+          selected: node.classList.contains('selected')
+        });
+      });
+      saveSlots(selectedProvider.id, slots);
+      alert('Availability saved successfully!');
+    }
+
+    // Toggle Notifications Drawer Panel inside device
+    function toggleMobileNotifications() {
+      const overlay = document.getElementById('mobile-notif-overlay');
+      overlay.classList.toggle('open');
+      if (overlay.classList.contains('open')) {
+        renderMobileNotificationsList();
+      }
+    }
+
+    function renderMobileNotificationsList() {
+      const listEl = document.getElementById('mobile-notifications-list');
+      listEl.innerHTML = '';
+      const list = getNotifications(selectedProvider.id);
+      
+      if (list.length === 0) {
+        listEl.innerHTML = `<p style="text-align:center; padding:24px 0; color:var(--text-light); font-size:12px;">No notifications found</p>`;
+        return;
+      }
+      
+      list.forEach(n => {
+        const item = document.createElement('div');
+        item.className = 'mobile-notification-item';
+        item.innerHTML = `
+          <div class="mobile-notification-dot"></div>
+          <div>
+            <p>${n.text}</p>
+            <span style="font-size:10px; color:var(--text-light); margin-top:2px; display:block;">${n.time}</span>
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function clearMobileNotifications() {
+      saveNotifications(selectedProvider.id, []);
+      renderMobileNotificationsList();
+      renderScreenContent();
+    }
+
+    // Simulate booking push notification
+    function simulatePatientBooking() {
+      const notifs = getNotifications(selectedProvider.id);
+      notifs.unshift({
+        id: Date.now(),
+        text: "New Appointment: Patient Hanaa Mansour booked a slot with you.",
+        time: "Just Now"
+      });
+      saveNotifications(selectedProvider.id, notifs);
+      renderScreenContent();
+      alert("Notification triggered on simulated device!");
+    }
+
+    // View Patient Detail Panel
+    function viewPatientCard(patientId, appointment) {
+      selectedPatientId = patientId;
+      const patient = PATIENTS_DATA[patientId];
+      const panel = document.getElementById('details-panel');
+      panel.style.display = 'block';
+
+      let prescriptionHtml = '';
+      if (selectedProvider.type === 'RS') {
+        prescriptionHtml = `
+          <div class="prescription-alert-box" style="margin-top: 16px;">
+            <div class="prescription-alert-title" style="display:flex; align-items:center; gap:6px;">
+              <span style="background:var(--primary-light); color:var(--primary); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:800;">RX</span>
+              Verified Treatment Plan (Prescription)
+            </div>
+            <p style="color: var(--dark); font-weight: 500; font-style: italic; margin-top: 6px;">"${patient.prescription.text}"</p>
+            <p style="font-size: 11px; margin-top: 6px; color: var(--text-light);">Prescribed by: <strong>${patient.prescription.doctor} (Ahilney Network)</strong></p>
+          </div>
+        `;
+      }
+
+      let appointmentDetails = '';
+      if (appointment.type === 'Home Visit') {
+        appointmentDetails = `
+          <div style="margin-top:16px; background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border);">
+            <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase; display:flex; align-items:center; gap:4px;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              Visit Location & Address
+            </p>
+            <p style="font-size:13px; font-weight:600; color:var(--dark); margin-top:4px;">${patient.address}</p>
+            <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:8px; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="alert('Simulating Google Maps Navigation...')">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+              Open Navigation Map
+            </button>
+          </div>
+        `;
+      } else {
+        appointmentDetails = `
+          <div style="margin-top:16px; background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border);">
+            <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase; display:flex; align-items:center; gap:4px;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+              Clinic Details
+            </p>
+            <p style="font-size:13px; font-weight:600; color:var(--dark); margin-top:4px;">Ahilney Central Rehab Hub, New Cairo</p>
+          </div>
+        `;
+      }
+
+      let progressHtml = '';
+      if (appointment.packageSize && appointment.packageSize > 1) {
+        progressHtml = `
+          <div style="margin-top:16px; background:rgba(76, 175, 80, 0.05); padding:12px; border-radius:10px; border:1px solid rgba(76, 175, 80, 0.15);">
+            <p style="font-size:11px; font-weight:700; color:var(--primary); text-transform:uppercase; margin:0 0 4px 0; display:flex; align-items:center; gap:4px;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Session Package Progress
+            </p>
+            <p style="font-size:13px; font-weight:700; color:var(--dark); margin:0;">
+              ${appointment.completedSessions || 0} of ${appointment.packageSize} Sessions Completed
+            </p>
+          </div>
+        `;
+      }
+
+      panel.innerHTML = `
+        <h3 style="font-weight:700; color:var(--dark); border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:16px;">Patient Card Summary</h3>
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+          <div class="patient-img-placeholder" style="width:54px; height:54px; font-size:18px;">${patient.name.split(' ').map(n => n[0]).join('')}</div>
+          <div>
+            <h4 style="font-size:16px; font-weight:700; color:var(--dark);">${patient.name}</h4>
+            <p style="font-size:12px; color:var(--text-light);">${patient.age} | ${patient.phone}</p>
+          </div>
+        </div>
+
+        <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">Medical Case History</p>
+        <p style="font-size:13px; margin-top:4px; color:var(--text);">${patient.history}</p>
+
+        ${progressHtml}
+        ${prescriptionHtml}
+        ${appointmentDetails}
+
+        <div style="margin-top: 24px; display:flex; gap:10px;">
+          ${
+            appointment.status === 'Upcoming' ? `<button class="btn btn-primary btn-sm" style="flex:1;" onclick="startSession('${appointment.id}')">Start Consultation Session</button>` :
+            appointment.status === 'Need Summary' ? `<button class="btn btn-primary btn-sm" style="flex:1; background:var(--warning); border-color:var(--warning);" onclick="startSession('${appointment.id}')">Submit Session Summary</button>` :
+            appointment.status === 'Awaiting Audit' ? `<button class="btn btn-secondary btn-sm" style="flex:1;" disabled>Awaiting Audit Payout</button>` :
+            `<button class="btn btn-secondary btn-sm" style="flex:1;" disabled>Session Completed ✓</button>`
+          }
+          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('details-panel').style.display='none'">Close</button>
+        </div>
+      `;
+    }
+
+    let sessionTimerInterval = null;
+    let sessionSeconds = 0;
+    let currentSessAptId = null;
+    let currentSessPatientId = null;
+
+    function startSession(aptId) {
+      const allApts = getAppointments();
+      const apt = allApts.find(a => a.id === aptId);
+      if (!apt) return;
+
+      const patient = PATIENTS_DATA[apt.patientId];
+      if (!patient) return;
+
+      currentSessAptId = aptId;
+      currentSessPatientId = apt.patientId;
+
+      document.getElementById('sess-patient-name').innerText = patient.name;
+      document.getElementById('sess-avatar').innerText = patient.name.split(' ').map(n=>n[0]).join('').substring(0, 2);
+      document.getElementById('sess-timer').innerText = "00:00";
+      
+      const chatLog = document.getElementById('sess-chat-log');
+      chatLog.innerHTML = `
+        <div style="text-align:center; font-size:11px; color:var(--text-light); margin:5px 0;">Patient and Doctor joined the call</div>
+      `;
+
+      sessionSeconds = 0;
+      clearInterval(sessionTimerInterval);
+      sessionTimerInterval = setInterval(() => {
+        sessionSeconds++;
+        const mins = String(Math.floor(sessionSeconds / 60)).padStart(2, '0');
+        const secs = String(sessionSeconds % 60).padStart(2, '0');
+        document.getElementById('sess-timer').innerText = `${mins}:${secs}`;
+        
+        if (sessionSeconds === 3) {
+          addSessChatMsg('patient', "Hello Doctor, I am ready.");
+        }
+      }, 1000);
+
+      document.getElementById('session-room-overlay').style.display = 'flex';
+      document.getElementById('details-panel').style.display = 'none';
+    }
+
+    function addSessChatMsg(sender, text) {
+      const chatLog = document.getElementById('sess-chat-log');
+      const isPat = sender === 'patient';
+      const msg = document.createElement('div');
+      msg.style.alignSelf = isPat ? 'flex-start' : 'flex-end';
+      msg.style.background = isPat ? 'var(--white)' : 'var(--primary)';
+      msg.style.color = isPat ? 'var(--dark)' : 'var(--white)';
+      msg.style.padding = '6px 12px';
+      msg.style.borderRadius = '10px';
+      msg.style.maxWidth = '75%';
+      msg.style.fontSize = '12px';
+      msg.style.boxShadow = 'var(--shadow-sm)';
+      msg.innerText = text;
+      chatLog.appendChild(msg);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function sendSessChatMsg() {
+      const input = document.getElementById('sess-chat-input');
+      const val = input.value.trim();
+      if (!val) return;
+      addSessChatMsg('doctor', val);
+      input.value = '';
+    }
+
+    function endActiveSession() {
+      clearInterval(sessionTimerInterval);
+      document.getElementById('session-room-overlay').style.display = 'none';
+
+      document.getElementById('sum-apt-id').value = currentSessAptId;
+      document.getElementById('sum-patient-id').value = currentSessPatientId;
+      document.getElementById('sum-complaint').value = "";
+      document.getElementById('sum-diagnosis').value = "";
+      document.getElementById('sum-plan').value = "";
+
+      document.getElementById('session-summary-overlay').style.display = 'flex';
+    }
+
+    function closeSummaryOverlay() {
+      document.getElementById('session-summary-overlay').style.display = 'none';
+    }
+
+    function submitSessSummary(e) {
+      e.preventDefault();
+      const aptId = document.getElementById('sum-apt-id').value;
+      const patientId = document.getElementById('sum-patient-id').value;
+      const complaint = document.getElementById('sum-complaint').value;
+      const diagnosis = document.getElementById('sum-diagnosis').value;
+      const treatmentPlan = document.getElementById('sum-plan').value;
+
+      const summaries = getSummaries();
+      const newId = `SUM-${String(summaries.length + 1).padStart(3, '0')}`;
+      summaries.unshift({
+        id: newId,
+        appointmentId: aptId,
+        providerId: selectedProvider.id,
+        patientId: patientId,
+        date: new Date().toISOString().split('T')[0],
+        complaint,
+        diagnosis,
+        treatmentPlan,
+        status: "Pending"
+      });
+      saveSummaries(summaries);
+
+      const appointments = getAppointments();
+      const apt = appointments.find(a => a.id === aptId);
+      if (apt) {
+        apt.status = "Awaiting Audit";
+        saveAppointments(appointments);
+      }
+
+      alert("Clinical summary submitted! Awaiting clinical panel audit in Admin Panel.");
+      document.getElementById('session-summary-overlay').style.display = 'none';
+      renderScreenContent();
+    }
+
+    let currentScheduleDay = 'Mon';
+
+    function selectScheduleDay(day) {
+      currentScheduleDay = day;
+      window.tempShifts = JSON.parse(JSON.stringify(selectedProvider.shifts[currentScheduleDay] || []));
+      window.lastScheduleDayLoaded = currentScheduleDay;
+      renderScreenContent();
+    }
+
+    const staticTimeOptions = [
+      "08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+      "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
+      "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM",
+      "08:00 PM", "08:30 PM", "09:00 PM", "09:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM",
+      "12:00 AM"
+    ];
+
+    function renderDynamicShiftsList() {
+      const container = document.getElementById('dynamic-shifts-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!window.tempShifts || window.tempShifts.length === 0) {
+        container.innerHTML = `<p style="font-size:11px; color:var(--text-light); text-align:center; padding:12px 0; margin:0;">No work shifts configured for ${currentScheduleDay}.</p>`;
+        return;
+      }
+
+      window.tempShifts.forEach((shift, idx) => {
+        const row = document.createElement('div');
+        row.style.background = 'var(--white)';
+        row.style.padding = '8px 10px';
+        row.style.borderRadius = '10px';
+        row.style.border = '1px solid var(--border)';
+        row.style.display = 'flex';
+        row.style.gap = '8px';
+        row.style.alignItems = 'center';
+        row.style.justifyContent = 'space-between';
+
+        let startOptionsHtml = staticTimeOptions.map(opt => `<option value="${opt}" ${shift.start === opt ? 'selected' : ''}>${opt}</option>`).join('');
+        let endOptionsHtml = staticTimeOptions.map(opt => `<option value="${opt}" ${shift.end === opt ? 'selected' : ''}>${opt}</option>`).join('');
+
+        row.innerHTML = `
+          <div style="display:flex; gap:6px; align-items:center; flex:1;">
+            <select class="form-control" style="font-size:11px; height:28px; padding:2px; flex:1;" onchange="updateTempShift(${idx}, 'start', this.value)">
+              ${startOptionsHtml}
+            </select>
+            <span style="font-size:10px; color:var(--text-light);">to</span>
+            <select class="form-control" style="font-size:11px; height:28px; padding:2px; flex:1;" onchange="updateTempShift(${idx}, 'end', this.value)">
+              ${endOptionsHtml}
+            </select>
+          </div>
+          <button class="btn btn-danger btn-sm" style="padding:0; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px;" onclick="deleteTempShift(${idx})">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function addTempShiftSlot() {
+      let start = "09:00 AM";
+      let end = "11:00 AM";
+      if (window.tempShifts && window.tempShifts.length > 0) {
+        const last = window.tempShifts[window.tempShifts.length - 1];
+        start = last.end;
+        const lastIdx = staticTimeOptions.indexOf(start);
+        const nextIdx = Math.min(staticTimeOptions.length - 1, lastIdx + 4); 
+        end = staticTimeOptions[nextIdx];
+      }
+      if (!window.tempShifts) window.tempShifts = [];
+      window.tempShifts.push({ start, end });
+      renderDynamicShiftsList();
+    }
+
+    function deleteTempShift(idx) {
+      if (window.tempShifts) {
+        window.tempShifts.splice(idx, 1);
+        renderDynamicShiftsList();
+      }
+    }
+
+    function updateTempShift(idx, field, value) {
+      if (window.tempShifts && window.tempShifts[idx]) {
+        window.tempShifts[idx][field] = value;
+      }
+    }
+
+    function confirmShiftsUpdate() {
+      const providers = getProviders();
+      const p = providers.find(item => item.id === selectedProvider.id);
+      if (p) {
+        if (!p.shifts) p.shifts = {};
+        p.shifts[currentScheduleDay] = window.tempShifts || [];
+
+        // Save Custom Fees per Session
+        const feeVal = parseInt(document.getElementById('provider-fee-input').value);
+        if (!isNaN(feeVal) && feeVal > 0) {
+          p.price = `${feeVal} EGP`;
+        }
+
+        // Save Slot Duration
+        const durationVal = parseInt(document.getElementById('slot-duration-select').value);
+        p.sessionDuration = durationVal;
+        p.duration = `${durationVal} min`;
+
+        saveProviders(providers);
+        selectedProvider = p;
+        alert(`Schedule and Fees for ${p.name} updated successfully!`);
+        renderScreenContent();
+      }
+    }
+
+    function openWithdrawModal() {
+      const appointments = getAppointments().filter(a => a.providerId === selectedProvider.id && a.status === 'Finished');
+      const txns = getTransactions().filter(t => t.entityName === selectedProvider.name);
+      const grossEarnings = appointments.reduce((acc, curr) => acc + (curr.price || 400), 0);
+      const netEarnings = grossEarnings - Math.round(grossEarnings * 0.15);
+      const withdrawnAmount = txns.reduce((acc, curr) => {
+        if (curr.type === 'Withdrawal' && (curr.status === 'Completed' || curr.status === 'Pending')) {
+          return acc + curr.amount;
+        }
+        return acc;
+      }, 0);
+      const availableBalance = Math.max(0, netEarnings - withdrawnAmount);
+
+      if (availableBalance <= 0) {
+        alert("Your balance is zero. Payouts require finished doctor/RS sessions.");
+        return;
+      }
+
+      document.getElementById('withdraw-amount').value = availableBalance;
+      document.getElementById('withdraw-amount').max = availableBalance;
+      document.getElementById('withdraw-details').value = selectedProvider.payoutDetails || '';
+      
+      document.getElementById('withdrawal-modal-overlay').style.display = 'flex';
+    }
+
+    function closeWithdrawModal() {
+      document.getElementById('withdrawal-modal-overlay').style.display = 'none';
+    }
+
+    function updateWithdrawDetailsPlaceholder(method) {
+      const label = document.getElementById('withdraw-details-label');
+      const input = document.getElementById('withdraw-details');
+      if (method === 'Instapay') {
+        label.innerText = 'Instapay Username / Link';
+        input.placeholder = 'e.g. name@instapay';
+      } else if (method === 'Bank Transfer') {
+        label.innerText = 'Bank IBAN & Account Number';
+        input.placeholder = 'e.g. CIB EG123456789...';
+      } else {
+        label.innerText = 'Mobile Phone Number';
+        input.placeholder = 'e.g. 010...';
+      }
+    }
+
+    function submitWithdrawalRequest(e) {
+      e.preventDefault();
+      const amt = parseInt(document.getElementById('withdraw-amount').value);
+      const method = document.getElementById('withdraw-method').value;
+      const details = document.getElementById('withdraw-details').value.trim();
+
+      const allTxns = getTransactions();
+      allTxns.unshift({
+        id: `TXN-${String(allTxns.length + 1).padStart(3, '0')}`,
+        date: new Date().toISOString().split('T')[0],
+        type: "Withdrawal",
+        entityName: selectedProvider.name,
+        amount: amt,
+        status: "Pending",
+        method: method,
+        payoutDetails: `${method}: ${details}`
+      });
+      saveTransactions(allTxns);
+      alert(`Withdrawal request for ${amt} EGP submitted to Ahilney clinical panel!`);
+      closeWithdrawModal();
+      renderScreenContent();
+    }
+
+    // REQUIREMENT 10: RS Booking Acceptance & Rejection Workflow
+    function acceptRSBooking(aptId) {
+      const appointments = getAppointments();
+      const apt = appointments.find(a => a.id === aptId);
+      if (!apt) return;
+
+      apt.status = 'Confirmed';
+      saveAppointments(appointments);
+      alert(`Booking ${aptId} ACCEPTED! Patient has been notified.`);
+      renderScreenContent();
+    }
+
+    function rejectRSBooking(aptId) {
+      const reason = prompt("Please provide a reason for rejecting this booking request:", "Schedule conflict / Out of range");
+      if (reason === null) return;
+
+      const appointments = getAppointments();
+      const apt = appointments.find(a => a.id === aptId);
+      if (!apt) return;
+
+      apt.status = 'Rejected by RS';
+      apt.rejectionReason = reason;
+      saveAppointments(appointments);
+
+      alert(`Booking ${aptId} REJECTED. Flagged for Ahilney Operations Team to process refund.`);
+      renderScreenContent();
+    }
+
+    // REQUIREMENT 7: RS Coverage Regions Toggle & Save
+    function toggleRSCoverageRegion(regionName) {
+      if (!selectedProvider.regionsCovered) selectedProvider.regionsCovered = [];
+      const idx = selectedProvider.regionsCovered.indexOf(regionName);
+      if (idx > -1) {
+        selectedProvider.regionsCovered.splice(idx, 1);
+      } else {
+        selectedProvider.regionsCovered.push(regionName);
+      }
+      renderScreenContent();
+    }
+
+    function saveRSCoverageRegions() {
+      const providers = getProviders();
+      const prov = providers.find(p => p.id === selectedProvider.id);
+      if (prov) {
+        prov.regionsCovered = selectedProvider.regionsCovered || [];
+        saveProviders(providers);
+        alert(`Updated coverage regions saved: ${(prov.regionsCovered).join(', ')}`);
+      }
+    }
+
+    let lastProvidersStr = "";
+    let lastAptsStr = "";
+    let lastSummariesStr = "";
+
+    function syncDataSilently() {
+      const providers = getProviders();
+      const appointments = getAppointments();
+      const summaries = getSummaries();
+      const provsStr = JSON.stringify(providers);
+      const aptsStr = JSON.stringify(appointments);
+      const summsStr = JSON.stringify(summaries);
+      
+      if (provsStr !== lastProvidersStr || aptsStr !== lastAptsStr || summsStr !== lastSummariesStr) {
+        lastProvidersStr = provsStr;
+        lastAptsStr = aptsStr;
+        lastSummariesStr = summsStr;
+        if (selectedProvider) {
+          selectedProvider = providers.find(p => p.id === selectedProvider.id);
+        }
+        renderProfileSelector();
+        renderScreenContent();
+      }
+    }
+
+    // Sync from localStorage if updated in admin tab
+    window.addEventListener('storage', syncDataSilently);
+
+    window.onload = function() {
+      renderProfileSelector();
+      renderScreenContent();
+      lastProvidersStr = JSON.stringify(getProviders());
+      lastAptsStr = JSON.stringify(getAppointments());
+      lastSummariesStr = JSON.stringify(getSummaries());
+      setInterval(syncDataSilently, 1500);
+    };
+  </script>
+</body>
+</html>
