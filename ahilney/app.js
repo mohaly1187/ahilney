@@ -433,7 +433,7 @@ const DEFAULT_PATIENTS = [
 ];
 
 const DEFAULT_APPOINTMENTS = [
-  { id: "APT-101", patientId: "P-001", providerId: "PROV-001", time: "02:00 PM Today", type: "Online Consultation", status: "Finished", price: 450 },
+  { id: "APT-101", patientId: "P-001", providerId: "PROV-001", time: "02:00 PM Today", type: "Online Consultation", status: "Finished", price: 450, rating: 5, feedback: "Great session with Dr. Sarah! Very thorough explanation and clear treatment steps." },
   { id: "APT-102", patientId: "P-002", providerId: "PROV-001", time: "04:30 PM Today", type: "Online Consultation", status: "Upcoming", price: 450 },
   { id: "APT-201", patientId: "P-003", providerId: "PROV-004", time: "10:00 AM Today", type: "Home Visit", status: "Pending RS Acceptance", price: 400, serviceName: "Post-Injury Rehabilitation" },
   { id: "APT-202", patientId: "P-001", providerId: "PROV-004", time: "01:00 PM Today", type: "Home Visit", status: "Confirmed", price: 400, serviceName: "Physical Therapy (PT)" },
@@ -567,6 +567,13 @@ function getAppointments() {
     apt101.status = "Finished";
     migrated = true;
   }
+  list.forEach(a => {
+    if (a.status === "Finished" && !a.rating) {
+      a.rating = 5;
+      a.feedback = "Great consultation, very professional guidance.";
+      migrated = true;
+    }
+  });
   if (migrated) {
     localStorage.setItem("ahilney_appointments", JSON.stringify(list));
   }

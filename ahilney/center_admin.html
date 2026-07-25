@@ -41,12 +41,6 @@
             </a>
           </li>
           <li>
-            <a href="#" class="menu-item" onclick="switchTab('summaries')">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-              <span>Summaries Audit</span>
-            </a>
-          </li>
-          <li>
             <a href="#" class="menu-item" onclick="switchTab('regions')">
               <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
               <span>Regions</span>
@@ -59,15 +53,18 @@
             </a>
           </li>
           <li>
-            <a href="#" class="menu-item" onclick="switchTab('subadmins')">
-              <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-              <span>Sub-Admins</span>
-            </a>
-          </li>
-          <li>
             <a href="#" class="menu-item" onclick="switchTab('promocodes')">
               <svg viewBox="0 0 24 24"><path d="M12.79 21L3 11.21V3h8.21L21 12.79V21h-8.21zM5 5v2h2V5H5z"/></svg>
               <span>Promo Codes</span>
+            </a>
+          </li>
+          
+          <!-- Reports Section -->
+          <li style="margin: 16px 0 6px 12px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px;">Reports</li>
+          <li>
+            <a href="#" class="menu-item" onclick="switchTab('summaries')">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+              <span>Summaries Audit Log</span>
             </a>
           </li>
         </ul>
@@ -179,6 +176,32 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Internal Sub-Admins Section inside Overview -->
+          <div class="table-card" style="margin-top: 24px;" id="subadmins-table-card">
+            <div class="table-header">
+              <div class="table-header-left">
+                <h3 class="table-title">Internal Sub-Admins</h3>
+                <span class="table-subtitle">Manage internal staff, review capabilities, and roles.</span>
+              </div>
+              <button class="btn btn-primary" onclick="openAddSubadminModal()">+ Add Sub-Admin</button>
+            </div>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Permissions</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="subadmins-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -839,6 +862,14 @@
 
     // Switch sidebar tab
     function switchTab(tabId) {
+      if (tabId === 'subadmins') {
+        tabId = 'dashboard';
+        setTimeout(() => {
+          const card = document.getElementById('subadmins-table-card');
+          if (card) card.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+
       document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
       
@@ -851,10 +882,10 @@
       const pageTitles = {
         'dashboard': 'Dashboard Overview',
         'verification': 'Providers Verification Pipeline',
-        'subadmins': 'Manage Sub-Admins',
+        'subadmins': 'Dashboard Overview (Sub-Admins)',
         'promocodes': 'Promo Codes & Marketing',
         'patients': 'Patient Management',
-        'summaries': 'Verify Session Summaries',
+        'summaries': 'Reports: Summaries Audit Log',
         'regions': 'Region & Subregion Management',
         'banners': 'App Promotion Banners',
         'transactions': 'Payment Transactions & Withdrawals',
@@ -1056,9 +1087,9 @@
             <td>${s.date}</td>
             <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.diagnosis}</td>
             <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:var(--primary);">${s.treatmentPlan}</td>
-            <td><span class="badge badge-${s.status.toLowerCase()}">${s.status}</span></td>
+            <td><span class="badge badge-active">Logged</span></td>
             <td>
-              ${s.status === 'Pending' ? `<button class="btn btn-primary btn-sm" onclick="openReviewSummaryModal('${s.id}')">Audit Summary</button>` : `<button class="btn btn-secondary btn-sm" onclick="openReviewSummaryModal('${s.id}')">View Details</button>`}
+              <button class="btn btn-secondary btn-sm" onclick="openReviewSummaryModal('${s.id}')">Audit Log</button>
             </td>
           `;
         } else {
@@ -1127,20 +1158,9 @@
         })()}
       \`;
 
-      // Always show Approve & Reject buttons inside modal for re-audits/action changes
-      document.getElementById('summary-reject-btn').style.display = 'block';
-      document.getElementById('summary-approve-btn').style.display = 'block';
-
-      if (s.status !== 'Pending') {
-        document.getElementById('summary-approve-btn').innerText = `Re-Approve Audit`;
-        document.getElementById('summary-reject-btn').innerText = `Reject Summary`;
-      } else {
-        document.getElementById('summary-approve-btn').innerText = `Approve Summary`;
-        document.getElementById('summary-reject-btn').innerText = `Reject Summary`;
-      }
-
-      document.getElementById('summary-approve-btn').onclick = () => auditSummary(s.id, 'Approved');
-      document.getElementById('summary-reject-btn').onclick = () => auditSummary(s.id, 'Rejected');
+      // Operations team should not approve or reject doctor treatment plans; it is logging only
+      document.getElementById('summary-reject-btn').style.display = 'none';
+      document.getElementById('summary-approve-btn').style.display = 'none';
 
       openModal('modal-review-summary');
     }
