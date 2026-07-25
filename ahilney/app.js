@@ -223,6 +223,11 @@ function getProviders() {
       p.sessionDuration = 45;
       migrated = true;
     }
+    if (p.rating === undefined) {
+      p.rating = 4.8;
+      p.reviewCount = 15;
+      migrated = true;
+    }
   });
   
   if (migrated || !data) {
@@ -572,6 +577,26 @@ function saveAppointments(list) {
   localStorage.setItem("ahilney_appointments", JSON.stringify(list));
   syncGlobals();
   window.dispatchEvent(new Event("storage"));
+}
+
+function submitRating(aptId, rating, feedback) {
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === aptId);
+  if (apt) {
+    apt.rating = parseInt(rating);
+    apt.feedback = feedback;
+    saveAppointments(apts);
+    
+    const provs = getProviders();
+    const prov = provs.find(p => p.id === apt.providerId);
+    if (prov) {
+      prov.reviewCount = (prov.reviewCount || 0) + 1;
+      prov.rating = (Math.min(5.0, ((prov.rating * (prov.reviewCount - 1)) + apt.rating) / prov.reviewCount)).toFixed(1);
+      saveProviders(provs);
+    }
+    return true;
+  }
+  return false;
 }
 
 function getRegions() {
