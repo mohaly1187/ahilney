@@ -3,1709 +3,2264 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ahilney Patient App Prototype</title>
+  <title>Ahilney – Patient App</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* Add extra CSS rules for patient app specifics */
-    .service-grid {
+    /* ═══════════════════════════════════════════════════
+       PATIENT APP – ADDITIONAL STYLES
+    ═══════════════════════════════════════════════════ */
+
+    /* Page wrapper */
+    .simulator-page {
+      max-width: 1100px;
+      margin: 32px auto;
+      padding: 0 24px;
+      font-family: var(--font);
+    }
+
+    .simulator-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .simulator-title h2 {
+      font-weight: 800;
+      color: var(--dark);
+      font-size: 22px;
+    }
+    .simulator-title p {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 3px;
+    }
+
+    .sim-controls {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      gap: 20px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .sim-controls label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    .simulator-layout {
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* Info panel on the left */
+    .info-panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .info-panel h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scenario-card {
+      background: var(--light);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .scenario-card:last-child { margin-bottom: 0; }
+
+    .scenario-tag {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .scenario-card p {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .scenario-card strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+
+    /* ═══════════════════════════
+       PHONE SCREEN INTERNALS
+    ═══════════════════════════ */
+
+    /* Wallet balance hero card */
+    .wallet-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #0f766e 100%);
+      border-radius: 16px;
+      padding: 18px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .wallet-hero::before {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+      top: -30px;
+      right: -20px;
+    }
+
+    .wallet-hero::after {
+      content: '';
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      bottom: -20px;
+      left: 20px;
+    }
+
+    .wallet-label { font-size: 10px; font-weight: 600; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.8px; }
+    .wallet-amount { font-size: 28px; font-weight: 800; line-height: 1.2; margin: 4px 0 12px; }
+    .wallet-actions { display: flex; gap: 8px; position: relative; z-index: 1; }
+    .wallet-action-btn {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Section heading inside phone */
+    .section-heading {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-heading a {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Service tiles grid */
+    .services-tiles {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 15px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
-    .service-btn {
+
+    .service-tile {
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .service-tile:hover, .service-tile.featured {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .service-tile-icon {
+      font-size: 22px;
+    }
+
+    .service-tile span {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.2;
+    }
+
+    .service-tile .badge-new {
+      font-size: 8px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-weight: 700;
+    }
+
+    /* Recent appointment mini card */
+    .apt-mini-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .apt-mini-card:hover { border-color: var(--primary); }
+
+    .apt-mini-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .apt-mini-icon.home { background: #f0fdfa; }
+    .apt-mini-icon.online { background: #eff6ff; }
+
+    .apt-mini-info { flex: 1; min-width: 0; }
+    .apt-mini-info h5 { font-size: 12px; font-weight: 700; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .apt-mini-info p { font-size: 10px; color: var(--text-light); }
+
+    /* Status badges */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .status-pill.waiting { background: #fef3c7; color: #d97706; }
+    .status-pill.confirmed { background: #dcfce7; color: #15803d; }
+    .status-pill.finished { background: #dbeafe; color: #1d4ed8; }
+    .status-pill.rejected { background: #fee2e2; color: #b91c1c; }
+    .status-pill.upcoming { background: #f3e8ff; color: #6d28d9; }
+
+    /* Homecare discovery */
+    .district-selector {
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 15px 10px;
-      text-align: center;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-family: var(--font);
+      width: 100%;
+      color: var(--dark);
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: var(--shadow-sm);
+      margin-bottom: 12px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 28px;
     }
-    .service-btn:hover {
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-    .service-icon {
-      font-size: 24px;
+
+    .district-selector:focus { outline: none; border-color: var(--primary); }
+
+    /* Provider card in discovery list */
+    .provider-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      cursor: pointer;
+      transition: all 0.2s;
       margin-bottom: 8px;
     }
-    .service-btn span {
+
+    .provider-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(13,148,136,0.1); }
+
+    .provider-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-light), #ccfbf1);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .provider-info { flex: 1; min-width: 0; }
+    .provider-info h4 { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .provider-info .spec { font-size: 10px; color: var(--text-light); margin: 1px 0; }
+
+    .provider-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .provider-chip {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 8px;
+      background: var(--light);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .provider-chip.price { background: var(--primary-light); color: var(--primary); border-color: transparent; }
+
+    .stars-row {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 10px;
+      color: #f59e0b;
+      font-weight: 700;
+    }
+
+    /* Slide-up sheet (profile, booking) */
+    .slide-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      z-index: 200;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      max-height: 90%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .slide-sheet.open { transform: translateY(0); }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 10px auto 0;
+    }
+
+    .sheet-header {
+      padding: 10px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .sheet-header h3 { font-size: 15px; font-weight: 700; color: var(--dark); }
+
+    .sheet-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--light);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+      font-size: 16px;
+    }
+
+    .sheet-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 16px;
+    }
+
+    .sheet-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* Sheet overlay backdrop */
+    .sheet-backdrop {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15,23,42,0.4);
+      z-index: 199;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .sheet-backdrop.visible { opacity: 1; pointer-events: auto; }
+
+    /* Booking stepper */
+    .step-indicator {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .step-dot {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .step-dot.active { background: var(--primary); }
+
+    .step-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    /* Package size picker */
+    .package-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .package-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .package-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .package-card .pkg-sessions { font-size: 18px; font-weight: 800; color: var(--dark); }
+    .package-card .pkg-label { font-size: 9px; color: var(--text-light); font-weight: 600; }
+    .package-card .pkg-price { font-size: 11px; font-weight: 700; color: var(--primary); margin-top: 3px; }
+    .package-card.selected .pkg-sessions, .package-card.selected .pkg-price { color: var(--primary); }
+
+    /* Payment method */
+    .pay-option {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .pay-option.selected { border-color: var(--primary); background: var(--primary-light); }
+    .pay-option-icon { font-size: 20px; }
+    .pay-option-text h5 { font-size: 12px; font-weight: 700; color: var(--dark); }
+    .pay-option-text p { font-size: 10px; color: var(--text-light); }
+
+    /* Order summary rows */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row.total { font-weight: 700; font-size: 13px; }
+    .summary-row span:last-child { font-weight: 600; color: var(--dark); }
+
+    /* Confirmation screen */
+    .confirm-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    .confirm-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #dcfce7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .confirm-icon svg { color: #15803d; }
+
+    /* Appointment full card */
+    .apt-full-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .apt-full-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .apt-type-badge {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: #f0fdfa;
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    .apt-provider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .apt-provider-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 11px;
       font-weight: 700;
-      color: var(--dark);
-      display: block;
     }
-    .promo-banner-scroll {
+
+    .apt-provider-name { font-size: 12px; font-weight: 700; color: var(--dark); }
+    .apt-provider-spec { font-size: 10px; color: var(--text-light); }
+
+    .apt-meta-row {
       display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-top: 15px;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
     }
-    .promo-card {
-      min-width: 240px;
-      height: 110px;
+
+    .apt-meta-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    /* Star rating widget */
+    .star-picker {
+      display: flex;
+      gap: 6px;
+      margin: 10px 0;
+    }
+
+    .star-btn {
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform 0.15s;
+      color: #d1d5db;
+    }
+
+    .star-btn.lit { color: #f59e0b; }
+    .star-btn:hover { transform: scale(1.2); }
+
+    /* Wallet tab */
+    .txn-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .txn-item:last-child { border-bottom: none; }
+
+    .txn-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .txn-icon.credit { background: #dcfce7; }
+    .txn-icon.debit { background: #fee2e2; }
+    .txn-icon.pending { background: #fef3c7; }
+
+    .txn-info { flex: 1; }
+    .txn-name { font-size: 12px; font-weight: 600; color: var(--dark); }
+    .txn-date { font-size: 10px; color: var(--text-light); }
+
+    .txn-amount { font-size: 13px; font-weight: 700; }
+    .txn-amount.credit { color: #15803d; }
+    .txn-amount.debit { color: #dc2626; }
+    .txn-amount.pending { color: #d97706; }
+
+    /* Profile tab */
+    .profile-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #0f766e 100%);
+      border-radius: 16px;
+      padding: 20px 16px;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0 auto 10px;
+    }
+
+    .profile-name { font-size: 16px; font-weight: 800; }
+    .profile-meta { font-size: 11px; opacity: 0.8; margin-top: 3px; }
+
+    .info-block {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+
+    .info-block h4 { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-row span:first-child { color: var(--text-light); }
+    .info-row span:last-child { font-weight: 600; color: var(--dark); }
+
+    .plan-card {
+      background: var(--primary-light);
+      border: 1px solid #99f6e4;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+
+    .plan-card .plan-title { font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .plan-card .plan-text { font-size: 11px; color: var(--text); line-height: 1.4; }
+
+    /* OTP / Login */
+    .otp-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    .otp-screen h3 { font-size: 16px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+    .otp-screen p { font-size: 11px; color: var(--text-light); margin-bottom: 20px; line-height: 1.5; }
+
+    .otp-boxes {
+      display: flex;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .otp-box {
+      width: 46px;
+      height: 52px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--dark);
+      font-family: var(--font);
+      transition: border-color 0.2s;
+    }
+
+    .otp-box:focus { border-color: var(--primary); outline: none; }
+
+    /* Slot picker */
+    .slot-chip {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 3px;
+    }
+
+    .slot-chip.selected { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .slot-chip:hover:not(.selected) { border-color: var(--primary); }
+
+    /* Date chip */
+    .date-chip {
+      padding: 7px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      min-width: 58px;
+      flex-shrink: 0;
+    }
+
+    .date-chip .dc-day { font-size: 9px; color: var(--text-light); }
+    .date-chip .dc-date { font-size: 13px; font-weight: 800; color: var(--dark); }
+    .date-chip.selected { background: var(--primary); border-color: var(--primary); }
+    .date-chip.selected .dc-day, .date-chip.selected .dc-date { color: #fff; }
+
+    /* Address input row */
+    .addr-input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-family: var(--font);
+      color: var(--dark);
+    }
+
+    .addr-input:focus { outline: none; border-color: var(--primary); }
+
+    /* Tab filter pills */
+    .tab-pills {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .tab-pill {
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      color: var(--text);
+    }
+
+    .tab-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--text-light);
+    }
+
+    .empty-state .empty-icon { font-size: 36px; margin-bottom: 10px; }
+    .empty-state p { font-size: 12px; line-height: 1.5; }
+
+    /* Full-screen overlay inside phone for back navigation */
+    .phone-screen-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--white);
+      z-index: 100;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .phone-screen-overlay.open { transform: translateX(0); }
+
+    .overlay-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .back-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--light);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dark);
+      flex-shrink: 0;
+    }
+
+    .overlay-header h4 { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    /* Prescription file upload area */
+    .rx-upload {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--light);
+    }
+
+    .rx-upload:hover, .rx-upload.has-file { border-color: var(--primary); background: var(--primary-light); }
+    .rx-upload p { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+    .rx-upload .rx-status { font-size: 12px; font-weight: 700; color: var(--primary); }
+
+    /* Primary button full width */
+    .btn-full {
+      width: 100%;
+      height: 44px;
+      border-radius: 12px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-full:hover { background: var(--primary-hover); }
+    .btn-full:active { transform: scale(0.98); }
+    .btn-full:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-full.secondary { background: var(--light); color: var(--dark); border: 1px solid var(--border); }
+    .btn-full.secondary:hover { background: var(--border); }
+
+    /* Toast notification */
+    .toast {
+      position: absolute;
+      bottom: 75px;
+      left: 12px;
+      right: 12px;
+      background: var(--dark);
+      color: #fff;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: #15803d; }
+    .toast.error { background: #dc2626; }
+
+    /* Rating stars in apt card */
+    .rating-stars { color: #f59e0b; font-size: 12px; }
+
+    /* Promo banner scroll */
+    .banner-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 16px;
+    }
+
+    .banner-card {
+      min-width: 180px;
+      height: 90px;
       border-radius: 12px;
       background-size: cover;
       background-position: center;
       position: relative;
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
       flex-shrink: 0;
     }
-    .promo-overlay {
+
+    .banner-overlay {
       position: absolute;
       bottom: 0;
       left: 0;
-      width: 100%;
-      background: linear-gradient(transparent, rgba(0,0,0,0.8));
-      padding: 10px;
-      color: white;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.75));
+      padding: 8px 10px;
+      color: #fff;
     }
-    .promo-overlay h5 {
-      margin: 0;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .doctor-item-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
+
+    .banner-overlay p { font-size: 10px; font-weight: 700; }
+
+    /* App header tighter for inner screens */
+    .app-header-sm {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 16px 12px;
       display: flex;
-      gap: 12px;
       align-items: center;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: border-color 0.2s;
+      gap: 10px;
     }
-    .doctor-item-card:hover {
-      border-color: var(--primary);
-    }
-    .checkout-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px dashed var(--border);
-      font-size: 13px;
-    }
-    .otp-digits {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin: 20px 0;
-    }
-    .otp-input {
-      width: 44px;
-      height: 48px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--dark);
-    }
+
+    .app-header-sm h2 { font-size: 15px; font-weight: 700; }
   </style>
 </head>
 <body>
-  
-  <div style="max-width: 1200px; margin: 40px auto; padding: 0 20px; font-family: var(--font);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-      <div>
-        <h2 style="font-weight: 800; color: var(--dark);">Ahilney Patient App Simulator</h2>
-        <p style="font-size: 14px; color: var(--text-light); margin-top: 4px;">Experience the patient's booking, wallet, medical files, and session summary lifecycle.</p>
-      </div>
-      
-      <!-- Simulator controls -->
-      <div style="display: flex; gap: 16px; align-items: center; background: var(--white); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: var(--text-light); display: block; margin-bottom: 4px; text-transform: uppercase;">Simulated Patient Profile</label>
-          <select id="sim-patient-select" class="select-filter" style="height: 36px;" onchange="selectPatientProfile()">
-            <!-- Populated dynamically -->
-          </select>
-        </div>
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: var(--text-light); display: block; margin-bottom: 4px; text-transform: uppercase;">Simulate Events</label>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-secondary btn-sm" onclick="triggerDoctorNoShow()" style="font-size:11px; font-weight:700;">Doctor No-Show</button>
-            <button class="btn btn-secondary btn-sm" onclick="triggerPatientNoShow()" style="font-size:11px; font-weight:700;">Patient No-Show</button>
-          </div>
-        </div>
-      </div>
+<div class="simulator-page">
+
+  <!-- Top header -->
+  <div class="simulator-header">
+    <div class="simulator-title">
+      <h2>Ahilney – Patient App</h2>
+      <p>Home-care booking, appointments, wallet & medical profile</p>
     </div>
-
-    <!-- Main Container -->
-    <div style="display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; max-width: 900px; margin: 0 auto;">
-      
-      <!-- LEFT INFO: Walkthrough -->
-      <div style="background: var(--white); border-radius: 20px; border: 1px solid var(--border); padding: 24px; box-shadow: var(--shadow-sm);">
-        <h3 style="font-weight: 700; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 113.536 0V21h2v-2.243a8.013 8.013 0 01-1.077-.323z"/></svg>
-          Patient App Scenarios
-        </h3>
-        
-        <div style="display: flex; flex-direction: column; gap: 16px; font-size: 13px; color: var(--text);">
-          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: var(--shadow-sm);">
-            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
-              <span style="background:var(--primary-light); color:var(--primary); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">AUTH</span>
-              OTP Verification Login
-            </strong>
-            Switch simulated profiles in the dropdown. You will be logged out and prompted to complete the mock email OTP verification screen.
-          </div>
-
-          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--secondary); box-shadow: var(--shadow-sm);">
-            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
-              <span style="background:var(--secondary-light); color:var(--secondary); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">BOOKING</span>
-              Choose Booking Types
-            </strong>
-            Book an <strong>Online Consultation</strong> (must pay online), a <strong>Clinic Reservation</strong> (New Cairo filter), or a <strong>Home Care</strong> visit (must share GPS location and select payment options).
-          </div>
-
-          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--info); box-shadow: var(--shadow-sm);">
-            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
-              <span style="background:rgba(14, 165, 233, 0.1); color:var(--info); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">WALLET</span>
-              Wallet Integration & Cancellations
-            </strong>
-            Add funds under the Profile tab. Cancel an upcoming booking under the Appointments tab to verify immediate cancellation policies.
-          </div>
+    <div class="sim-controls">
+      <div>
+        <label>Simulated Patient</label>
+        <select id="sim-patient-select" class="select-filter" style="height:36px; min-width:180px;" onchange="switchPatient()"></select>
+      </div>
+      <div>
+        <label>Simulate Events</label>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="triggerDoctorNoShow()" title="Mark next upcoming apt as doctor no-show">Doctor No-Show</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetAllData()" title="Reset localStorage to defaults">Reset Data</button>
         </div>
       </div>
-
-      <!-- CENTER: Interactive Phone Simulator -->
-      <div class="phone-simulation-container">
-        <div class="phone-mockup">
-          <div class="phone-notch">
-            <div class="phone-camera"></div>
-            <div class="phone-speaker"></div>
-          </div>
-          
-          <div class="phone-screen">
-            <!-- Phone Status Bar -->
-            <div class="phone-status-bar">
-              <span class="status-bar-time">09:41</span>
-              <div class="status-bar-icons">
-                <svg width="15" height="11" viewBox="0 0 17 11">
-                  <rect x="0" y="8" width="2" height="3" rx="0.5" fill="currentColor" />
-                  <rect x="3" y="6" width="2" height="5" rx="0.5" fill="currentColor" />
-                  <rect x="6" y="4" width="2" height="7" rx="0.5" fill="currentColor" />
-                  <rect x="9" y="2" width="2" height="9" rx="0.5" fill="currentColor" />
-                  <rect x="12" y="0" width="2" height="11" rx="0.5" fill="currentColor" />
-                </svg>
-                <svg width="14" height="11" viewBox="0 0 15 11">
-                  <path d="M7.5 11a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-3.5-3.5a5 5 0 0 1 7 0 .5.5 0 0 0 .7-.7 6 6 0 0 0-8.4 0 .5.5 0 0 0 .7.7zm-2.8-2.8a9 9 0 0 1 12.6 0 .5.5 0 0 0 .7-.7 10 10 0 0 0-14 0 .5.5 0 0 0 .7.7z" fill="currentColor" />
-                </svg>
-                <svg width="18" height="11" viewBox="0 0 22 11">
-                  <rect x="0" y="0" width="20" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1" />
-                  <rect x="2" y="2" width="13" height="7" rx="1.5" fill="currentColor" />
-                  <path d="M21 3.5v4" stroke="currentColor" stroke-linecap="round" stroke-width="1" />
-                </svg>
-              </div>
-            </div>
-            
-            <!-- Mobile App Header -->
-            <header class="app-header" style="padding: 12px 20px 16px 20px;">
-              <span class="app-header-title" id="app-header-title">Ahilney Patient</span>
-              <div class="app-header-icons">
-                <button class="app-header-icon-btn" onclick="alert('No unread notifications')">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                </button>
-              </div>
-            </header>
-
-            <!-- Phone Screen Dynamic Viewports -->
-            <div class="app-body" id="app-body-content">
-              <!-- Content populated dynamically -->
-            </div>
-
-            <!-- Mobile App Bottom Navigation (Hidden on OTP screen) -->
-            <nav class="mobile-nav" id="patient-bottom-nav" style="display:none;">
-              <div class="mobile-nav-item active" id="nav-home" onclick="setMobileTab('home')">
-                <svg viewBox="0 0 24 24"><path d="M10 20H5a1 1 0 0 1-1-1v-6.586l8-8 8 8V19a1 1 0 0 1-1 1h-5v-6H10v6zm2-14.414l-6 6V18h3v-6h6v6h3v-6.414l-6-6z"/></svg>
-                <span>Services</span>
-              </div>
-              <div class="mobile-nav-item" id="nav-appointments" onclick="setMobileTab('appointments')">
-                <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-                <span>Bookings</span>
-              </div>
-              <div class="mobile-nav-item" id="nav-profile" onclick="setMobileTab('profile')">
-                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span>Profile</span>
-              </div>
-            </nav>
-
-            <!-- RIGHT PANEL: Context detail panels (nested inside phone screen overlay) -->
-            <div id="patient-details-panel" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999; background: var(--white); padding: 42px 16px 16px 16px; overflow-y: auto; display: none;">
-              <!-- Dynamic content like doctor selection, booking flows, checkout -->
-            </div>
-
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <script src="app.js"></script>
-  <script>
-    let activeMobileTab = 'home';
-    let selectedPatient = null;
-    let otpVerified = false;
+  <div class="simulator-layout">
 
-    // Load patient profiles into simulator selector
-    function initPatientSimulator() {
-      const patients = getPatients();
-      const selectEl = document.getElementById('sim-patient-select');
-      selectEl.innerHTML = '';
-      
-      patients.forEach(p => {
-        const option = document.createElement('option');
-        option.value = p.id;
-        option.innerText = p.name;
-        selectEl.appendChild(option);
-      });
+    <!-- LEFT: Scenario walkthrough -->
+    <div class="info-panel">
+      <h3>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        How to test the Patient App
+      </h3>
 
-      if (!selectedPatient) {
-        selectedPatient = patients[0];
-      }
-      selectEl.value = selectedPatient.id;
-      otpVerified = false; // Require OTP login on load/profile switch
-      renderScreenContent();
-    }
+      <div class="scenario-card">
+        <span class="scenario-tag">Login</span>
+        <strong>OTP Verification</strong>
+        <p>Switch patients in the dropdown above. The phone resets to the OTP screen. Enter any 4 digits and tap Verify to log in as that patient.</p>
+      </div>
 
-    function selectPatientProfile() {
-      const patients = getPatients();
-      const id = document.getElementById('sim-patient-select').value;
-      selectedPatient = patients.find(p => p.id === id);
-      otpVerified = false;
-      document.getElementById('patient-details-panel').style.display = 'none';
-      renderScreenContent();
-    }
+      <div class="scenario-card" style="border-left-color: #10b981;">
+        <span class="scenario-tag" style="background:#ecfdf5; color:#059669;">Book</span>
+        <strong>Book a Homecare Session</strong>
+        <p>Tap the <strong>Book</strong> tab → Select district → Browse RS providers → tap a card → Open profile sheet → Tap <strong>Book Now</strong> → Complete 4-step flow → Confirm. A new appointment is created with status "Waiting for confirmation".</p>
+      </div>
 
-    function setMobileTab(tabId) {
-      if (!otpVerified) return;
-      activeMobileTab = tabId;
-      document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById(`nav-${tabId}`).classList.add('active');
-      document.getElementById('patient-details-panel').style.display = 'none';
-      renderScreenContent();
-    }
+      <div class="scenario-card" style="border-left-color: #3b82f6;">
+        <span class="scenario-tag" style="background:#eff6ff; color:#2563eb;">Appointments</span>
+        <strong>Track Bookings & Rate Sessions</strong>
+        <p>The <strong>Appointments</strong> tab shows all bookings with live status badges. Finished sessions show a Rate & Review prompt. Rejected ones show a Book Again shortcut.</p>
+      </div>
 
-    // Main Renderer
-    function renderScreenContent() {
-      const appBody = document.getElementById('app-body-content');
-      const bottomNav = document.getElementById('patient-bottom-nav');
-      appBody.innerHTML = '';
+      <div class="scenario-card" style="border-left-color: #8b5cf6;">
+        <span class="scenario-tag" style="background:#f5f3ff; color:#6d28d9;">Wallet</span>
+        <strong>View Balance & Transactions</strong>
+        <p>The <strong>Wallet</strong> tab shows current balance, pending cash bookings, and full transaction history. Use the Top-Up button to add mock funds.</p>
+      </div>
 
-      if (!otpVerified) {
-        bottomNav.style.display = 'none';
-        renderOtpLogin();
-        return;
-      }
-      bottomNav.style.display = 'flex';
+      <div class="scenario-card" style="border-left-color: #f59e0b;">
+        <span class="scenario-tag" style="background:#fffbeb; color:#d97706;">Profile</span>
+        <strong>Medical History & Treatment Plans</strong>
+        <p>The <strong>Profile</strong> tab shows personal info, medical history, and approved treatment plans from doctors.</p>
+      </div>
+    </div>
 
-      if (activeMobileTab === 'home') {
-        renderServicesDashboard();
-      } else if (activeMobileTab === 'appointments') {
-        renderAppointmentsTab();
-      } else if (activeMobileTab === 'profile') {
-        renderProfileTab();
-      }
-    }
-
-    // 1. OTP Verification Screen (Requirement 1)
-    let selectedOtpChannel = 'whatsapp';
-    let otpCountdown = 30;
-
-    function renderOtpLogin() {
-      const appBody = document.getElementById('app-body-content');
-      appBody.innerHTML = '';
-      
-      const container = document.createElement('div');
-      container.style.padding = '20px 16px';
-      container.style.textAlign = 'center';
-      container.innerHTML = `
-        <div style="margin-top:10px; color:var(--primary); display:flex; justify-content:center;">
-          <div style="background:var(--primary-light); width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
-          </div>
-        </div>
-        <h3 style="font-weight:800; color:var(--dark); margin-top:10px; font-size:16px;">Registration Security OTP</h3>
-        <p style="font-size:11px; color:var(--text-light); margin-top:4px;">Verify phone number <strong>${selectedPatient.phone}</strong></p>
-
-        <!-- OTP Channel Toggle -->
-        <div style="display:flex; justify-content:center; gap:8px; margin:14px 0;">
-          <button type="button" class="btn btn-sm ${selectedOtpChannel === 'whatsapp' ? 'btn-primary' : 'btn-secondary'}" id="btn-otp-wa" onclick="switchOtpChannel('whatsapp')" style="font-size:10px; border-radius:16px; padding:4px 12px; display:flex; align-items:center; gap:4px;">
-            💬 WhatsApp OTP
-          </button>
-          <button type="button" class="btn btn-sm ${selectedOtpChannel === 'sms' ? 'btn-primary' : 'btn-secondary'}" id="btn-otp-sms" onclick="switchOtpChannel('sms')" style="font-size:10px; border-radius:16px; padding:4px 12px; display:flex; align-items:center; gap:4px;">
-            📱 SMS OTP
-          </button>
-        </div>
-        
-        <div style="background:var(--light); padding:8px 12px; border-radius:10px; font-size:11px; color:var(--primary); font-weight:600; margin-bottom:12px;" id="otp-status-notice">
-          Sending code via ${selectedOtpChannel === 'whatsapp' ? 'WhatsApp 💬' : 'SMS 📱'}...
+    <!-- RIGHT: Phone mockup -->
+    <div class="phone-simulation-container" style="padding:0; align-items:flex-start;">
+      <div class="phone-mockup">
+        <div class="phone-notch">
+          <div class="phone-camera"></div>
+          <div class="phone-speaker"></div>
         </div>
 
-        <div class="otp-digits">
-          <input type="text" class="otp-input" id="otp-d1" maxlength="1" value="4">
-          <input type="text" class="otp-input" id="otp-d2" maxlength="1" value="8">
-          <input type="text" class="otp-input" id="otp-d3" maxlength="1" value="2">
-          <input type="text" class="otp-input" id="otp-d4" maxlength="1" value="9">
-        </div>
+        <div class="phone-screen" id="phone-screen">
 
-        <button class="btn btn-primary" style="width:100%; height:40px; margin-top:6px; font-size:13px; font-weight:700;" onclick="verifyOtp()">Verify OTP & Continue</button>
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:10px; color:var(--text-light);">
-          <span>Mock Verification Code: <strong style="color:var(--dark);">4829</strong></span>
-          <button style="background:none; border:none; color:var(--primary); font-weight:700; cursor:pointer; font-size:10px;" onclick="resendOtp()">Resend Code (30s)</button>
-        </div>
-      `;
-      appBody.appendChild(container);
-    }
-
-    function switchOtpChannel(channel) {
-      selectedOtpChannel = channel;
-      renderOtpLogin();
-    }
-
-    function resendOtp() {
-      alert(`New OTP code sent via ${selectedOtpChannel.toUpperCase()}! Please use code 4829.`);
-    }
-
-    function verifyOtp() {
-      const d1 = document.getElementById('otp-d1').value;
-      const d2 = document.getElementById('otp-d2').value;
-      const d3 = document.getElementById('otp-d3').value;
-      const d4 = document.getElementById('otp-d4').value;
-      const entered = `${d1}${d2}${d3}${d4}`;
-
-      if (entered !== '4829') {
-        alert('Invalid OTP code. Please enter 4829.');
-        return;
-      }
-
-      otpVerified = true;
-      activeMobileTab = 'home';
-      document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById('nav-home').classList.add('active');
-      renderScreenContent();
-    }
-
-    // 2. Services Dashboard
-    function renderServicesDashboard() {
-      const appBody = document.getElementById('app-body-content');
-      
-      // Welcome Card
-      const welcome = document.createElement('div');
-      welcome.className = 'provider-welcome-card';
-      const initials = selectedPatient.name.split(' ').map(n=>n[0]).join('').substring(0,2);
-      welcome.innerHTML = `
-        <div class="provider-welcome-avatar">${initials}</div>
-        <div class="provider-welcome-details">
-          <h3>Good Afternoon,</h3>
-          <h4 style="font-weight:800; color:var(--dark); margin:0;">${selectedPatient.name}</h4>
-        </div>
-      `;
-      appBody.appendChild(welcome);
-
-      // Promo Banners Horizontal Scroll
-      const banners = getBanners().filter(b => b.status === 'active');
-      if (banners.length > 0) {
-        const bannersTitle = document.createElement('h5');
-        bannersTitle.style.margin = '15px 0 0 0';
-        bannersTitle.style.fontSize = '12px';
-        bannersTitle.style.fontWeight = '700';
-        bannersTitle.style.color = 'var(--text-light)';
-        bannersTitle.innerText = "SPECIAL OFFERS & CAMPAIGNS";
-        appBody.appendChild(bannersTitle);
-
-        const bannerScroll = document.createElement('div');
-        bannerScroll.className = 'promo-banner-scroll';
-        banners.forEach(b => {
-          bannerScroll.innerHTML += `
-            <div class="promo-card" style="background-image: url('${b.image}')">
-              <div class="promo-overlay">
-                <h5>${b.title}</h5>
-              </div>
+          <!-- Status bar -->
+          <div class="phone-status-bar">
+            <span class="status-bar-time" id="status-time">09:41</span>
+            <div class="status-bar-icons">
+              <svg width="12" height="12" viewBox="0 0 24 24"><path d="M1 6l11 11L23 6"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+              <svg width="14" height="10" viewBox="0 0 24 16"><rect x="0" y="2" width="20" height="12" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="1.5" y="3.5" width="15" height="9" rx="2" fill="currentColor"/><path d="M21 6v4a2 2 0 0 0 0-4z" fill="currentColor"/></svg>
             </div>
-          `;
-        });
-        appBody.appendChild(bannerScroll);
-      }
-
-      // Services Selection Grid
-      const gridTitle = document.createElement('h5');
-      gridTitle.style.margin = '20px 0 0 0';
-      gridTitle.style.fontSize = '12px';
-      gridTitle.style.fontWeight = '700';
-      gridTitle.style.color = 'var(--text-light)';
-      gridTitle.innerText = "CHOOSE REHAB SERVICE TYPE";
-      appBody.appendChild(gridTitle);
-
-      const grid = document.createElement('div');
-      grid.className = 'service-grid';
-      grid.innerHTML = `
-        <div class="service-btn" onclick="openServiceFlow('consultation')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
-          <div class="service-icon" style="color: var(--primary); display: flex; align-items: center; justify-content: center;">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
           </div>
+
+          <!-- App body: swapped screens -->
+          <div id="app-main" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
+            <!-- Dynamic content rendered here -->
+          </div>
+
+          <!-- Bottom nav -->
+          <nav class="mobile-nav" id="bottom-nav" style="display:none;">
+            <div class="mobile-nav-item active" id="nav-home" onclick="navigate('home')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+              <span>Home</span>
+            </div>
+            <div class="mobile-nav-item" id="nav-book" onclick="navigate('book')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>Book</span>
+            </div>
+            <div class="mobile-nav-item" id="nav-appointments" onclick="navigate('appointments')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <span>Bookings</span>
+              <span id="apt-badge" style="display:none; position:absolute; top:4px; background:#ef4444; color:#fff; font-size:8px; font-weight:800; padding:1px 4px; border-radius:8px;">!</span>
+            </div>
+            <div class="mobile-nav-item" id="nav-wallet" onclick="navigate('wallet')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+              <span>Wallet</span>
+            </div>
+            <div class="mobile-nav-item" id="nav-profile" onclick="navigate('profile')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              <span>Profile</span>
+            </div>
+          </nav>
+
+          <!-- Toast -->
+          <div id="toast" class="toast"></div>
+
+          <!-- Sheet backdrop -->
+          <div id="sheet-backdrop" class="sheet-backdrop" onclick="closeAllSheets()"></div>
+
+          <!-- Provider profile sheet -->
+          <div id="provider-sheet" class="slide-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+              <h3 id="sheet-provider-name">Provider</h3>
+              <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+            </div>
+            <div class="sheet-body" id="sheet-provider-body"></div>
+            <div class="sheet-footer">
+              <button class="btn-full" onclick="startBookingFlow()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Book Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Booking flow sheet -->
+          <div id="booking-sheet" class="slide-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+              <h3 id="booking-sheet-title">Book Homecare Session</h3>
+              <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+            </div>
+            <div class="sheet-body" id="booking-sheet-body"></div>
+            <div class="sheet-footer" id="booking-sheet-footer"></div>
+          </div>
+
+          <!-- Rating sheet -->
+          <div id="rating-sheet" class="slide-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+              <h3>Rate Your Session</h3>
+              <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+            </div>
+            <div class="sheet-body" id="rating-sheet-body"></div>
+            <div class="sheet-footer">
+              <button class="btn-full" onclick="submitRatingFlow()">Submit Review</button>
+            </div>
+          </div>
+
+        </div><!-- end phone-screen -->
+      </div><!-- end phone-mockup -->
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let currentPatient = null;
+let currentTab = 'home';
+let isLoggedIn = false;
+
+// Booking state
+let bookingProvider = null;
+let bookingStep = 0; // 1-4
+let bookingState = {
+  district: 'New Cairo',
+  prescriptionFile: '',
+  selectedDate: null,
+  selectedDateLabel: '',
+  selectedSlot: null,
+  packageSize: 1,
+  paymentMethod: 'Online',
+  serviceName: ''
+};
+
+// Rating state
+let ratingAptId = null;
+let ratingStars = 0;
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  // Live clock
+  updateClock();
+  setInterval(updateClock, 30000);
+
+  // Populate patient dropdown
+  const patients = getPatients();
+  const sel = document.getElementById('sim-patient-select');
+  patients.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.name} (${p.id})`;
+    sel.appendChild(opt);
+  });
+
+  currentPatient = patients[0];
+  renderOtp();
+});
+
+window.addEventListener('storage', () => {
+  if (isLoggedIn && currentPatient) {
+    const patients = getPatients();
+    currentPatient = patients.find(p => p.id === currentPatient.id) || patients[0];
+    renderTab(currentTab);
+  }
+});
+
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('status-time').textContent = `${h}:${m}`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PATIENT SWITCH
+// ═══════════════════════════════════════════════════════
+function switchPatient() {
+  const id = document.getElementById('sim-patient-select').value;
+  const patients = getPatients();
+  currentPatient = patients.find(p => p.id === id) || patients[0];
+  isLoggedIn = false;
+  closeAllSheets();
+  renderOtp();
+  document.getElementById('bottom-nav').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+//  OTP SCREEN
+// ═══════════════════════════════════════════════════════
+function renderOtp() {
+  const main = document.getElementById('app-main');
+  const initials = currentPatient.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+  main.innerHTML = `
+    <div class="otp-screen" style="flex:1; justify-content:center;">
+      <div style="width:60px; height:60px; border-radius:50%; background:var(--primary-light); border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; color:var(--primary); margin:0 auto 14px;">${initials}</div>
+      <h3>Welcome back,<br>${currentPatient.name.split(' ')[0]}!</h3>
+      <p>A verification code was sent to<br><strong>${currentPatient.email}</strong></p>
+      <div style="display:flex; gap:6px; margin:8px 0 6px;">
+        <button class="wallet-action-btn" style="background:var(--primary-light); color:var(--primary); border:1px solid var(--primary); border-radius:20px; padding:5px 12px; font-size:10px; font-weight:700; cursor:pointer;" id="btn-email">📧 Email</button>
+        <button class="wallet-action-btn" style="background:var(--light); color:var(--text); border:1px solid var(--border); border-radius:20px; padding:5px 12px; font-size:10px; font-weight:700; cursor:pointer;" id="btn-sms">📱 SMS</button>
+        <button class="wallet-action-btn" style="background:var(--light); color:var(--text); border:1px solid var(--border); border-radius:20px; padding:5px 12px; font-size:10px; font-weight:700; cursor:pointer;" id="btn-wa">💬 WhatsApp</button>
+      </div>
+      <div class="otp-boxes">
+        <input class="otp-box" id="otp1" maxlength="1" oninput="otpNext(this,'otp2')" value="4">
+        <input class="otp-box" id="otp2" maxlength="1" oninput="otpNext(this,'otp3')" value="8">
+        <input class="otp-box" id="otp3" maxlength="1" oninput="otpNext(this,'otp4')" value="2">
+        <input class="otp-box" id="otp4" maxlength="1" onkeydown="if(event.key==='Enter')verifyOtp()" value="9">
+      </div>
+      <p style="margin-bottom:16px;">Didn't receive it? <span style="color:var(--primary); font-weight:700; cursor:pointer;" onclick="showToast('Code resent!','success')">Resend code</span></p>
+      <button class="btn-full" onclick="verifyOtp()" style="max-width:220px;">Verify & Continue</button>
+    </div>
+  `;
+  document.getElementById('bottom-nav').style.display = 'none';
+}
+
+function otpNext(el, nextId) {
+  if (el.value) {
+    const next = document.getElementById(nextId);
+    if (next) next.focus();
+  }
+}
+
+function verifyOtp() {
+  isLoggedIn = true;
+  navigate('home');
+  document.getElementById('bottom-nav').style.display = 'flex';
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+function navigate(tab) {
+  if (!isLoggedIn) return verifyOtp();
+  currentTab = tab;
+  closeAllSheets();
+
+  document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById(`nav-${tab}`);
+  if (navEl) navEl.classList.add('active');
+
+  renderTab(tab);
+}
+
+function renderTab(tab) {
+  const main = document.getElementById('app-main');
+  if (tab === 'home') renderHome(main);
+  else if (tab === 'book') renderBook(main);
+  else if (tab === 'appointments') renderAppointments(main);
+  else if (tab === 'wallet') renderWallet(main);
+  else if (tab === 'profile') renderProfile(main);
+}
+
+// ═══════════════════════════════════════════════════════
+//  HOME SCREEN
+// ═══════════════════════════════════════════════════════
+function renderHome(main) {
+  const patient = currentPatient;
+  const initials = patient.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+  const apts = getAppointments().filter(a => a.patientId === patient.id);
+  const recent = apts.slice(0, 2);
+  const banners = getBanners();
+
+  main.innerHTML = `
+    <header class="app-header" style="padding:14px 16px 14px 16px;">
+      <div>
+        <div style="font-size:10px; opacity:0.75;">Good ${getTimeOfDay()},</div>
+        <div style="font-size:15px; font-weight:800;">${patient.name.split(' ')[0]} 👋</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button class="app-header-icon-btn" onclick="showToast('No new notifications','')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        </button>
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;">${initials}</div>
+      </div>
+    </header>
+    <div class="app-body">
+      <!-- Wallet card -->
+      <div class="wallet-hero" onclick="navigate('wallet')" style="cursor:pointer;">
+        <div class="wallet-label">Ahilney Wallet Balance</div>
+        <div class="wallet-amount">${patient.walletBalance.toLocaleString()} EGP</div>
+        <div class="wallet-actions">
+          <div class="wallet-action-btn" onclick="event.stopPropagation(); navigate('wallet')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+            Top Up
+          </div>
+          <div class="wallet-action-btn" onclick="event.stopPropagation(); navigate('wallet')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            History
+          </div>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div class="section-heading">Our Services <a onclick="navigate('book')">Book Now →</a></div>
+      <div class="services-tiles">
+        <div class="service-tile" onclick="navigate('book')">
+          <div class="service-tile-icon">🏠</div>
+          <span>Homecare Visit</span>
+          <span class="badge-new">Popular</span>
+        </div>
+        <div class="service-tile" onclick="showToast('Online consultation flow coming soon','')">
+          <div class="service-tile-icon">💻</div>
           <span>Online Consult</span>
         </div>
-        <div class="service-btn" onclick="openServiceFlow('clinic')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
-          <div class="service-icon" style="color: var(--primary); display: flex; align-items: center; justify-content: center;">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
-          <span>Rehab Centers</span>
-          <span style="font-size: 8px; color: var(--warning); font-weight: 700; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 4px; padding: 1px 4px;">Coming Soon</span>
+        <div class="service-tile" onclick="showToast('Center booking coming soon','')">
+          <div class="service-tile-icon">🏥</div>
+          <span>Rehab Center</span>
         </div>
-        <div class="service-btn" onclick="openServiceFlow('homecare')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
-          <div class="service-icon" style="color: var(--primary); display: flex; align-items: center; justify-content: center;">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-3-4H8.5L6 7m14 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2V7m16 0H4M9 17a2 2 0 11-4 0 2 2 0 014 0zm10 0a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
+      </div>
+
+      <!-- Promo banners -->
+      ${banners.length > 0 ? `
+      <div class="section-heading">Promotions</div>
+      <div class="banner-scroll">
+        ${banners.map(b => `
+          <div class="banner-card" style="background-image:url('${b.image}')">
+            <div class="banner-overlay"><p>${b.title}</p></div>
           </div>
-          <span>Home Care</span>
+        `).join('')}
+      </div>` : ''}
+
+      <!-- Recent activity -->
+      <div class="section-heading">Recent Activity <a onclick="navigate('appointments')">See all →</a></div>
+      ${recent.length === 0 ? `
+        <div class="empty-state"><div class="empty-icon">📅</div><p>No bookings yet.<br>Book your first homecare session!</p></div>
+      ` : recent.map(a => renderAptMiniCard(a)).join('')}
+
+      ${patient.completedSessionsCount > 0 ? `
+      <div class="info-block" style="margin-top:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:12px; font-weight:700; color:var(--dark);">Sessions Completed</div>
+            <div style="font-size:10px; color:var(--text-light);">Keep up the great progress!</div>
+          </div>
+          <div style="font-size:28px; font-weight:800; color:var(--primary);">${patient.completedSessionsCount}</div>
         </div>
-      `;
-      appBody.appendChild(grid);
-    }
+      </div>` : ''}
+    </div>
+  `;
+}
 
-    // Interactive Service Selection Flow (Requirement 11, 12, 8, 9)
-    let selectedDoctorSpecFilter = 'ALL';
-    let patientCoords = { lat: 30.0276, lng: 31.4913 }; // default New Cairo
-    let locationPermissionState = 'prompt'; // prompt, granted, denied
-    let selectedHomecareServiceId = 'SRV-01';
+function getTimeOfDay() {
+  const h = new Date().getHours();
+  if (h < 12) return 'morning';
+  if (h < 18) return 'afternoon';
+  return 'evening';
+}
 
-    function openServiceFlow(serviceType) {
-      const panel = document.getElementById('patient-details-panel');
-      panel.style.display = 'block';
-      panel.innerHTML = '';
+function renderAptMiniCard(apt) {
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === apt.providerId);
+  const isHome = apt.type === 'Home Visit';
+  return `
+    <div class="apt-mini-card" onclick="navigate('appointments')">
+      <div class="apt-mini-icon ${isHome ? 'home' : 'online'}">${isHome ? '🏠' : '💻'}</div>
+      <div class="apt-mini-info">
+        <h5>${prov ? prov.name : 'Provider'}</h5>
+        <p>${apt.time} · ${apt.serviceName || apt.type}</p>
+      </div>
+      ${getStatusPill(apt.status)}
+    </div>
+  `;
+}
 
-      if (serviceType === 'consultation') {
-        let filterPillsHtml = `
-          <div class="spec-filter-container">
-            <span class="spec-pill ${selectedDoctorSpecFilter === 'ALL' ? 'active' : ''}" onclick="setDoctorSpecFilter('ALL')">All Specialties</span>
-            ${DOCTOR_SPECIALIZATIONS.map(spec => `
-              <span class="spec-pill ${selectedDoctorSpecFilter === spec ? 'active' : ''}" onclick="setDoctorSpecFilter('${spec}')">${spec}</span>
-            `).join('')}
-          </div>
-        `;
+function getStatusPill(status) {
+  const map = {
+    'Pending RS Acceptance': ['waiting', '⏳ Awaiting'],
+    'Confirmed': ['confirmed', '✓ Confirmed'],
+    'Upcoming': ['upcoming', '📅 Upcoming'],
+    'Finished': ['finished', '✅ Done'],
+    'Rejected': ['rejected', '✗ Declined'],
+    'Need Summary': ['upcoming', '📝 In Progress'],
+  };
+  const [cls, label] = map[status] || ['waiting', status];
+  return `<span class="status-pill ${cls}">${label}</span>`;
+}
 
-        panel.innerHTML = `
-          <h3 style="font-weight:800; color:var(--dark); margin-bottom:4px;">Browse Online Consultations</h3>
-          <p style="font-size:11px; color:var(--text-light); margin-bottom:12px;">Select doctor specialization and book online consultation.</p>
-          
-          ${filterPillsHtml}
-          
-          <div style="display:flex; flex-direction:column; gap:10px;" id="browse-docs-list"></div>
-        `;
-        renderFilteredDoctors();
+// ═══════════════════════════════════════════════════════
+//  BOOK TAB – HOMECARE DISCOVERY
+// ═══════════════════════════════════════════════════════
+function renderBook(main) {
+  const allProviders = getProviders().filter(p => p.status === 'active' && p.type === 'RS');
+  const allDistricts = EGYPT_SUBREGIONS.map(s => s.name);
+  const currentDistrict = bookingState.district || 'New Cairo';
+  const filtered = allProviders.filter(p => p.regionsCovered.includes(currentDistrict));
 
-      } else if (serviceType === 'clinic') {
-        renderCenterServicesFlow(panel);
+  main.innerHTML = `
+    <header class="app-header" style="padding:14px 16px;">
+      <div style="font-size:15px; font-weight:800;">Book Homecare</div>
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="opacity:0.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    </header>
+    <div class="app-body">
+      <div style="background:var(--primary-light); border:1px solid #99f6e4; border-radius:12px; padding:10px 12px; margin-bottom:12px; font-size:11px; color:var(--primary); font-weight:600;">
+        🏠 A licensed Rehab Specialist visits your home at your chosen time slot.
+      </div>
 
-      } else if (serviceType === 'homecare') {
-        renderHomecareServicesFlow(panel);
-      }
-    }
+      <div class="section-heading">Your District</div>
+      <select class="district-selector" id="district-sel" onchange="onDistrictChange(this.value)">
+        ${allDistricts.map(d => `<option value="${d}" ${d === currentDistrict ? 'selected' : ''}>${d}</option>`).join('')}
+      </select>
 
-    function setDoctorSpecFilter(spec) {
-      selectedDoctorSpecFilter = spec;
-      renderFilteredDoctors();
-    }
+      <div class="section-heading">
+        Available Specialists
+        <span style="font-size:11px; color:var(--text-light); font-weight:600;">${filtered.length} found</span>
+      </div>
 
-    function renderFilteredDoctors() {
-      const list = document.getElementById('browse-docs-list');
-      if (!list) return;
-      list.innerHTML = '';
-      let providers = getProviders().filter(p => p.status === 'active' && p.type === 'Doctor');
-      if (selectedDoctorSpecFilter !== 'ALL') {
-        providers = providers.filter(p => p.specialty === selectedDoctorSpecFilter);
-      }
-
-      if (providers.length === 0) {
-        list.innerHTML = `<p style="font-size:11px; color:var(--text-light); text-align:center; padding:16px 0;">No active doctors under ${selectedDoctorSpecFilter}.</p>`;
-        return;
-      }
-
-      providers.forEach(p => {
-        const item = document.createElement('div');
-        item.className = 'doctor-item-card';
-        item.onclick = () => selectDoctorForBooking(p, 'Online Consultation');
-        item.innerHTML = `
-          <div class="patient-img-placeholder" style="background:var(--light); font-weight:700; color:var(--primary);">${p.name.split(' ').map(n=>n[0]).join('')}</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700; color:var(--dark); margin:0; font-size:13px;">${p.name}</h4>
-            <span class="badge badge-active" style="font-size:9px; margin-top:2px;">${p.specialty}</span>
-          </div>
-          <strong style="color:var(--primary); font-size:13px;">${p.price}</strong>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    function renderHomecareServicesFlow(panel) {
-      const subregions = EGYPT_SUBREGIONS;
-      
-      let locationBannerHtml = '';
-      if (locationPermissionState === 'denied') {
-        locationBannerHtml = `
-          <div class="location-banner location-banner-refused">
-            <span>📍 Location permission refused. Please select your region manually below:</span>
-          </div>
-        `;
-      } else if (locationPermissionState === 'granted') {
-        locationBannerHtml = `
-          <div class="location-banner">
-            <span>📍 GPS Location Active (${patientCoords.lat.toFixed(2)}, ${patientCoords.lng.toFixed(2)})</span>
-            <span style="font-weight:700;">Nearest RS Sorted</span>
-          </div>
-        `;
-      }
-
-      panel.innerHTML = `
-        <h3 style="font-weight:800; color:var(--dark); margin-bottom:4px;">Home Care Visits</h3>
-        <p style="font-size:11px; color:var(--text-light); margin-bottom:12px;">Select Home Care service and choose specialist nearest to your location.</p>
-
-        ${locationBannerHtml}
-
-        <div style="margin-bottom:12px;">
-          <label style="font-size:10px; font-weight:700; color:var(--text-light); text-transform:uppercase; display:block; margin-bottom:6px;">Select Service Type</label>
-          <div class="services-grid-list">
-            ${SERVICES_CATALOG.map(s => `
-              <div class="service-card-item ${selectedHomecareServiceId === s.id ? 'selected' : ''}" onclick="selectHomecareService('${s.id}')">
-                <div class="service-card-icon">${s.icon}</div>
-                <div>
-                  <div class="service-card-title">${s.name}</div>
-                  ${!s.supportsHome ? `<span class="service-badge-exclusive">Rehab Center Only</span>` : `<span style="font-size:9px; color:var(--primary); font-weight:700;">Home & Center</span>`}
-                </div>
-              </div>
-            `).join('')}
-          </div>
+      ${filtered.length === 0 ? `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <p>No specialists available in <strong>${currentDistrict}</strong> yet.<br>Try a nearby district.</p>
         </div>
+      ` : filtered.map(p => renderProviderCard(p)).join('')}
+    </div>
+  `;
+}
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <label style="font-size:10px; font-weight:700; color:var(--text-light); text-transform:uppercase;">Subregion Location</label>
-          <button class="btn btn-secondary btn-sm" onclick="detectLocation()" style="font-size:10px; padding:2px 8px; border-radius:12px;">
-            📡 Request GPS Location
-          </button>
+function onDistrictChange(val) {
+  bookingState.district = val;
+  renderBook(document.getElementById('app-main'));
+}
+
+function renderProviderCard(p) {
+  const initials = p.name.replace('Dr. ','').split(' ').map(n=>n[0]).join('').slice(0,2);
+  const rating = p.rating || 4.8;
+  const reviews = p.reviewCount || 15;
+  const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+  return `
+    <div class="provider-card" onclick="openProviderSheet('${p.id}')">
+      <div class="provider-avatar">${initials}</div>
+      <div class="provider-info">
+        <h4>${p.name}</h4>
+        <div class="spec">${p.specialty}</div>
+        <div class="provider-meta">
+          <span class="provider-chip price">${p.price} / session</span>
+          <span class="provider-chip">⏱ ${p.duration}</span>
         </div>
+        <div class="stars-row" style="margin-top:4px;">
+          <span style="color:#f59e0b; font-size:11px;">${stars}</span>
+          <span style="color:var(--text-light); margin-left:3px;">${parseFloat(rating).toFixed(1)} (${reviews})</span>
+        </div>
+      </div>
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--text-light); flex-shrink:0; margin-top:2px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    </div>
+  `;
+}
 
-        <select class="form-control" id="homecare-district-select" onchange="onSubregionChange()" style="font-size:12px; height:32px; margin-bottom:10px;">
-          ${subregions.map(sub => `<option value="${sub.name}" ${selectedPatient.address.includes(sub.name) ? 'selected' : ''}>${sub.name}</option>`).join('')}
+// ═══════════════════════════════════════════════════════
+//  PROVIDER PROFILE SHEET
+// ═══════════════════════════════════════════════════════
+function openProviderSheet(providerId) {
+  const providers = getProviders();
+  bookingProvider = providers.find(p => p.id === providerId);
+  if (!bookingProvider) return;
+
+  const p = bookingProvider;
+  const initials = p.name.replace('Dr. ','').split(' ').map(n=>n[0]).join('').slice(0,2);
+  const rating = p.rating || 4.8;
+  const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+  const reviews = p.reviewCount || 15;
+
+  document.getElementById('sheet-provider-name').textContent = p.name;
+  document.getElementById('sheet-provider-body').innerHTML = `
+    <div style="text-align:center; margin-bottom:16px;">
+      <div style="width:64px; height:64px; border-radius:16px; background:linear-gradient(135deg,var(--primary-light),#ccfbf1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; margin:0 auto 10px;">${initials}</div>
+      <div style="font-size:16px; font-weight:800; color:var(--dark);">${p.name}</div>
+      <div style="font-size:12px; color:var(--text-light);">${p.specialty}</div>
+      <div class="stars-row" style="justify-content:center; margin-top:5px;">
+        <span style="color:#f59e0b; font-size:14px;">${stars}</span>
+        <span style="color:var(--text-light); margin-left:4px; font-size:11px;">${parseFloat(rating).toFixed(1)} · ${reviews} reviews</span>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
+      <div style="background:var(--light); border-radius:10px; padding:10px; text-align:center;">
+        <div style="font-size:16px; font-weight:800; color:var(--primary);">${p.price}</div>
+        <div style="font-size:10px; color:var(--text-light);">per session</div>
+      </div>
+      <div style="background:var(--light); border-radius:10px; padding:10px; text-align:center;">
+        <div style="font-size:16px; font-weight:800; color:var(--dark);">${p.duration}</div>
+        <div style="font-size:10px; color:var(--text-light);">session length</div>
+      </div>
+    </div>
+
+    <div class="info-block" style="margin-bottom:10px;">
+      <h4>Districts Covered</h4>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+        ${p.regionsCovered.map(r => `<span class="provider-chip" style="background:var(--primary-light); color:var(--primary);">📍 ${r}</span>`).join('')}
+      </div>
+    </div>
+
+    <div class="info-block" style="margin-bottom:10px;">
+      <h4>Weekly Availability</h4>
+      ${Object.entries(p.shifts || {}).filter(([,slots]) => slots.length > 0).slice(0,4).map(([day, slots]) => `
+        <div class="info-row">
+          <span>${day}</span>
+          <span>${slots.map(s=>`${s.start}–${s.end}`).join(', ')}</span>
+        </div>
+      `).join('') || '<p style="font-size:11px; color:var(--text-light); padding:6px 0;">Schedule to be confirmed</p>'}
+    </div>
+
+    <div class="info-block">
+      <h4>About</h4>
+      <p style="font-size:12px; color:var(--text); line-height:1.5;">Licensed rehabilitation specialist with expertise in ${p.specialty.toLowerCase()}. All equipment brought to your home. Sessions conducted following clinical protocols approved by Ahilney.</p>
+    </div>
+  `;
+
+  openSheet('provider-sheet');
+}
+
+// ═══════════════════════════════════════════════════════
+//  BOOKING FLOW (4 steps)
+// ═══════════════════════════════════════════════════════
+function startBookingFlow() {
+  bookingStep = 1;
+  bookingState.prescriptionFile = '';
+  bookingState.selectedDate = null;
+  bookingState.selectedSlot = null;
+  bookingState.packageSize = 1;
+  bookingState.paymentMethod = 'Online';
+  bookingState.serviceName = bookingProvider ? bookingProvider.specialty : '';
+
+  closeSheet('provider-sheet');
+  setTimeout(() => {
+    openSheet('booking-sheet');
+    renderBookingStep();
+  }, 200);
+}
+
+function renderBookingStep() {
+  const body = document.getElementById('booking-sheet-body');
+  const footer = document.getElementById('booking-sheet-footer');
+  document.getElementById('booking-sheet-title').textContent = `Book Session – Step ${bookingStep} of 4`;
+
+  const stepLabels = ['Prescription', 'Date & Time', 'Package', 'Payment'];
+  const stepsHTML = `
+    <div class="step-indicator">
+      ${[1,2,3,4].map(i => `<div class="step-dot ${i <= bookingStep ? 'active' : ''}"></div>`).join('')}
+    </div>
+    <div class="step-label">${stepLabels[bookingStep-1]}</div>
+  `;
+
+  if (bookingStep === 1) {
+    body.innerHTML = stepsHTML + `
+      <p style="font-size:12px; color:var(--text-light); margin-bottom:14px; line-height:1.5;">
+        Confirm your visit district and attach your doctor's prescription or medical report.
+      </p>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label" style="font-size:11px;">Visit District</label>
+        <select class="district-selector" id="bk-district" style="margin-bottom:0;">
+          ${EGYPT_SUBREGIONS.map(d => `<option value="${d.name}" ${d.name === bookingState.district ? 'selected' : ''}>${d.name}</option>`).join('')}
         </select>
+      </div>
 
-        <div class="form-group" style="margin-bottom:12px;">
-          <label class="form-label" style="font-size:10px;">Delivery Address Details</label>
-          <input type="text" class="form-control" id="home-address" value="${selectedPatient.address}" style="height:30px; font-size:11px;">
-        </div>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label" style="font-size:11px;">Home Address</label>
+        <input class="addr-input" id="bk-address" value="${currentPatient.address}" placeholder="Full address for visit">
+      </div>
 
-        <p style="font-size:10px; font-weight:700; color:var(--text-light); text-transform:uppercase; margin-bottom:8px;">Available Specialists (Sorted by Nearest Distance)</p>
-        <div style="display:flex; flex-direction:column; gap:10px;" id="browse-homecare-list"></div>
-      `;
+      <label class="form-label" style="font-size:11px; margin-bottom:6px; display:block;">Prescription / Medical Report</label>
+      <div class="rx-upload ${bookingState.prescriptionFile ? 'has-file' : ''}" id="rx-upload-zone" onclick="mockUploadPrescription()">
+        ${bookingState.prescriptionFile
+          ? `<div style="font-size:18px;">📄</div>
+             <div class="rx-status">✓ ${bookingState.prescriptionFile}</div>
+             <p>Tap to change file</p>`
+          : `<div style="font-size:24px;">📋</div>
+             <div style="font-size:12px; font-weight:700; color:var(--primary);">Tap to upload</div>
+             <p>PDF, JPG, or PNG · max 10MB</p>`
+        }
+      </div>
+      ${currentPatient.prescription && currentPatient.prescription.text ? `
+      <div class="plan-card" style="margin-top:10px;">
+        <div class="plan-title">📋 Existing Prescription on File</div>
+        <div class="plan-text">${currentPatient.prescription.text.slice(0,120)}…</div>
+        <div style="font-size:10px; color:var(--text-light); margin-top:4px;">By ${currentPatient.prescription.doctor}</div>
+      </div>` : ''}
+    `;
+    footer.innerHTML = `<button class="btn-full" onclick="nextBookingStep()">Continue →</button>`;
 
-      renderFilteredHomecareProviders();
+  } else if (bookingStep === 2) {
+    const today = new Date();
+    const dates = [];
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      dates.push({ dayName: days[d.getDay()], date: d.getDate(), monthShort: d.toLocaleString('en',{month:'short'}), fullString: d.toLocaleDateString('en-GB') });
     }
 
-    function selectHomecareService(srvId) {
-      const srv = SERVICES_CATALOG.find(s => s.id === srvId);
-      if (!srv.supportsHome) {
-        showHydrotherapyCenterModal(srv);
-        return;
-      }
-      selectedHomecareServiceId = srvId;
-      renderHomecareServicesFlow(document.getElementById('patient-details-panel'));
-    }
-
-    function showHydrotherapyCenterModal(srv) {
-      const overlay = document.createElement('div');
-      overlay.className = 'custom-modal-overlay';
-      overlay.onclick = () => document.body.removeChild(overlay);
-      overlay.innerHTML = `
-        <div class="custom-modal-card" onclick="event.stopPropagation()" style="text-align:center;">
-          <div style="background:#fffbeb; color:#b45309; width:54px; height:54px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-bottom:12px;">
-            <span style="font-size:28px;">🏊‍♂️</span>
+    body.innerHTML = stepsHTML + `
+      <label class="form-label" style="font-size:11px; margin-bottom:8px; display:block;">Select Date</label>
+      <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:14px;" id="dates-row">
+        ${dates.map((d,i) => `
+          <div class="date-chip ${bookingState.selectedDate === d.fullString ? 'selected' : ''}" onclick="selectDate('${d.fullString}','${d.dayName}',this)">
+            <div class="dc-day">${d.dayName}</div>
+            <div class="dc-date">${d.date}</div>
+            <div class="dc-day">${d.monthShort}</div>
           </div>
-          <h3 style="font-size:16px; font-weight:800; color:var(--dark); margin-bottom:8px;">${srv.name} Notice</h3>
-          <p style="font-size:12px; color:var(--text-light); line-height:1.5; margin-bottom:16px;">
-            ${srv.name} requires specialized aquatic hydrotherapy facilities available <strong>exclusively at Ahilney Rehab Centers</strong>.
-          </p>
-          <button class="btn btn-primary" style="width:100%; height:38px; font-size:12px; font-weight:700; margin-bottom:8px;" onclick="document.body.removeChild(overlay); openServiceFlow('clinic');">
-            Switch to Rehab Center Reservation
-          </button>
-          <button class="btn btn-secondary" style="width:100%; height:34px; font-size:11px;" onclick="document.body.removeChild(overlay);">
-            Cancel & Return to Home Care
-          </button>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-    }
+        `).join('')}
+      </div>
 
-    function renderCenterServicesFlow(panel) {
-      panel.innerHTML = `
-        <h3 style="font-weight:800; color:var(--dark); margin-bottom:4px;">Ahilney Rehab Centers</h3>
-        <p style="font-size:11px; color:var(--text-light); margin-bottom:12px;">Book specialized clinical services including Hydrotherapy & Center Equipment.</p>
-        
-        <div style="background:var(--primary-light); padding:12px; border-radius:12px; border:1px solid var(--primary); margin-bottom:14px;">
-          <span style="font-weight:700; color:var(--primary); font-size:12px; display:block; margin-bottom:4px;">Center Services Catalog (All Available at Center)</span>
-          <div class="services-grid-list">
-            ${SERVICES_CATALOG.map(s => `
-              <div class="service-card-item selected" onclick="alert('Selected ${s.name} for Rehab Center reservation.')">
-                <div class="service-card-icon">${s.icon}</div>
-                <div>
-                  <div class="service-card-title">${s.name}</div>
-                  <span style="font-size:9px; color:var(--primary); font-weight:700;">Rehab Center</span>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
+      <label class="form-label" style="font-size:11px; margin-bottom:8px; display:block;">Select Time Slot</label>
+      <div id="slots-area" style="flex-wrap:wrap; display:flex;">
+        ${!bookingState.selectedDate
+          ? `<p style="font-size:11px; color:var(--text-light);">Please select a date above first.</p>`
+          : renderSlotChips()
+        }
+      </div>
+    `;
+    footer.innerHTML = `
+      <div style="display:flex; gap:8px;">
+        <button class="btn-full secondary" style="flex:1;" onclick="prevBookingStep()">← Back</button>
+        <button class="btn-full" style="flex:2;" onclick="nextBookingStep()">Continue →</button>
+      </div>`;
 
-        <button class="btn btn-secondary" onclick="panel.style.display='none'" style="width:100%;">Close</button>
-      `;
-    }
-
-    function onSubregionChange() {
-      const subName = document.getElementById('homecare-district-select').value;
-      const subObj = EGYPT_SUBREGIONS.find(s => s.name === subName);
-      if (subObj) {
-        patientCoords = { lat: subObj.lat, lng: subObj.lng };
-      }
-      renderFilteredHomecareProviders();
-    }
-
-    function detectLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            patientCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            locationPermissionState = 'granted';
-            alert(`Location granted! Lat: ${patientCoords.lat.toFixed(4)}, Lng: ${patientCoords.lng.toFixed(4)}. Specialists sorted by nearest distance.`);
-            renderHomecareServicesFlow(document.getElementById('patient-details-panel'));
-          },
-          (err) => {
-            locationPermissionState = 'denied';
-            alert("Location access denied or unavailable. You can manually select your subregion from the dropdown list.");
-            renderHomecareServicesFlow(document.getElementById('patient-details-panel'));
-          }
-        );
-      } else {
-        locationPermissionState = 'denied';
-        renderHomecareServicesFlow(document.getElementById('patient-details-panel'));
-      }
-    }
-
-    function renderFilteredHomecareProviders() {
-      const subVal = document.getElementById('homecare-district-select') ? document.getElementById('homecare-district-select').value : 'New Cairo';
-      const list = document.getElementById('browse-homecare-list');
-      if (!list) return;
-      list.innerHTML = '';
-      
-      let providers = getProviders().filter(p => p.status === 'active' && p.type === 'RS');
-      let filtered = providers.filter(p => p.regionsCovered.includes(subVal));
-
-      // Calculate Proximity Distance for Each RS & Sort Nearest First (Req 9)
-      filtered.forEach(p => {
-        const dist = calculateDistanceKm(patientCoords.lat, patientCoords.lng, p.lat || 30.02, p.lng || 31.49);
-        p.computedDistance = dist;
-      });
-
-      filtered.sort((a, b) => a.computedDistance - b.computedDistance);
-
-      if (filtered.length === 0) {
-        list.innerHTML = `<p style="font-size:11px; color:var(--text-light); text-align:center; padding:16px 0;">No active Rehab Specialists cover ${subVal} at the moment.</p>`;
-        return;
-      }
-
-      filtered.forEach(p => {
-        const item = document.createElement('div');
-        item.className = 'doctor-item-card';
-        item.onclick = () => {
-          const addr = document.getElementById('home-address').value;
-          if (!addr) {
-            alert("Please verify address details.");
-            return;
-          }
-          selectDoctorForBooking(p, 'Home Visit');
-        };
-        item.innerHTML = `
-          <div class="patient-img-placeholder" style="background:var(--light); font-weight:700; color:var(--primary);">${p.name.split(' ').map(n=>n[0]).join('')}</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700; color:var(--dark); margin:0; font-size:13px;">${p.name}</h4>
-            <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
-              <span class="badge badge-contract" style="font-size:9px;">Rehab Specialist</span>
-              <span class="distance-badge">📍 ${p.computedDistance} km away</span>
-            </div>
-            <p style="font-size:11px; color:var(--text-light); margin-top:4px;">Specialty: ${p.specialty}</p>
-          </div>
-          <strong style="color:var(--primary); font-size:13px;">${p.price}</strong>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    function detectLocation() {
-      alert("Mocking GPS coordinates: Lat: 30.0444, Lon: 31.2357. Coordinates saved!");
-    }
-
-    function filterClinicHubs() {
-      const subVal = document.getElementById('clinic-subregion-filter').value;
-      const list = document.getElementById('browse-centers-list');
-      list.innerHTML = '';
-      
-      const filtered = subVal === 'All' ? window.centerData : window.centerData.filter(c => c.subregion === subVal);
-      if (filtered.length === 0) {
-        list.innerHTML = `<p style="font-size:12px; color:var(--text-light); text-align:center;">No operational centers found in this subregion.</p>`;
-        return;
-      }
-
-      filtered.forEach(c => {
-        const item = document.createElement('div');
-        item.style.background = 'var(--white)';
-        item.style.padding = '12px';
-        item.style.borderRadius = '12px';
-        item.style.border = '1px solid var(--border)';
-        item.style.cursor = 'pointer';
-        item.onclick = () => selectCenterClinic(c);
-        item.innerHTML = `
-          <h4 style="font-weight:700; color:var(--dark); margin:0;">${c.name}</h4>
-          <p style="font-size:11px; color:var(--text-light); margin-top:4px; display:flex; align-items:center; gap:4px;">
-            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            ${c.address}
-          </p>
-          <div style="border-top:1px solid var(--border); padding-top:8px; margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; font-weight:700; color:var(--primary);">Book Doctor at Center</span>
-            <strong style="font-size:12px; color:var(--dark);">${c.price} avg</strong>
-          </div>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    function selectCenterClinic(center) {
-      const panel = document.getElementById('patient-details-panel');
-      const activeProviders = getProviders().filter(p => p.status === 'active');
-      panel.innerHTML = `
-        <h3 style="font-weight:800; color:var(--dark); margin-bottom:12px;">Doctors at ${center.name}</h3>
-        <p style="font-size:12px; color:var(--text-light); margin-bottom:15px;">Choose from practitioners assigned to this clinical facility.</p>
-        <div style="display:flex; flex-direction:column; gap:12px;" id="browse-center-docs"></div>
-      `;
-      const list = document.getElementById('browse-center-docs');
-      activeProviders.forEach(p => {
-        const item = document.createElement('div');
-        item.className = 'doctor-item-card';
-        item.onclick = () => selectDoctorForBooking(p, 'Clinic Visit');
-        item.innerHTML = `
-          <div class="patient-img-placeholder" style="background:var(--light); font-weight:700; color:var(--primary);">${p.name.split(' ').map(n=>n[0]).join('')}</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700; color:var(--dark); margin:0;">${p.name}</h4>
-            <span class="badge badge-active" style="font-size:9px; margin-top:2px;">${p.type}</span>
-            <p style="font-size:11px; color:var(--text-light); margin-top:4px;">Specialty: ${p.specialty}</p>
-          </div>
-          <strong style="color:var(--primary); font-size:13px;">${p.price}</strong>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    // Checkout and Slot Selection
-    // Checkout and Slot Selection
-    function selectDoctorForBooking(provider, sessionType) {
-      const panel = document.getElementById('patient-details-panel');
-      panel.innerHTML = '';
-      
-      window.selectedSlotTime = null;
-      window.selectedBookingDate = null;
-      window.selectedRSPackageSize = 1; 
-      window.selectedTreatmentPlanText = null;
-
-      // 1. Enforce Region Coverage Check for RS Home Visits
-      if (sessionType === 'Home Visit') {
-        const patientSubregion = document.getElementById('homecare-district-select') ? document.getElementById('homecare-district-select').value : 'New Cairo';
-        
-        if (!provider.regionsCovered.includes(patientSubregion)) {
-          panel.innerHTML = `
-            <div style="text-align:center; padding:24px 12px; font-family:var(--font);">
-              <div style="background:#fef2f2; color:#b91c1c; width:48px; height:48px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-bottom:12px;">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-              </div>
-              <h3 style="font-size:16px; font-weight:800; color:#991b1b; margin:0 0 8px 0;">Out of Service Area</h3>
-              <p style="font-size:12px; color:var(--text-light); line-height:1.4;">${provider.name} does not cover your subregion (${patientSubregion}). Please choose a Rehab Specialist covering your district.</p>
-              <button class="btn btn-secondary btn-sm" onclick="document.getElementById('patient-details-panel').style.display='none'" style="width:100%; margin-top:12px;">Back</button>
+  } else if (bookingStep === 3) {
+    const price = parseInt((bookingProvider.price || '400 EGP').replace(/\D/g,'')) || 400;
+    body.innerHTML = stepsHTML + `
+      <p style="font-size:12px; color:var(--text-light); margin-bottom:14px;">Choose a session package. Larger packages offer better value.</p>
+      <div class="package-options">
+        ${[
+          { size: 1, label: 'Single', saving: '' },
+          { size: 5, label: 'Standard', saving: 'Save 10%' },
+          { size: 10, label: 'Extended', saving: 'Save 20%' },
+        ].map(pkg => {
+          const total = pkg.size === 1 ? price : pkg.size === 5 ? Math.round(price * 5 * 0.9) : Math.round(price * 10 * 0.8);
+          return `
+            <div class="package-card ${bookingState.packageSize === pkg.size ? 'selected' : ''}" onclick="selectPackage(${pkg.size})">
+              <div class="pkg-sessions">${pkg.size}</div>
+              <div class="pkg-label">${pkg.label}</div>
+              <div class="pkg-price">${total} EGP</div>
+              ${pkg.saving ? `<div style="font-size:8px; background:#dcfce7; color:#15803d; padding:1px 5px; border-radius:6px; margin-top:3px; font-weight:700;">${pkg.saving}</div>` : ''}
             </div>
           `;
-          return;
-        }
-      }
+        }).join('')}
+      </div>
+      <div class="info-block" style="margin-top:14px;">
+        <div class="summary-row"><span>Provider</span><span>${bookingProvider.name}</span></div>
+        <div class="summary-row"><span>Service</span><span>${bookingProvider.specialty}</span></div>
+        <div class="summary-row"><span>Date & Time</span><span>${bookingState.selectedDateLabel || bookingState.selectedDate} ${bookingState.selectedSlot || ''}</span></div>
+        <div class="summary-row"><span>Sessions</span><span>${bookingState.packageSize}</span></div>
+      </div>
+    `;
+    footer.innerHTML = `
+      <div style="display:flex; gap:8px;">
+        <button class="btn-full secondary" style="flex:1;" onclick="prevBookingStep()">← Back</button>
+        <button class="btn-full" style="flex:2;" onclick="nextBookingStep()">Continue →</button>
+      </div>`;
 
-      // Generate next 5 dates:
-      const dates = [];
-      const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      
-      const tomorrow = new Date();
-      for (let i = 1; i <= 5; i++) {
-        const next = new Date(tomorrow);
-        next.setDate(tomorrow.getDate() + i);
-        const wday = daysOfWeek[next.getDay()];
-        const mname = months[next.getMonth()];
-        const dnum = next.getDate();
-        dates.push({
-          dayName: wday,
-          label: `${wday}, ${mname} ${dnum}`,
-          fullString: `${wday}, ${mname} ${dnum}`
-        });
-      }
+  } else if (bookingStep === 4) {
+    const price = parseInt((bookingProvider.price || '400 EGP').replace(/\D/g,'')) || 400;
+    const total = bookingState.packageSize === 1 ? price : bookingState.packageSize === 5 ? Math.round(price * 5 * 0.9) : Math.round(price * 10 * 0.8);
+    const walletOk = currentPatient.walletBalance >= total;
 
-      let rsAdditionalHtml = '';
-      if (sessionType === 'Home Visit') {
-        const plans = selectedPatient.treatmentPlans || [];
-        const planOptions = plans.map(p => `<option value="${p.id}">${p.doctorName} Plan (${p.date})</option>`).join('');
-
-        rsAdditionalHtml = `
-          <!-- Package Selection Block -->
-          <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-bottom:16px;">
-            <p style="font-weight:700; font-size:11px; color:var(--text-light); text-transform:uppercase; margin-bottom:8px;">Select Session Package</p>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--dark); cursor:pointer;">
-                <input type="radio" name="rs-package" value="3" checked onchange="updateRSPackageSize(3)" style="accent-color:var(--primary);">
-                <span>3 Sessions</span>
-              </label>
-              <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--dark); cursor:pointer;">
-                <input type="radio" name="rs-package" value="6" onchange="updateRSPackageSize(6)" style="accent-color:var(--primary);">
-                <span>6 Sessions</span>
-              </label>
-              <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--dark); cursor:pointer;">
-                <input type="radio" name="rs-package" value="9" onchange="updateRSPackageSize(9)" style="accent-color:var(--primary);">
-                <span>9 Sessions</span>
-              </label>
-            </div>
+    body.innerHTML = stepsHTML + `
+      <label class="form-label" style="font-size:11px; margin-bottom:8px; display:block;">Payment Method</label>
+      <div id="pay-options">
+        <div class="pay-option ${bookingState.paymentMethod === 'Online' ? 'selected' : ''}" onclick="selectPayment('Online')">
+          <div class="pay-option-icon">💳</div>
+          <div class="pay-option-text">
+            <h5>Ahilney Wallet</h5>
+            <p>Balance: ${currentPatient.walletBalance} EGP ${!walletOk ? '· <span style="color:#dc2626;">Insufficient</span>' : '· Sufficient'}</p>
           </div>
+          ${bookingState.paymentMethod === 'Online' ? '<div style="margin-left:auto; color:var(--primary); font-size:16px;">✓</div>' : ''}
+        </div>
+        <div class="pay-option ${bookingState.paymentMethod === 'Cash' ? 'selected' : ''}" onclick="selectPayment('Cash')">
+          <div class="pay-option-icon">💵</div>
+          <div class="pay-option-text">
+            <h5>Cash on Visit</h5>
+            <p>Pay directly to the specialist</p>
+          </div>
+          ${bookingState.paymentMethod === 'Cash' ? '<div style="margin-left:auto; color:var(--primary); font-size:16px;">✓</div>' : ''}
+        </div>
+      </div>
 
-          <!-- Treatment Plan Entry Options (Requirement 3 & 4) -->
-          <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-bottom:16px;">
-            <p style="font-weight:700; font-size:11px; color:var(--text-light); text-transform:uppercase; margin-bottom:6px;">Treatment Plan Option</p>
-            <p style="font-size:10px; color:var(--text-light); margin-bottom:10px;">Select an existing Ahilney Doctor plan or upload an external plan (Document upload is <strong>Optional</strong>).</p>
+      <div class="info-block" style="margin-top:14px;">
+        <h4>Order Summary</h4>
+        <div class="summary-row"><span>${bookingProvider.name}</span><span>${bookingProvider.specialty}</span></div>
+        <div class="summary-row"><span>${bookingState.packageSize} session${bookingState.packageSize > 1 ? 's' : ''} × ${price} EGP</span><span>${total} EGP</span></div>
+        <div class="summary-row"><span>Payment</span><span>${bookingState.paymentMethod === 'Online' ? 'Wallet Debit' : 'Cash on Visit'}</span></div>
+        <div class="summary-row total"><span>Total</span><span style="color:var(--primary);">${total} EGP</span></div>
+      </div>
+    `;
+    footer.innerHTML = `
+      <div style="display:flex; gap:8px;">
+        <button class="btn-full secondary" style="flex:1;" onclick="prevBookingStep()">← Back</button>
+        <button class="btn-full" style="flex:2;" onclick="confirmBooking(${total})">Confirm Booking</button>
+      </div>`;
+  }
+}
 
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              <!-- Option A: Reserve Online Consult with Ahilney Doctor -->
-              <div style="background:var(--white); padding:8px 10px; border-radius:8px; border:1px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size:11px; font-weight:700; color:var(--dark);">Option 1: Consult Ahilney Doctor</span>
-                  <button type="button" class="btn btn-secondary btn-sm" style="font-size:9px; padding:2px 8px;" onclick="openServiceFlow('consultation')">Reserve Doctor</button>
+function renderSlotChips() {
+  if (!bookingProvider || !bookingState.selectedDate) return '';
+  const today = new Date();
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  // Parse stored full string (DD/MM/YYYY)
+  const parts = bookingState.selectedDate.split('/');
+  const d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+  const dayName = days[d.getDay()];
+  const shifts = (bookingProvider.shifts || {})[dayName] || [];
+  const times = [];
+  shifts.forEach(sh => {
+    const start = parseTime12(sh.start);
+    const end = parseTime12(sh.end);
+    for (let t = start; t < end; t += bookingProvider.sessionDuration || 60) {
+      times.push(format12(t));
+    }
+  });
+  if (times.length === 0) return `<p style="font-size:11px; color:var(--text-light); width:100%;">No slots on this day. Pick another date.</p>`;
+  return times.map(t => `<div class="slot-chip ${bookingState.selectedSlot === t ? 'selected' : ''}" onclick="selectSlot('${t}',this)">${t}</div>`).join('');
+}
+
+function parseTime12(str) {
+  const m = str.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!m) return 0;
+  let h = parseInt(m[1]);
+  const min = parseInt(m[2]);
+  const ampm = m[3].toUpperCase();
+  if (ampm === 'PM' && h !== 12) h += 12;
+  if (ampm === 'AM' && h === 12) h = 0;
+  return h * 60 + min;
+}
+
+function format12(minutes) {
+  const h24 = Math.floor(minutes / 60) % 24;
+  const m = minutes % 60;
+  const ampm = h24 >= 12 ? 'PM' : 'AM';
+  const h = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
+  return `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function selectDate(fullStr, dayName, el) {
+  bookingState.selectedDate = fullStr;
+  bookingState.selectedDateLabel = `${dayName} ${fullStr}`;
+  bookingState.selectedSlot = null;
+  document.querySelectorAll('.date-chip').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('slots-area').innerHTML = renderSlotChips();
+}
+
+function selectSlot(time, el) {
+  bookingState.selectedSlot = time;
+  document.querySelectorAll('.slot-chip').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectPackage(size) {
+  bookingState.packageSize = size;
+  renderBookingStep();
+}
+
+function selectPayment(method) {
+  bookingState.paymentMethod = method;
+  renderBookingStep();
+}
+
+function mockUploadPrescription() {
+  const names = ['Dr_Gaber_Prescription.pdf', 'Medical_Report_2026.pdf', 'Referral_Letter.jpg'];
+  bookingState.prescriptionFile = names[Math.floor(Math.random() * names.length)];
+  renderBookingStep();
+}
+
+function nextBookingStep() {
+  if (bookingStep === 1) {
+    const district = document.getElementById('bk-district');
+    if (district) bookingState.district = district.value;
+  }
+  if (bookingStep === 2 && !bookingState.selectedDate) {
+    showToast('Please select a date first', 'error');
+    return;
+  }
+  if (bookingStep === 2 && !bookingState.selectedSlot) {
+    showToast('Please select a time slot', 'error');
+    return;
+  }
+  if (bookingStep < 4) { bookingStep++; renderBookingStep(); }
+}
+
+function prevBookingStep() {
+  if (bookingStep > 1) { bookingStep--; renderBookingStep(); }
+}
+
+function confirmBooking(total) {
+  if (bookingState.paymentMethod === 'Online' && currentPatient.walletBalance < total) {
+    showToast('Insufficient wallet balance. Use Cash on Visit.', 'error');
+    return;
+  }
+
+  const apts = getAppointments();
+  const newId = `APT-${Date.now().toString().slice(-4)}`;
+  const newApt = {
+    id: newId,
+    patientId: currentPatient.id,
+    providerId: bookingProvider.id,
+    time: `${bookingState.selectedSlot || '10:00 AM'} on ${bookingState.selectedDate || 'Today'}`,
+    type: 'Home Visit',
+    status: 'Pending RS Acceptance',
+    price: total,
+    packageSize: bookingState.packageSize,
+    completedSessions: 0,
+    serviceName: bookingState.serviceName || bookingProvider.specialty,
+    prescriptionFile: bookingState.prescriptionFile,
+    district: bookingState.district,
+    paymentMethod: bookingState.paymentMethod,
+  };
+  apts.unshift(newApt);
+  saveAppointments(apts);
+
+  // Deduct wallet if online
+  if (bookingState.paymentMethod === 'Online') {
+    const patients = getPatients();
+    const pat = patients.find(p => p.id === currentPatient.id);
+    if (pat) {
+      pat.walletBalance = (pat.walletBalance || 0) - total;
+      savePatients(patients);
+      currentPatient = pat;
+    }
+    const txns = getTransactions();
+    txns.unshift({ id: `TXN-P-${Date.now().toString().slice(-4)}`, date: new Date().toISOString().split('T')[0], type: 'Session Booking', entityName: `${bookingProvider.name} – Homecare`, amount: total, status: 'Completed', method: 'Wallet', patientId: currentPatient.id });
+    saveTransactions(txns);
+  }
+
+  // Notify provider
+  const notifs = getNotifications(bookingProvider.id);
+  notifs.unshift({ id: Date.now(), text: `New homecare request from ${currentPatient.name} for ${bookingState.selectedSlot || 'morning'} on ${bookingState.selectedDate}. District: ${bookingState.district}.`, time: 'Just now' });
+  saveNotifications(bookingProvider.id, notifs);
+
+  // Show confirmation
+  closeAllSheets();
+  showConfirmationScreen(newId);
+}
+
+function showConfirmationScreen(aptId) {
+  const main = document.getElementById('app-main');
+  main.innerHTML = `
+    <div style="flex:1; overflow-y:auto; padding:20px 16px 80px;">
+      <div class="confirm-screen">
+        <div class="confirm-icon">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:#15803d;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h3 style="font-size:18px; font-weight:800; color:var(--dark); margin-bottom:8px;">Booking Submitted!</h3>
+        <p style="font-size:12px; color:var(--text-light); margin-bottom:20px; line-height:1.6;">Your homecare session request has been sent to <strong>${bookingProvider.name}</strong>. You'll be notified once they confirm.</p>
+        <div style="background:var(--light); border-radius:12px; padding:12px 16px; width:100%; margin-bottom:20px; text-align:left;">
+          <div class="summary-row"><span>Booking ID</span><span style="font-family:monospace; font-size:11px;">${aptId}</span></div>
+          <div class="summary-row"><span>Provider</span><span>${bookingProvider.name}</span></div>
+          <div class="summary-row"><span>Date & Time</span><span>${bookingState.selectedDate} ${bookingState.selectedSlot || ''}</span></div>
+          <div class="summary-row"><span>District</span><span>${bookingState.district}</span></div>
+          <div class="summary-row"><span>Package</span><span>${bookingState.packageSize} session${bookingState.packageSize > 1 ? 's' : ''}</span></div>
+          <div class="summary-row"><span>Status</span><span style="color:#d97706;">⏳ Awaiting Confirmation</span></div>
+        </div>
+        <button class="btn-full" onclick="navigate('appointments')">View My Bookings</button>
+        <button class="btn-full secondary" style="margin-top:8px;" onclick="navigate('book')">Book Another Session</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('bottom-nav').style.display = 'flex';
+  document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-appointments').classList.add('active');
+  currentTab = 'appointments';
+}
+
+// ═══════════════════════════════════════════════════════
+//  APPOINTMENTS TAB
+// ═══════════════════════════════════════════════════════
+let aptFilter = 'all';
+
+function renderAppointments(main) {
+  const all = getAppointments().filter(a => a.patientId === currentPatient.id);
+  const filters = [
+    { id: 'all', label: 'All' },
+    { id: 'active', label: 'Upcoming' },
+    { id: 'finished', label: 'Completed' },
+    { id: 'pending', label: 'Awaiting' },
+  ];
+
+  let displayed = all;
+  if (aptFilter === 'active') displayed = all.filter(a => ['Confirmed', 'Upcoming'].includes(a.status));
+  if (aptFilter === 'finished') displayed = all.filter(a => a.status === 'Finished');
+  if (aptFilter === 'pending') displayed = all.filter(a => a.status === 'Pending RS Acceptance');
+
+  main.innerHTML = `
+    <header class="app-header" style="padding:14px 16px;">
+      <div style="font-size:15px; font-weight:800;">My Bookings</div>
+      <span style="font-size:12px; opacity:0.8;">${all.length} total</span>
+    </header>
+    <div class="app-body">
+      <div class="tab-pills">
+        ${filters.map(f => `<div class="tab-pill ${aptFilter === f.id ? 'active' : ''}" onclick="setAptFilter('${f.id}')">${f.label}</div>`).join('')}
+      </div>
+      ${displayed.length === 0 ? `
+        <div class="empty-state"><div class="empty-icon">📅</div><p>No bookings found.<br><a onclick="navigate('book')" style="color:var(--primary); font-weight:700; cursor:pointer;">Book a homecare session</a></p></div>
+      ` : displayed.map(a => renderAptFullCard(a)).join('')}
+    </div>
+  `;
+}
+
+function setAptFilter(filter) {
+  aptFilter = filter;
+  renderAppointments(document.getElementById('app-main'));
+}
+
+function renderAptFullCard(apt) {
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === apt.providerId);
+  const isHome = apt.type === 'Home Visit';
+  const provInitials = prov ? prov.name.replace('Dr. ','').split(' ').map(n=>n[0]).join('').slice(0,2) : '?';
+
+  let actionHTML = '';
+  if (apt.status === 'Finished' && !apt.rating) {
+    actionHTML = `<button class="btn-full" style="height:36px; font-size:12px; margin-top:8px;" onclick="openRatingSheet('${apt.id}')">⭐ Rate Your Session</button>`;
+  }
+  if (apt.status === 'Rejected') {
+    actionHTML = `<button class="btn-full secondary" style="height:36px; font-size:12px; margin-top:8px;" onclick="navigate('book')">🔄 Book Again</button>`;
+  }
+  if (apt.status === 'Finished' && apt.rating) {
+    const stars = '★'.repeat(apt.rating) + '☆'.repeat(5-apt.rating);
+    actionHTML = `<div class="rating-stars" style="margin-top:6px;">${stars} <span style="font-size:11px; color:var(--text-light); font-weight:600;">${apt.feedback ? `"${apt.feedback.slice(0,50)}…"` : ''}</span></div>`;
+  }
+
+  return `
+    <div class="apt-full-card">
+      <div class="apt-full-card-header">
+        <span class="apt-type-badge">${isHome ? '🏠 Home Visit' : '💻 Online'}</span>
+        ${getStatusPill(apt.status)}
+      </div>
+      <div class="apt-provider-row">
+        <div class="apt-provider-img">${provInitials}</div>
+        <div>
+          <div class="apt-provider-name">${prov ? prov.name : 'Provider'}</div>
+          <div class="apt-provider-spec">${apt.serviceName || (prov ? prov.specialty : '')}</div>
+        </div>
+      </div>
+      <div class="apt-meta-row">
+        <div class="apt-meta-chip">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          ${apt.time}
+        </div>
+        ${apt.district ? `<div class="apt-meta-chip">📍 ${apt.district}</div>` : ''}
+        ${apt.packageSize > 1 ? `<div class="apt-meta-chip">📦 ${apt.packageSize} sessions</div>` : ''}
+        <div class="apt-meta-chip" style="color:var(--primary);">💷 ${apt.price} EGP</div>
+      </div>
+      ${apt.paymentMethod === 'Cash' ? `<div style="background:#fef3c7; border-radius:8px; padding:6px 10px; font-size:10px; font-weight:700; color:#d97706; margin-top:4px;">💵 Cash on Visit – Pay when specialist arrives</div>` : ''}
+      ${actionHTML}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+//  RATING SHEET
+// ═══════════════════════════════════════════════════════
+function openRatingSheet(aptId) {
+  ratingAptId = aptId;
+  ratingStars = 0;
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === aptId);
+  const prov = getProviders().find(p => p.id === apt?.providerId);
+
+  document.getElementById('rating-sheet-body').innerHTML = `
+    <div style="text-align:center; margin-bottom:16px;">
+      <div style="font-size:32px; margin-bottom:8px;">⭐</div>
+      <p style="font-size:13px; color:var(--text); line-height:1.5;">How was your session with<br><strong>${prov ? prov.name : 'your specialist'}</strong>?</p>
+    </div>
+    <div class="star-picker" style="justify-content:center;" id="star-picker">
+      ${[1,2,3,4,5].map(i => `<span class="star-btn" id="star-${i}" onclick="setRatingStar(${i})">★</span>`).join('')}
+    </div>
+    <div class="form-group" style="margin-top:14px;">
+      <label class="form-label" style="font-size:11px;">Leave a comment (optional)</label>
+      <textarea class="form-control" id="rating-comment" style="min-height:70px; font-size:12px; resize:none;" placeholder="Share your experience…"></textarea>
+    </div>
+  `;
+  openSheet('rating-sheet');
+}
+
+function setRatingStar(n) {
+  ratingStars = n;
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById(`star-${i}`);
+    if (el) el.classList.toggle('lit', i <= n);
+  }
+}
+
+function submitRatingFlow() {
+  if (!ratingStars) { showToast('Please select a star rating', 'error'); return; }
+  const comment = document.getElementById('rating-comment')?.value || '';
+  submitRating(ratingAptId, ratingStars, comment);
+
+  const patients = getPatients();
+  currentPatient = patients.find(p => p.id === currentPatient.id) || currentPatient;
+
+  closeAllSheets();
+  showToast('Review submitted! Thank you.', 'success');
+  setTimeout(() => renderAppointments(document.getElementById('app-main')), 300);
+}
+
+// ═══════════════════════════════════════════════════════
+//  WALLET TAB
+// ═══════════════════════════════════════════════════════
+function renderWallet(main) {
+  const patients = getPatients();
+  currentPatient = patients.find(p => p.id === currentPatient.id) || currentPatient;
+
+  const allTxns = getTransactions();
+  const myTxns = allTxns.filter(t => !t.patientId || t.patientId === currentPatient.id);
+  const pendingCash = getAppointments().filter(a => a.patientId === currentPatient.id && a.paymentMethod === 'Cash' && !['Finished','Rejected'].includes(a.status));
+
+  main.innerHTML = `
+    <header class="app-header" style="padding:14px 16px;">
+      <div style="font-size:15px; font-weight:800;">My Wallet</div>
+    </header>
+    <div class="app-body">
+      <div class="wallet-hero">
+        <div class="wallet-label">Available Balance</div>
+        <div class="wallet-amount">${currentPatient.walletBalance.toLocaleString()} EGP</div>
+        <div class="wallet-actions">
+          <div class="wallet-action-btn" onclick="mockTopUp()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+            Top Up
+          </div>
+        </div>
+      </div>
+
+      ${pendingCash.length > 0 ? `
+      <div class="info-block" style="border:1px solid #fde68a; background:#fffbeb;">
+        <h4 style="color:#d97706;">⏳ Pending Cash Payments</h4>
+        ${pendingCash.map(a => {
+          const prov = getProviders().find(p => p.id === a.providerId);
+          return `<div class="info-row"><span>${prov ? prov.name : a.id}</span><span style="color:#d97706; font-weight:700;">${a.price} EGP – Cash</span></div>`;
+        }).join('')}
+      </div>` : ''}
+
+      <div class="section-heading">Transaction History</div>
+      <div class="info-block">
+        ${myTxns.length === 0 ? `<p style="font-size:12px; color:var(--text-light); text-align:center; padding:16px 0;">No transactions yet</p>` :
+          myTxns.map(t => {
+            const isDebit = ['Session Booking', 'Debit'].includes(t.type);
+            const isPending = t.status !== 'Completed';
+            const cls = isPending ? 'pending' : isDebit ? 'debit' : 'credit';
+            const icon = isDebit ? '💸' : '💰';
+            return `
+              <div class="txn-item">
+                <div class="txn-icon ${cls}">${icon}</div>
+                <div class="txn-info">
+                  <div class="txn-name">${t.entityName || t.type}</div>
+                  <div class="txn-date">${t.date} · ${t.method}</div>
                 </div>
-                <span style="font-size:10px; color:var(--text-light); display:block; margin-top:2px;">Get an official Ahilney doctor plan online.</span>
+                <div class="txn-amount ${cls}">${isDebit ? '-' : '+'}${t.amount} EGP</div>
               </div>
-
-              <!-- Option B: Upload External Plan (Optional) -->
-              <div style="background:var(--white); padding:8px 10px; border-radius:8px; border:1px solid var(--border);">
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <input type="radio" name="plan-source" id="plan-external" value="external" checked onchange="togglePlanSource('external')" style="accent-color:var(--primary);">
-                  <strong style="font-size:11px; color:var(--dark);">Option 2: External Doctor Plan (Optional)</strong>
-                </div>
-                <div id="external-upload-block" style="margin-top:6px;">
-                  <button type="button" class="btn btn-secondary btn-sm" style="font-size:10px; height:26px; width:100%;" onclick="simulateExternalPlanUpload()">Simulate Upload External PDF/Image</button>
-                  <span id="external-file-status" style="font-size:10px; font-weight:700; color:var(--primary); display:block; margin-top:4px; text-align:center;">Optional external document attached</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Mandatory T&C Liability Waiver Notice Box (Requirement 4) -->
-          <div class="tc-notice-box">
-            <strong>⚠️ Patient Responsibility Waiver:</strong>
-            <p style="margin-top:4px; font-size:10px;">By proceeding, you agree that you are solely responsible for the validity of any uploaded treatment plan. No refunds will be issued if the provided external plan is incorrect or unsuited.</p>
-            <label class="tc-checkbox-group">
-              <input type="checkbox" id="tc-accept-checkbox" onchange="toggleTcAcceptance(this.checked)">
-              <span style="font-size:10px; font-weight:700; color:var(--dark);">I accept the Terms & Conditions and liability policy</span>
-            </label>
-          </div>
-        `;
-      }
-
-      const rawPriceInt = parseInt(provider.price.replace(' EGP', ''));
-
-      panel.innerHTML = `
-        <h3 style="font-weight:800; color:var(--dark); margin-bottom:12px;">Book Appointment</h3>
-        
-        <div class="doctor-item-card" style="margin-bottom:16px;">
-          <div class="patient-img-placeholder" style="background:var(--light); font-weight:700; color:var(--primary);">${provider.name.split(' ').map(n=>n[0]).join('')}</div>
-          <div style="flex:1;">
-            <h4 style="font-weight:700; color:var(--dark); margin:0;">${provider.name}</h4>
-            <span class="badge ${sessionType.includes('Online') ? 'badge-interview' : 'badge-contract'}" style="font-size:9px; margin-top:2px;">${sessionType}</span>
-          </div>
-          <span style="font-size:12px; font-weight:700; color:var(--primary);">${provider.price} / Slot</span>
-        </div>
-
-        ${rsAdditionalHtml}
-
-        <p style="font-weight:700; font-size:11px; color:var(--text-light); margin-bottom:6px; text-transform:uppercase;">1. SELECT DATE</p>
-        <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:12px;" id="checkout-dates-grid">
-          <!-- Populated -->
-        </div>
-
-        <p style="font-weight:700; font-size:11px; color:var(--text-light); margin-bottom:6px; text-transform:uppercase;">2. SELECT TIME SLOT</p>
-        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px;" id="checkout-slots-grid">
-          <p style="font-size:10px; color:var(--text-light);">Please select a date first.</p>
-        </div>
-
-        <div id="checkout-summary-area" style="display:none; border-top:1px solid var(--border); padding-top:12px;">
-          <h4 style="font-weight:700; font-size:12px; color:var(--dark); margin-bottom:8px;">Billing Summary</h4>
-          <div class="checkout-row" style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:6px;">
-            <span>Booking Total</span>
-            <strong id="checkout-total-price">${provider.price}</strong>
-          </div>
-          <div class="checkout-row" style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:12px; align-items:center;">
-            <span>Payment Options</span>
-            <select class="form-control" style="width:130px; height:28px; font-size:11px; padding:2px;" id="checkout-pay-method">
-              <option value="Online">Online Payout (Wallet)</option>
-              ${sessionType !== 'Online Consultation' ? `<option value="Cash">Cash on Visit</option>` : ''}
-            </select>
-          </div>
-          
-          <button class="btn btn-primary" id="confirm-booking-btn" ${sessionType === 'Home Visit' ? 'disabled style="opacity:0.5; cursor:not-allowed; width:100%; height:38px; font-weight:700; font-size:12px;"' : 'style="width:100%; height:38px; font-weight:700; font-size:12px;"'} onclick="completeBookingTransaction('${provider.id}', '${sessionType}', ${rawPriceInt})">Confirm Booking & Pay</button>
-        </div>
-      `;
-
-      // Render dates row
-      const datesRow = document.getElementById('checkout-dates-grid');
-      datesRow.innerHTML = '';
-      dates.forEach(d => {
-        const item = document.createElement('div');
-        item.style.padding = '8px';
-        item.style.borderRadius = '8px';
-        item.style.border = '1px solid var(--border)';
-        item.style.background = 'var(--white)';
-        item.style.fontSize = '10px';
-        item.style.textAlign = 'center';
-        item.style.cursor = 'pointer';
-        item.style.minWidth = '75px';
-        item.innerHTML = `
-          <strong>${d.dayName}</strong>
-          <div style="font-size:8px; color:var(--text-light); margin-top:2px;">${d.label.split(', ')[1]}</div>
-        `;
-        item.onclick = () => {
-          datesRow.childNodes.forEach(n => {
-            if (n.style) {
-              n.style.background = 'var(--white)';
-              n.style.borderColor = 'var(--border)';
-            }
-          });
-          item.style.background = 'var(--primary-light)';
-          item.style.borderColor = 'var(--primary)';
-          window.selectedBookingDate = d.fullString;
-          renderBookingSlotsForDate(provider, d.dayName);
-        };
-        datesRow.appendChild(item);
-      });
-      
-      if (sessionType === 'Home Visit') {
-        updateRSPackageSize(3);
-      } else {
-        window.selectedRSPackageSize = 1;
-      }
-    }
-
-    function toggleTcAcceptance(accepted) {
-      const btn = document.getElementById('confirm-booking-btn');
-      if (!btn) return;
-      if (accepted) {
-        btn.removeAttribute('disabled');
-        btn.style.opacity = '1';
-        btn.style.cursor = 'pointer';
-      } else {
-        btn.setAttribute('disabled', 'true');
-        btn.style.opacity = '0.5';
-        btn.style.cursor = 'not-allowed';
-      }
-    }
-
-    function updateRSPackageSize(size) {
-      window.selectedRSPackageSize = parseInt(size);
-      
-      const confirmBtn = document.getElementById('confirm-booking-btn');
-      if (confirmBtn) {
-        const onclickAttr = confirmBtn.getAttribute('onclick');
-        const match = onclickAttr.match(/,\s*(\d+)\s*\)/);
-        const basePrice = match ? parseInt(match[1]) : 400;
-        const rawTotal = basePrice * size;
-        
-        document.getElementById('checkout-total-price').innerText = `${rawTotal} EGP (Package of ${size})`;
-      }
-    }
-
-    function togglePlanSource(source) {
-      const uploadBlock = document.getElementById('external-upload-block');
-      if (uploadBlock) uploadBlock.style.display = 'block';
-      const label = document.getElementById('external-file-status');
-      window.selectedTreatmentPlanText = label ? label.innerText : 'Optional External Document Attached';
-    }
-
-    function updateSelectedTreatmentPlanText(planId) {
-      if (!planId) {
-        window.selectedTreatmentPlanText = 'Optional External Plan';
-        return;
-      }
-      const plans = selectedPatient.treatmentPlans || [];
-      const plan = plans.find(p => p.id === planId);
-      window.selectedTreatmentPlanText = plan ? `Ahilney Plan: ${plan.text}` : 'Optional External Plan';
-    }
-
-    function simulateExternalPlanUpload() {
-      const label = document.getElementById('external-file-status');
-      label.innerText = 'Uploaded: Dr_Gaber_Prescription.pdf ✓';
-      window.selectedTreatmentPlanText = 'External Upload: Gaber Prescription PDF';
-      alert('Mock PDF Prescription uploaded successfully!');
-    }
-
-    function renderBookingSlotsForDate(provider, dayName) {
-      const grid = document.getElementById('checkout-slots-grid');
-      grid.innerHTML = '';
-      
-      const slots = generateSlotsForDay(provider, dayName);
-      if (slots.length === 0) {
-        grid.innerHTML = `<p style="font-size:10px; color:var(--text-light); width:100%; text-align:center;">No work shifts configured on this weekday.</p>`;
-        return;
-      }
-
-      slots.forEach(t => {
-        const item = document.createElement('div');
-        item.style.padding = '6px 10px';
-        item.style.borderRadius = '16px';
-        item.style.border = '1px solid var(--border)';
-        item.style.background = 'var(--white)';
-        item.style.fontSize = '11px';
-        item.style.cursor = 'pointer';
-        item.innerText = t;
-        item.onclick = () => {
-          grid.childNodes.forEach(n => {
-            if (n.style) {
-              n.style.background = 'var(--white)';
-              n.style.borderColor = 'var(--border)';
-            }
-          });
-          item.style.background = 'var(--primary-light)';
-          item.style.borderColor = 'var(--primary)';
-          window.selectedSlotTime = t;
-          document.getElementById('checkout-summary-area').style.display = 'block';
-        };
-        grid.appendChild(item);
-      });
-    }
-
-    function generateSlotsForDay(provider, dayName) {
-      const dayShifts = provider.shifts[dayName] || [];
-      const slots = [];
-      const duration = provider.sessionDuration || 45;
-
-      function generateBlock(startStr, endStr) {
-        function parseTime(tStr) {
-          const parts = tStr.split(' ');
-          const hm = parts[0].split(':');
-          let hours = parseInt(hm[0]);
-          const minutes = parseInt(hm[1]);
-          const ampm = parts[1];
-          if (ampm === 'PM' && hours !== 12) hours += 12;
-          if (ampm === 'AM' && hours === 12) hours = 0;
-          return hours * 60 + minutes;
+            `;
+          }).join('')
         }
-
-        function formatTime(mins) {
-          let hours = Math.floor(mins / 60);
-          let m = mins % 60;
-          let ampm = 'AM';
-          if (hours >= 12) {
-            ampm = 'PM';
-            if (hours > 12) hours -= 12;
-          }
-          if (hours === 0) hours = 12;
-          return `${String(hours).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
-        }
-
-        const startMins = parseTime(startStr);
-        const endMins = parseTime(endStr);
-        let curr = startMins;
-
-        while (curr + duration <= endMins) {
-          slots.push(formatTime(curr));
-          curr += duration;
-        }
-      }
-
-      if (Array.isArray(dayShifts)) {
-        dayShifts.forEach(shift => {
-          if (shift && shift.start && shift.end) {
-            generateBlock(shift.start, shift.end);
-          }
-        });
-      } else {
-        if (dayShifts.morning && dayShifts.morning.enabled) {
-          generateBlock(dayShifts.morning.start, dayShifts.morning.end);
-        }
-        if (dayShifts.evening && dayShifts.evening.enabled) {
-          generateBlock(dayShifts.evening.start, dayShifts.evening.end);
-        }
-      }
-
-      return slots;
-    }
-
-    function completeBookingTransaction(provId, sessionType, basePrice) {
-      if (!window.selectedBookingDate || !window.selectedSlotTime) {
-        alert("Please select a date and time slot.");
-        return;
-      }
-
-      const size = window.selectedRSPackageSize || 1;
-      const totalPrice = basePrice * size;
-      const payMethod = document.getElementById('checkout-pay-method').value;
-
-      if (payMethod === 'Online' && selectedPatient.walletBalance < totalPrice) {
-        alert("Insufficient wallet balance. Please add funds under the Profile tab.");
-        return;
-      }
-
-      const allApts = getAppointments();
-      const newId = `APT-${String(allApts.length + 101).padStart(3, '0')}`;
-      
-      const appointmentLabel = size > 1 ? `Home Visit (${size} Sessions Package)` : sessionType;
-      const initialStatus = sessionType === 'Home Visit' ? 'Pending RS Acceptance' : 'Confirmed';
-
-      allApts.push({
-        id: newId,
-        patientId: selectedPatient.id,
-        providerId: provId,
-        time: `${window.selectedSlotTime} on ${window.selectedBookingDate}`,
-        type: appointmentLabel,
-        status: initialStatus,
-        price: totalPrice,
-        packageSize: size,
-        completedSessions: 0,
-        treatmentPlanText: window.selectedTreatmentPlanText || 'Optional External Plan'
-      });
-      saveAppointments(allApts);
-
-      if (payMethod === 'Online') {
-        const patients = getPatients();
-        const p = patients.find(item => item.id === selectedPatient.id);
-        p.walletBalance = Math.max(0, p.walletBalance - totalPrice);
-        savePatients(patients);
-        selectedPatient = p;
-
-        const txns = getTransactions();
-        txns.unshift({
-          id: `TXN-${String(txns.length + 1).padStart(3, '0')}`,
-          date: new Date().toISOString().split('T')[0],
-          type: "Deposit",
-          entityName: selectedPatient.name,
-          amount: totalPrice,
-          status: "Completed",
-          method: "Online"
-        });
-        saveTransactions(txns);
-      }
-
-      // Add push notification to provider simulator
-      const notifs = getNotifications(provId);
-      notifs.unshift({
-        id: Date.now(),
-        text: `New Booking: Patient ${selectedPatient.name} booked a ${appointmentLabel} session.`,
-        time: "Just Now"
-      });
-      saveNotifications(provId, notifs);
-
-      alert("Appointment booked successfully!");
-      document.getElementById('patient-details-panel').style.display = 'none';
-      setMobileTab('appointments');
-    }
-
-    // 3. Appointments tab
-    function renderAppointmentsTab() {
-      const appBody = document.getElementById('app-body-content');
-      
-      const apts = getAppointments().filter(a => a.patientId === selectedPatient.id);
-      
-      const container = document.createElement('div');
-      container.style.padding = '12px';
-      container.innerHTML = `
-        <h4 style="font-weight:800; font-size:13px; color:var(--dark); margin-bottom:12px;">Your Bookings Checklist</h4>
-        <div style="display:flex; flex-direction:column; gap:12px;" id="patient-bookings-list">
-          ${apts.length === 0 ? `<p style="font-size:12px; color:var(--text-light); text-align:center; padding:30px 0;">No appointments found.</p>` : ''}
-        </div>
-      `;
-      appBody.appendChild(container);
-
-      const listEl = document.getElementById('patient-bookings-list');
-      apts.forEach(a => {
-        const providers = getProviders();
-        const prov = providers.find(p => p.id === a.providerId);
-        const card = document.createElement('div');
-        card.className = 'mobile-card';
-        card.style.cursor = 'pointer';
-        card.onclick = () => openBookingDetailPanel(a);
-
-        const isPkg = a.packageSize && a.packageSize > 1;
-        const progressHtml = isPkg ? `
-          <div style="margin-bottom:6px;">
-            <span class="badge" style="font-size:9px; background:rgba(76, 175, 80, 0.1); color:var(--primary); font-weight:700; border:1px solid rgba(76, 175, 80, 0.2);">
-              Session Progress: ${a.completedSessions || 0} of ${a.packageSize} Completed
-            </span>
-          </div>
-        ` : '';
-
-        card.innerHTML = `
-          <div class="mobile-card-header">
-            <span class="badge ${a.type.includes('Online') ? 'badge-interview' : a.type.includes('Home') ? 'badge-contract' : 'badge-active'}">${a.type}</span>
-            <span style="font-size:11px; font-weight:700; color:var(--primary);">${a.time}</span>
-          </div>
-          <div style="margin:8px 0; font-weight:600; color:var(--dark); font-size:13px;">
-            ${prov ? prov.name : 'Clinical Specialist'}
-          </div>
-          ${progressHtml}
-          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:8px; margin-top:8px; font-size:11px;">
-            <span style="color:var(--text-light);">Status: <strong>${a.status}</strong></span>
-            <span style="color:var(--primary); font-weight:700;">View Summary / Details</span>
-          </div>
-        `;
-        listEl.appendChild(card);
-      });
-    }
-
-    function isWithin24Hours(timeStr) {
-      if (!timeStr) return false;
-      if (timeStr.includes("Today")) return true;
-      if (timeStr.includes("Tomorrow")) return true;
-      
-      try {
-        if (timeStr.includes("on ")) {
-          const parts = timeStr.split(" on ");
-          const timePart = parts[0]; 
-          const datePart = parts[1]; 
-          
-          const currentYear = new Date().getFullYear();
-          const dateClean = datePart.split(", ")[1] || datePart; 
-          const dateToParse = `${dateClean} ${currentYear} ${timePart}`;
-          const parsedDate = new Date(Date.parse(dateToParse));
-          
-          if (!isNaN(parsedDate.getTime())) {
-            const diffMs = parsedDate.getTime() - Date.now();
-            const diffHours = diffMs / (1000 * 60 * 60);
-            return diffHours >= 0 && diffHours < 24;
-          }
-        }
-      } catch (err) {
-        console.error(err);
-      }
-      return false;
-    }
-
-    function openBookingDetailPanel(apt) {
-      const panel = document.getElementById('patient-details-panel');
-      panel.style.display = 'block';
-
-      const providers = getProviders();
-      const prov = providers.find(p => p.id === apt.providerId);
-
-      let actionSection = '';
-      if (apt.status === 'Upcoming') {
-        const within24 = isWithin24Hours(apt.time);
-        actionSection = `
-          <div style="display:flex; flex-direction:column; gap:8px; margin-top:20px; width:100%;">
-            <div style="display:flex; gap:10px; width:100%;">
-              <button class="btn btn-danger btn-sm" style="flex:1;" ${within24 ? 'disabled style="opacity:0.6; cursor:not-allowed;"' : ''} onclick="cancelBooking('${apt.id}')">Cancel Appointment</button>
-              <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="simulateSessionComplete('${apt.id}')">Start Consultation</button>
-            </div>
-            ${within24 ? `<p style="font-size:10px; color:var(--danger); text-align:center; font-weight:700; margin:0;">⚠️ Cancellations must be made at least 24 hours prior to appointment start time.</p>` : ''}
-          </div>
-        `;
-      }
-
-      let ratingActionHtml = '';
-      if (apt.status === 'Finished') {
-        if (apt.rating) {
-           ratingActionHtml = `
-             <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-top:15px;">
-               <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700; display:block;">Your Rating</span>
-               <div style="margin-top:4px; font-size:16px; color:#fbbf24;">${'★'.repeat(apt.rating)}${'☆'.repeat(5-apt.rating)}</div>
-               <div style="margin-top:4px; font-size:12px; font-style:italic;">"${apt.feedback || ''}"</div>
-             </div>
-           `;
-        } else {
-           ratingActionHtml = `
-             <div style="margin-top:15px;">
-               <button class="btn btn-primary btn-sm" style="width:100%; background:#fbbf24; border-color:#f59e0b; color:var(--dark);" onclick="openRatingModal('${apt.id}')">⭐ Leave Rating & Feedback</button>
-             </div>
-           `;
-        }
-      }
-
-      // Check if session summary exists
-      const summaries = getSummaries();
-      const s = summaries.find(item => item.appointmentId === apt.id && item.status === 'Approved');
-      let clinicalPlanHtml = '';
-      if (s) {
-        clinicalPlanHtml = `
-          <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-top:15px;">
-            <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700; display:block;">Clinical Panel Verified Summary</span>
-            <div style="margin-top:6px; font-size:12px;"><strong>Diagnosis:</strong> ${s.diagnosis}</div>
-            <div style="margin-top:4px; font-size:12px; color:var(--primary);"><strong>Treatment Plan:</strong> ${s.treatmentPlan}</div>
-          </div>
-        `;
-      } else if (apt.status === 'Awaiting Audit') {
-        clinicalPlanHtml = `
-          <div style="background:var(--light); padding:12px; border-radius:10px; border:1px dashed var(--border); margin-top:15px; text-align:center; color:var(--text-light); font-size:12px;">
-            Clinical summary submitted by practitioner. Awaiting medical panel verification.
-          </div>
-        `;
-      }
-
-      panel.innerHTML = `
-        <h3 style="font-weight:800; color:var(--dark); margin-bottom:15px;">Booking Details</h3>
-        <div class="doctor-item-card" style="margin-bottom:15px;">
-          <div class="patient-img-placeholder" style="background:var(--light); font-weight:700; color:var(--primary);">${prov ? prov.name.split(' ').map(n=>n[0]).join('') : ''}</div>
-          <div>
-            <h4 style="font-weight:700; color:var(--dark); margin:0;">${prov ? prov.name : 'Practitioner'}</h4>
-            <span class="badge badge-active" style="font-size:9px; margin-top:2px;">${apt.type}</span>
-          </div>
-        </div>
-
-        <div class="checkout-row"><span>Scheduled Time</span><strong>${apt.time}</strong></div>
-        <div class="checkout-row"><span>Billing Fee</span><strong>${apt.price} EGP</strong></div>
-        <div class="checkout-row"><span>Status</span><strong>${apt.status}</strong></div>
-        ${apt.packageSize && apt.packageSize > 1 ? `<div class="checkout-row"><span>Session Progress</span><strong>${apt.completedSessions || 0} of ${apt.packageSize} Sessions Completed</strong></div>` : ''}
-
-        ${clinicalPlanHtml}
-        ${actionSection}
-        ${ratingActionHtml}
-      `;
-    }
-
-    function cancelBooking(aptId) {
-      if (!confirm("Are you sure you want to cancel this booking?")) return;
-
-      const appointments = getAppointments();
-      const apt = appointments.find(a => a.id === aptId);
-      if (!apt) return;
-
-      apt.status = 'Cancelled';
-      saveAppointments(appointments);
-
-      // Refund the wallet
-      const patients = getPatients();
-      const p = patients.find(item => item.id === selectedPatient.id);
-      p.walletBalance = (p.walletBalance || 0) + apt.price;
-      savePatients(patients);
-
-      // Add payout refund transaction
-      const txns = getTransactions();
-      txns.unshift({
-        id: `TXN-${String(txns.length + 1).padStart(3, '0')}`,
-        date: new Date().toISOString().split('T')[0],
-        type: "Payout", // refunded payout
-        entityName: selectedPatient.name,
-        amount: apt.price,
-        status: "Completed",
-        method: "Online"
-      });
-      saveTransactions(txns);
-
-      // Add push notification to provider
-      const notifs = getNotifications(apt.providerId);
-      notifs.unshift({
-        id: Date.now(),
-        text: `Booking Cancelled: Patient ${selectedPatient.name} cancelled their slot. Fee refunded.`,
-        time: "Just Now"
-      });
-      saveNotifications(apt.providerId, notifs);
-
-      alert("Appointment cancelled! Consultation fee refunded to your wallet.");
-      document.getElementById('patient-details-panel').style.display = 'none';
-      renderScreenContent();
-    }
-
-    function simulateSessionComplete(aptId) {
-      alert("Simulating patient joining session. Connecting securely...");
-      const appointments = getAppointments();
-      const apt = appointments.find(a => a.id === aptId);
-      if (apt) {
-        apt.status = "Need Summary"; // triggers summary form requirement in provider app
-        saveAppointments(appointments);
-      }
-      alert("Video Consultation finished. Doctor is now compiling session summary.");
-      document.getElementById('patient-details-panel').style.display = 'none';
-      renderScreenContent();
-    }
-
-    function openRatingModal(aptId) {
-      const apts = getAppointments();
-      const apt = apts.find(a => a.id === aptId);
-      if (!apt) return;
-      
-      const provs = getProviders();
-      const prov = provs.find(p => p.id === apt.providerId);
-      
-      const ratingStr = prompt(`Leave a rating (1 to 5) for ${prov ? prov.name : 'your practitioner'}:`, "5");
-      if (!ratingStr) return;
-      
-      const ratingVal = parseInt(ratingStr);
-      if (isNaN(ratingVal) || ratingVal < 1 || ratingVal > 5) {
-        alert("Please enter a valid number between 1 and 5.");
-        return;
-      }
-      
-      const feedbackStr = prompt("Leave a brief review or feedback comment:", "Great session, very helpful.");
-      
-      if (submitRating(aptId, ratingVal, feedbackStr || "")) {
-        alert("Thank you! Your rating and feedback have been submitted.");
-        openBookingDetailPanel(apt); // Refresh details panel
-      }
-    }
-
-    // 4. Profile and case file tab
-    function renderProfileTab() {
-      const appBody = document.getElementById('app-body-content');
-      
-      const container = document.createElement('div');
-      container.style.padding = '12px';
-      container.innerHTML = `
-        <!-- Wallet Balance Card -->
-        <div style="background:var(--primary); color:white; border-radius:15px; padding:20px; margin-bottom:20px; box-shadow:var(--shadow-sm);">
-          <span style="font-size:11px; opacity:0.8; text-transform:uppercase; font-weight:700;">Patient Wallet Balance</span>
-          <h2 style="font-size:32px; font-weight:800; margin:5px 0 0 0;">${selectedPatient.walletBalance} EGP</h2>
-          <div style="display:flex; gap:10px; margin-top:15px;">
-            <button class="btn btn-secondary btn-sm" style="flex:1; border:none; background:white; color:var(--primary);" onclick="addWalletFunds()">+ Add Funds</button>
-            <button class="btn btn-secondary btn-sm" style="flex:1; border:none; background:rgba(255,255,255,0.2); color:white;" onclick="requestPatientWithdrawal()">Withdraw</button>
-          </div>
-        </div>
-
-        <h4 style="font-weight:800; font-size:13px; color:var(--dark); margin-bottom:12px;">Update Case Records</h4>
-        
-<!-- NEW V1 SCOPE: 3-Section Medical Records -->
-<div class="medical-records-v1">
-    <div style="background:var(--white); padding:12px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border);">
-        <h4 style="font-size:14px; margin-bottom:8px; color:var(--primary);">Section A: Patient Information</h4>
-        <p style="font-size:11px; color:var(--text-light); margin-bottom:8px;">Describe your condition and symptoms.</p>
-        <form id="form-case-records"
- onsubmit="submitCaseRecordsForm(event)" style="display:flex; flex-direction:column; gap:10px;">
-          <div class="form-group">
-            <label class="form-label" style="font-size:11px;">Chief Medical Complaint</label>
-            <textarea class="form-control" id="case-history" required rows="3" style="resize:none; padding:8px; font-size:12px;"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary btn-sm" style="width:100%;">Update Records</button>
+      </div>
     </div>
-    
-    <div style="background:var(--white); padding:12px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border);">
-        <h4 style="font-size:14px; margin-bottom:8px; color:var(--primary);">Section B: Medical Documents</h4>
-        <p style="font-size:11px; color:var(--text-light); margin-bottom:8px;">Upload medical reports, radiology, lab results. Must be approved by Ahilney Operations.</p>
-        <input type="file" class="form-control" style="font-size:12px; margin-bottom:8px;">
-        <button class="btn btn-secondary" style="width:100%; font-size:12px;">Upload Document</button>
-        <div style="margin-top:8px; font-size:11px; color:#b45309; background:#fef3c7; padding:4px; border-radius:4px; text-align:center;">Status: Pending Review</div>
+  `;
+}
+
+function mockTopUp() {
+  const amounts = [200, 500, 1000];
+  const amt = amounts[Math.floor(Math.random() * amounts.length)];
+  const patients = getPatients();
+  const pat = patients.find(p => p.id === currentPatient.id);
+  if (pat) {
+    pat.walletBalance = (pat.walletBalance || 0) + amt;
+    savePatients(patients);
+    currentPatient = pat;
+    const txns = getTransactions();
+    txns.unshift({ id: `TXN-TU-${Date.now().toString().slice(-4)}`, date: new Date().toISOString().split('T')[0], type: 'Top Up', entityName: `Wallet Top-Up (Mock)`, amount: amt, status: 'Completed', method: 'Card', patientId: currentPatient.id });
+    saveTransactions(txns);
+    showToast(`${amt} EGP added to your wallet!`, 'success');
+    renderWallet(document.getElementById('app-main'));
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROFILE TAB
+// ═══════════════════════════════════════════════════════
+function renderProfile(main) {
+  const p = currentPatient;
+  const initials = p.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+  const plans = p.treatmentPlans || [];
+
+  main.innerHTML = `
+    <header class="app-header" style="padding:14px 16px;">
+      <div style="font-size:15px; font-weight:800;">My Profile</div>
+    </header>
+    <div class="app-body">
+      <div class="profile-hero">
+        <div class="profile-avatar">${initials}</div>
+        <div class="profile-name">${p.name}</div>
+        <div class="profile-meta">${p.age} · ${p.phone}</div>
+        <div class="profile-meta" style="margin-top:2px;">${p.email}</div>
+      </div>
+
+      <div class="info-block">
+        <h4>Personal Info</h4>
+        <div class="info-row"><span>Address</span><span style="font-size:11px; text-align:right; max-width:60%;">${p.address}</span></div>
+        <div class="info-row"><span>Sessions Completed</span><span>${p.completedSessionsCount || 0}</span></div>
+        <div class="info-row"><span>Wallet Balance</span><span style="color:var(--primary); font-weight:700;">${p.walletBalance} EGP</span></div>
+      </div>
+
+      ${p.history ? `
+      <div class="info-block">
+        <h4>Medical History</h4>
+        <p style="font-size:12px; color:var(--text); line-height:1.5;">${p.history}</p>
+      </div>` : ''}
+
+      ${p.prescription && p.prescription.text ? `
+      <div class="info-block">
+        <h4>Active Prescription</h4>
+        <p style="font-size:11px; color:var(--text-light); margin-bottom:6px;">Issued by ${p.prescription.doctor}</p>
+        <p style="font-size:12px; color:var(--text); line-height:1.5;">${p.prescription.text}</p>
+      </div>` : ''}
+
+      ${plans.length > 0 ? `
+      <div class="section-heading">Treatment Plans</div>
+      ${plans.map(plan => `
+        <div class="plan-card">
+          <div class="plan-title">${plan.doctorName} · ${plan.date}</div>
+          <div style="font-size:10px; color:var(--text-light); margin-bottom:4px; font-style:italic;">${plan.diagnosis}</div>
+          <div class="plan-text">${plan.text}</div>
+          <div style="margin-top:6px;">
+            <span class="status-pill ${plan.status === 'Approved' || plan.status === 'Logged' ? 'confirmed' : 'waiting'}">${plan.status}</span>
+          </div>
+        </div>
+      `).join('')}` : ''}
+
+      <button class="btn-full secondary" style="margin-top:8px;" onclick="switchPatient(); document.getElementById('sim-patient-select').focus();">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Sign Out
+      </button>
     </div>
-    
-    <div style="background:var(--white); padding:12px; border-radius:8px; border:1px solid var(--border);">
-        <h4 style="font-size:14px; margin-bottom:8px; color:var(--primary);">Section C: Clinical Progress Notes</h4>
-        <p style="font-size:11px; color:var(--text-light); margin-bottom:8px;">Read-only section updated by your rehabilitation provider.</p>
-        <div style="background:#f8fafc; padding:8px; border-radius:4px; font-size:11px; color:var(--text-light);">No progress notes available yet.</div>
-    </div>
-</div>
-        </form>
-      `;
-      appBody.appendChild(container);
+  `;
+}
 
-      document.getElementById('case-history').value = selectedPatient.history;
-    }
+// ═══════════════════════════════════════════════════════
+//  SHEET HELPERS
+// ═══════════════════════════════════════════════════════
+function openSheet(id) {
+  closeAllSheets(false);
+  const sheet = document.getElementById(id);
+  if (sheet) sheet.classList.add('open');
+  document.getElementById('sheet-backdrop').classList.add('visible');
+}
 
-    function addWalletFunds() {
-      const amtStr = prompt("Enter deposit amount (EGP):", "500");
-      const amt = parseInt(amtStr);
-      if (isNaN(amt) || amt <= 0) {
-        alert("Invalid deposit amount.");
-        return;
-      }
+function closeSheet(id) {
+  const sheet = document.getElementById(id);
+  if (sheet) sheet.classList.remove('open');
+}
 
-      const patients = getPatients();
-      const p = patients.find(item => item.id === selectedPatient.id);
-      p.walletBalance = (p.walletBalance || 0) + amt;
-      savePatients(patients);
+function closeAllSheets(closeBackdrop = true) {
+  document.querySelectorAll('.slide-sheet').forEach(s => s.classList.remove('open'));
+  if (closeBackdrop) document.getElementById('sheet-backdrop').classList.remove('visible');
+}
 
-      // add deposit log to transaction
-      const txns = getTransactions();
-      txns.unshift({
-        id: `TXN-${String(txns.length + 1).padStart(3, '0')}`,
-        date: new Date().toISOString().split('T')[0],
-        type: "Deposit",
-        entityName: selectedPatient.name,
-        amount: amt,
-        status: "Completed",
-        method: "Online"
-      });
-      saveTransactions(txns);
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+let toastTimer = null;
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = `toast show ${type || ''}`;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
 
-      alert(`Deposited ${amt} EGP successfully!`);
-      renderScreenContent();
-    }
+// ═══════════════════════════════════════════════════════
+//  SIM EVENTS
+// ═══════════════════════════════════════════════════════
+function triggerDoctorNoShow() {
+  const apts = getAppointments();
+  const upcoming = apts.find(a => a.patientId === currentPatient.id && ['Confirmed', 'Upcoming'].includes(a.status));
+  if (!upcoming) { showToast('No upcoming confirmed appointment found', 'error'); return; }
+  upcoming.status = 'Rejected';
+  saveAppointments(apts);
 
-    function requestPatientWithdrawal() {
-      if (selectedPatient.walletBalance <= 0) {
-        alert("Your balance is zero.");
-        return;
-      }
+  const refundAmt = upcoming.paymentMethod === 'Online' ? upcoming.price : 0;
+  if (refundAmt > 0) {
+    const patients = getPatients();
+    const pat = patients.find(p => p.id === currentPatient.id);
+    if (pat) { pat.walletBalance += refundAmt; savePatients(patients); currentPatient = pat; }
+  }
+  showToast(`Doctor no-show logged. ${refundAmt ? refundAmt + ' EGP refunded.' : ''}`, 'success');
+  if (isLoggedIn) renderTab(currentTab);
+}
 
-      const amtStr = prompt(`Enter amount to withdraw (max ${selectedPatient.walletBalance} EGP):`, selectedPatient.walletBalance);
-      const amt = parseInt(amtStr);
-      if (isNaN(amt) || amt <= 0 || amt > selectedPatient.walletBalance) {
-        alert("Invalid withdrawal amount.");
-        return;
-      }
-
-      const txns = getTransactions();
-      txns.unshift({
-        id: `TXN-${String(txns.length + 1).padStart(3, '0')}`,
-        date: new Date().toISOString().split('T')[0],
-        type: "Withdrawal",
-        entityName: selectedPatient.name,
-        amount: amt,
-        status: "Pending",
-        method: "Bank Transfer"
-      });
-      saveTransactions(txns);
-
-      alert(`Withdrawal request for ${amt} EGP submitted to clinical panel for review!`);
-      renderScreenContent();
-    }
-
-    function submitCaseRecordsForm(e) {
-      e.preventDefault();
-      const val = document.getElementById('case-history').value;
-      const patients = getPatients();
-      const p = patients.find(item => item.id === selectedPatient.id);
-      p.history = val;
-      savePatients(patients);
-      alert("Medical Case Records updated successfully!");
-      renderScreenContent();
-    }
-
-    // Dynamic Events simulator triggers
-    function triggerDoctorNoShow() {
-      // Find upcoming appointment to trigger refund
-      const appointments = getAppointments().filter(a => a.patientId === selectedPatient.id && a.status === 'Upcoming');
-      if (appointments.length === 0) {
-        alert("No active upcoming appointments to simulate Doctor No-Show.");
-        return;
-      }
-
-      const apt = appointments[0];
-      alert(`Simulating No-Show for appointment ${apt.id}. Applying automatic full refund...`);
-      
-      apt.status = 'Cancelled';
-      saveAppointments(getAppointments().map(a => a.id === apt.id ? apt : a));
-
-      // refund patient wallet
-      const patients = getPatients();
-      const p = patients.find(item => item.id === selectedPatient.id);
-      p.walletBalance = (p.walletBalance || 0) + apt.price;
-      savePatients(patients);
-
-      // log payout refund txn
-      const txns = getTransactions();
-      txns.unshift({
-        id: `TXN-${String(txns.length + 1).padStart(3, '0')}`,
-        date: new Date().toISOString().split('T')[0],
-        type: "Payout",
-        entityName: selectedPatient.name,
-        amount: apt.price,
-        status: "Completed",
-        method: "Online"
-      });
-      saveTransactions(txns);
-
-      alert("Doctor no-show registered. Full refund credited back to wallet.");
-      renderScreenContent();
-    }
-
-    function triggerPatientNoShow() {
-      const appointments = getAppointments().filter(a => a.patientId === selectedPatient.id && a.status === 'Upcoming');
-      if (appointments.length === 0) {
-        alert("No active upcoming appointments to simulate Patient No-Show.");
-        return;
-      }
-
-      const apt = appointments[0];
-      alert(`Simulating No-Show for patient in appointment ${apt.id}. Applying cancellation policy...`);
-      
-      apt.status = 'Missed';
-      saveAppointments(getAppointments().map(a => a.id === apt.id ? apt : a));
-
-      // Release payout to doctor as penalty fee!
-      const txns = getTransactions();
-      const providers = getProviders();
-      const prov = providers.find(p => p.id === apt.providerId);
-      const provName = prov ? prov.name : 'Doctor';
-
-      txns.unshift({
-        id: `TXN-${String(txns.length + 1).padStart(3, '0')}`,
-        date: new Date().toISOString().split('T')[0],
-        type: "Payout",
-        entityName: provName,
-        amount: apt.price,
-        status: "Completed",
-        method: "Online"
-      });
-      saveTransactions(txns);
-
-      // notify provider
-      const notifs = getNotifications(apt.providerId);
-      notifs.unshift({
-        id: Date.now(),
-        text: `Patient No-Show: Session ${apt.id} was missed by patient. Consultation fee released to your wallet.`,
-        time: "Just Now"
-      });
-      saveNotifications(apt.providerId, notifs);
-
-      alert("Patient no-show logged. Penalty fee released to practitioner's wallet.");
-      renderScreenContent();
-    }
-
-    let lastPatientsStr = "";
-    let lastAptsStr = "";
-
-    function syncDataSilently() {
-      const patients = getPatients();
-      const appointments = getAppointments();
-      const patientsStr = JSON.stringify(patients);
-      const aptsStr = JSON.stringify(appointments);
-      
-      if (patientsStr !== lastPatientsStr || aptsStr !== lastAptsStr) {
-        lastPatientsStr = patientsStr;
-        lastAptsStr = aptsStr;
-        if (selectedPatient) {
-          selectedPatient = patients.find(item => item.id === selectedPatient.id) || patients[0];
-        }
-        renderScreenContent();
-      }
-    }
-
-    // Sync from localStorage if updated in other tabs
-    window.addEventListener('storage', syncDataSilently);
-
-    window.onload = function() {
-      initPatientSimulator();
-      lastPatientsStr = JSON.stringify(getPatients());
-      lastAptsStr = JSON.stringify(getAppointments());
-      setInterval(syncDataSilently, 1500);
-    };
-  </script>
+function resetAllData() {
+  if (!confirm('Reset all prototype data to defaults?')) return;
+  localStorage.removeItem('ahilney_appointments');
+  localStorage.removeItem('ahilney_patients');
+  localStorage.removeItem('ahilney_providers');
+  localStorage.removeItem('ahilney_transactions');
+  localStorage.removeItem('ahilney_summaries');
+  localStorage.removeItem('ahilney_regions');
+  syncGlobals();
+  switchPatient();
+  showToast('Data reset to defaults', 'success');
+}
+</script>
 </body>
 </html>
