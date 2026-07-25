@@ -343,8 +343,8 @@
           <div class="table-card">
             <div class="table-header">
               <div class="table-header-left">
-                <h3 class="table-title">Session Summaries Approval</h3>
-                <span class="table-subtitle">Review clinical session summaries submitted by doctors before releasing to patients.</span>
+                <h3 class="table-title">Treatment Plans & Session Summaries Audit Log</h3>
+                <span class="table-subtitle">Read-only audit log of clinical session summaries and patient feedback.</span>
               </div>
             </div>
             <table class="custom-table">
@@ -356,6 +356,7 @@
                   <th>Date</th>
                   <th>Diagnosis</th>
                   <th>Treatment Plan</th>
+                  <th>Patient Feedback</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -1104,6 +1105,10 @@
         const provName = prov ? prov.name : 'Unknown Doctor';
         const patName = pat ? pat.name : 'Unknown Patient';
 
+        const feedbackHtml = apt.rating ? 
+          `<div style="font-size:11px;"><span style="color:#fbbf24; font-weight:700;">${'★'.repeat(apt.rating)}${'☆'.repeat(5-apt.rating)}</span> <br/><span style="color:var(--dark); font-style:italic;">"${apt.feedback || ''}"</span></div>` : 
+          `<span style="color:var(--text-light); font-size:11px; font-style:italic;">No feedback yet</span>`;
+
         const row = document.createElement('tr');
         if (s) {
           row.innerHTML = `
@@ -1111,8 +1116,9 @@
             <td style="font-weight:600; color:var(--dark);">${provName}</td>
             <td>${patName}</td>
             <td>${s.date}</td>
-            <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.diagnosis}</td>
-            <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:var(--primary);">${s.treatmentPlan}</td>
+            <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.diagnosis}</td>
+            <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:var(--primary);">${s.treatmentPlan}</td>
+            <td style="max-width:200px;">${feedbackHtml}</td>
             <td><span class="badge badge-active">Logged</span></td>
             <td>
               <button class="btn btn-secondary btn-sm" onclick="openReviewSummaryModal('${s.id}')">Audit Log</button>
@@ -1126,6 +1132,7 @@
             <td>${apt.time}</td>
             <td style="color:var(--text-light); font-style:italic;">No summary logged yet</td>
             <td style="color:var(--text-light); font-style:italic;">Pending Log</td>
+            <td style="max-width:200px;">${feedbackHtml}</td>
             <td><span class="badge badge-review" style="background:#f0fdfa; color:var(--primary); border:1px solid var(--primary);">Awaiting Logging</span></td>
             <td>
               <button class="btn btn-primary btn-sm" style="background:var(--primary); border-color:var(--primary);" onclick="openSimulateSubmissionModal('${apt.id}')">Simulate Doctor Log</button>
