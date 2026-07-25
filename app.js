@@ -223,6 +223,11 @@ function getProviders() {
       p.sessionDuration = 45;
       migrated = true;
     }
+    if (p.rating === undefined) {
+      p.rating = 4.8;
+      p.reviewCount = 15;
+      migrated = true;
+    }
   });
   
   if (migrated || !data) {
@@ -428,7 +433,7 @@ const DEFAULT_PATIENTS = [
 ];
 
 const DEFAULT_APPOINTMENTS = [
-  { id: "APT-101", patientId: "P-001", providerId: "PROV-001", time: "02:00 PM Today", type: "Online Consultation", status: "Finished", price: 450 },
+  { id: "APT-101", patientId: "P-001", providerId: "PROV-001", time: "02:00 PM Today", type: "Online Consultation", status: "Finished", price: 450, rating: 5, feedback: "Great session with Dr. Sarah! Very thorough explanation and clear treatment steps." },
   { id: "APT-102", patientId: "P-002", providerId: "PROV-001", time: "04:30 PM Today", type: "Online Consultation", status: "Upcoming", price: 450 },
   { id: "APT-201", patientId: "P-003", providerId: "PROV-004", time: "10:00 AM Today", type: "Home Visit", status: "Pending RS Acceptance", price: 400, serviceName: "Post-Injury Rehabilitation" },
   { id: "APT-202", patientId: "P-001", providerId: "PROV-004", time: "01:00 PM Today", type: "Home Visit", status: "Confirmed", price: 400, serviceName: "Physical Therapy (PT)" },
@@ -562,6 +567,13 @@ function getAppointments() {
     apt101.status = "Finished";
     migrated = true;
   }
+  list.forEach(a => {
+    if (a.status === "Finished" && !a.rating) {
+      a.rating = 5;
+      a.feedback = "Great consultation, very professional guidance.";
+      migrated = true;
+    }
+  });
   if (migrated) {
     localStorage.setItem("ahilney_appointments", JSON.stringify(list));
   }
@@ -572,6 +584,26 @@ function saveAppointments(list) {
   localStorage.setItem("ahilney_appointments", JSON.stringify(list));
   syncGlobals();
   window.dispatchEvent(new Event("storage"));
+}
+
+function submitRating(aptId, rating, feedback) {
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === aptId);
+  if (apt) {
+    apt.rating = parseInt(rating);
+    apt.feedback = feedback;
+    saveAppointments(apts);
+    
+    const provs = getProviders();
+    const prov = provs.find(p => p.id === apt.providerId);
+    if (prov) {
+      prov.reviewCount = (prov.reviewCount || 0) + 1;
+      prov.rating = (Math.min(5.0, ((prov.rating * (prov.reviewCount - 1)) + apt.rating) / prov.reviewCount)).toFixed(1);
+      saveProviders(provs);
+    }
+    return true;
+  }
+  return false;
 }
 
 function getRegions() {

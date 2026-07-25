@@ -1332,6 +1332,25 @@
         `;
       }
 
+      let ratingActionHtml = '';
+      if (apt.status === 'Finished') {
+        if (apt.rating) {
+           ratingActionHtml = `
+             <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-top:15px;">
+               <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700; display:block;">Your Rating</span>
+               <div style="margin-top:4px; font-size:16px; color:#fbbf24;">${'★'.repeat(apt.rating)}${'☆'.repeat(5-apt.rating)}</div>
+               <div style="margin-top:4px; font-size:12px; font-style:italic;">"${apt.feedback || ''}"</div>
+             </div>
+           `;
+        } else {
+           ratingActionHtml = `
+             <div style="margin-top:15px;">
+               <button class="btn btn-primary btn-sm" style="width:100%; background:#fbbf24; border-color:#f59e0b; color:var(--dark);" onclick="openRatingModal('${apt.id}')">⭐ Leave Rating & Feedback</button>
+             </div>
+           `;
+        }
+      }
+
       // Check if session summary exists
       const summaries = getSummaries();
       const s = summaries.find(item => item.appointmentId === apt.id && item.status === 'Approved');
@@ -1369,6 +1388,7 @@
 
         ${clinicalPlanHtml}
         ${actionSection}
+        ${ratingActionHtml}
       `;
     }
 
@@ -1426,6 +1446,31 @@
       alert("Video Consultation finished. Doctor is now compiling session summary.");
       document.getElementById('patient-details-panel').style.display = 'none';
       renderScreenContent();
+    }
+
+    function openRatingModal(aptId) {
+      const apts = getAppointments();
+      const apt = apts.find(a => a.id === aptId);
+      if (!apt) return;
+      
+      const provs = getProviders();
+      const prov = provs.find(p => p.id === apt.providerId);
+      
+      const ratingStr = prompt(`Leave a rating (1 to 5) for ${prov ? prov.name : 'your practitioner'}:`, "5");
+      if (!ratingStr) return;
+      
+      const ratingVal = parseInt(ratingStr);
+      if (isNaN(ratingVal) || ratingVal < 1 || ratingVal > 5) {
+        alert("Please enter a valid number between 1 and 5.");
+        return;
+      }
+      
+      const feedbackStr = prompt("Leave a brief review or feedback comment:", "Great session, very helpful.");
+      
+      if (submitRating(aptId, ratingVal, feedbackStr || "")) {
+        alert("Thank you! Your rating and feedback have been submitted.");
+        openBookingDetailPanel(apt); // Refresh details panel
+      }
     }
 
     // 4. Profile and case file tab

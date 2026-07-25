@@ -34,6 +34,9 @@
               <span>Verification Pipeline</span>
             </a>
           </li>
+
+          <!-- CLIENTS SECTION -->
+          <li style="margin: 16px 0 6px 12px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px;">Clients & Network</li>
           <li>
             <a href="#" class="menu-item" onclick="switchTab('patients')">
               <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 2.01 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
@@ -41,11 +44,20 @@
             </a>
           </li>
           <li>
-            <a href="#" class="menu-item" onclick="switchTab('summaries')">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-              <span>Summaries Audit</span>
+            <a href="#" class="menu-item" onclick="switchTab('doctors')">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.89 2 1.99 2H19c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>
+              <span>Doctors</span>
             </a>
           </li>
+          <li>
+            <a href="#" class="menu-item" onclick="switchTab('rs_specialists')">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              <span>Rehab Specialists (RS)</span>
+            </a>
+          </li>
+
+          <!-- SYSTEM & OPERATIONS SECTION -->
+          <li style="margin: 16px 0 6px 12px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px;">System & Operations</li>
           <li>
             <a href="#" class="menu-item" onclick="switchTab('regions')">
               <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -59,15 +71,36 @@
             </a>
           </li>
           <li>
-            <a href="#" class="menu-item" onclick="switchTab('subadmins')">
-              <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-              <span>Sub-Admins</span>
-            </a>
-          </li>
-          <li>
             <a href="#" class="menu-item" onclick="switchTab('promocodes')">
               <svg viewBox="0 0 24 24"><path d="M12.79 21L3 11.21V3h8.21L21 12.79V21h-8.21zM5 5v2h2V5H5z"/></svg>
               <span>Promo Codes</span>
+            </a>
+          </li>
+          
+          <!-- REPORTS SECTION -->
+          <li style="margin: 16px 0 6px 12px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.8px;">Reports & Audit Logs</li>
+          <li>
+            <a href="#" class="menu-item" onclick="switchTab('summaries')">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+              <span>Full Audit Log</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="menu-item" onclick="switchTab('report_doctors')">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              <span>Doctors</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="menu-item" onclick="switchTab('report_rs')">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              <span>RS</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="menu-item" onclick="switchTab('report_patients')">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              <span>Patients</span>
             </a>
           </li>
         </ul>
@@ -179,6 +212,32 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Internal Sub-Admins Section inside Overview -->
+          <div class="table-card" style="margin-top: 24px;" id="subadmins-table-card">
+            <div class="table-header">
+              <div class="table-header-left">
+                <h3 class="table-title">Internal Sub-Admins</h3>
+                <span class="table-subtitle">Manage internal staff, review capabilities, and roles.</span>
+              </div>
+              <button class="btn btn-primary" onclick="openAddSubadminModal()">+ Add Sub-Admin</button>
+            </div>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Permissions</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="subadmins-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -315,29 +374,174 @@
           </div>
         </section>
 
-        <!-- ================= SUMMARIES TAB ================= -->
+        <!-- ================= FULL AUDIT LOG TAB ================= -->
         <section id="tab-summaries" class="tab-content" style="display: none;">
           <div class="table-card">
             <div class="table-header">
               <div class="table-header-left">
-                <h3 class="table-title">Session Summaries Approval</h3>
-                <span class="table-subtitle">Review clinical session summaries submitted by doctors before releasing to patients.</span>
+                <h3 class="table-title">Full Audit Log (All System Bookings)</h3>
+                <span class="table-subtitle">Read-only operational audit log of all Online Consultations, RS Home Care, and Clinic sessions.</span>
+              </div>
+            </div>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Booking Type</th>
+                  <th>Practitioner</th>
+                  <th>Patient</th>
+                  <th>Time / Date</th>
+                  <th>Clinical Summary</th>
+                  <th>Patient Feedback</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="summaries-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= DOCTORS MANAGEMENT TAB ================= -->
+        <section id="tab-doctors" class="tab-content" style="display: none;">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-header-left">
+                <h3 class="table-title">Medical Doctors Directory</h3>
+                <span class="table-subtitle">Manage registered doctors, specialties, session pricing, and active status.</span>
+              </div>
+              <button class="btn btn-primary" onclick="openAddProviderModal()">+ Add Doctor</button>
+            </div>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Specialty</th>
+                  <th>Price & Duration</th>
+                  <th>Rating</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="doctors-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= REHAB SPECIALISTS (RS) TAB ================= -->
+        <section id="tab-rs_specialists" class="tab-content" style="display: none;">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-header-left">
+                <h3 class="table-title">Rehab Specialists (RS) Network</h3>
+                <span class="table-subtitle">Manage physical therapists, covered governorates/subregions, and session settings.</span>
+              </div>
+              <button class="btn btn-primary" onclick="openAddProviderModal()">+ Add RS Specialist</button>
+            </div>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Specialty</th>
+                  <th>Covered Regions</th>
+                  <th>Price & Duration</th>
+                  <th>Rating</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rs-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= DOCTORS REPORT TAB ================= -->
+        <section id="tab-report_doctors" class="tab-content" style="display: none;">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-header-left">
+                <h3 class="table-title">Doctors Report</h3>
+                <span class="table-subtitle">Read-only operational report logging doctor consultations, ratings, and revenue.</span>
               </div>
             </div>
             <table class="custom-table">
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Doctor</th>
-                  <th>Patient</th>
-                  <th>Date</th>
-                  <th>Diagnosis</th>
-                  <th>Treatment Plan</th>
+                  <th>Doctor Name</th>
+                  <th>Specialty</th>
+                  <th>Completed Consultations</th>
+                  <th>Avg Rating</th>
+                  <th>Total Gross Revenue</th>
+                  <th>Payout Channel</th>
                   <th>Status</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="summaries-table-body">
+              <tbody id="report-doctors-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= RS REPORT TAB ================= -->
+        <section id="tab-report_rs" class="tab-content" style="display: none;">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-header-left">
+                <h3 class="table-title">Rehab Specialists (RS) Report</h3>
+                <span class="table-subtitle">Read-only operational report logging RS home visits, covered zones, and rating.</span>
+              </div>
+            </div>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>RS Specialist Name</th>
+                  <th>Specialty</th>
+                  <th>Covered Subregions</th>
+                  <th>Completed Visits</th>
+                  <th>Avg Rating</th>
+                  <th>Total Gross Revenue</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="report-rs-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ================= PATIENTS REPORT TAB ================= -->
+        <section id="tab-report_patients" class="tab-content" style="display: none;">
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-header-left">
+                <h3 class="table-title">Patients Report</h3>
+                <span class="table-subtitle">Read-only operational report logging patient wallet balances, completed bookings, and medical history.</span>
+              </div>
+            </div>
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Patient Name</th>
+                  <th>Contact Info</th>
+                  <th>Wallet Balance</th>
+                  <th>Completed Sessions</th>
+                  <th>Medical Record Case</th>
+                </tr>
+              </thead>
+              <tbody id="report-patients-table-body">
                 <!-- Dynamically populated -->
               </tbody>
             </table>
@@ -839,6 +1043,14 @@
 
     // Switch sidebar tab
     function switchTab(tabId) {
+      if (tabId === 'subadmins') {
+        tabId = 'dashboard';
+        setTimeout(() => {
+          const card = document.getElementById('subadmins-table-card');
+          if (card) card.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+
       document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
       
@@ -851,10 +1063,15 @@
       const pageTitles = {
         'dashboard': 'Dashboard Overview',
         'verification': 'Providers Verification Pipeline',
-        'subadmins': 'Manage Sub-Admins',
+        'subadmins': 'Dashboard Overview (Sub-Admins)',
+        'patients': 'Patients Directory',
+        'doctors': 'Doctors Directory & Management',
+        'rs_specialists': 'Rehab Specialists (RS) Network',
         'promocodes': 'Promo Codes & Marketing',
-        'patients': 'Patient Management',
-        'summaries': 'Verify Session Summaries',
+        'summaries': 'Reports: Full Audit Log',
+        'report_doctors': 'Reports: Doctors',
+        'report_rs': 'Reports: RS',
+        'report_patients': 'Reports: Patients',
         'regions': 'Region & Subregion Management',
         'banners': 'App Promotion Banners',
         'transactions': 'Payment Transactions & Withdrawals',
@@ -971,6 +1188,11 @@
       });
 
       renderPatientsTable();
+      renderDoctorsTable();
+      renderRSTable();
+      renderDoctorsReportTable();
+      renderRSReportTable();
+      renderPatientsReportTable();
       renderSummariesTable();
       renderRegionsTable();
       renderBannersGrid();
@@ -978,7 +1200,6 @@
       renderChatChannelsList();
     }
 
-    // New management tabs rendering and action handlers
     function renderPatientsTable() {
       const patients = getPatients();
       const tbody = document.getElementById('patients-table-body');
@@ -994,8 +1215,126 @@
           <td style="font-weight:600; color:var(--primary);">${p.walletBalance} EGP</td>
           <td><span class="badge badge-active">${p.completedSessionsCount || 0} completed</span></td>
           <td>
-            <button class="btn btn-secondary btn-sm" onclick="viewPatientDetails('${p.id}')">View History</button>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="viewPatientDetails('${p.id}')">View History</button>
+              <button class="btn btn-warning btn-sm" style="background:#fffbeb; color:#b45309; border-color:#fef3c7;" onclick="promptIssueRefund('${p.id}')">Issue Refund</button>
+              <button class="btn btn-primary btn-sm" onclick="promptAddSessions('${p.id}')">+ Add Sessions</button>
+            </div>
           </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function renderDoctorsTable() {
+      const providers = getProviders().filter(p => p.type === 'Doctor');
+      const tbody = document.getElementById('doctors-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      providers.forEach(p => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
+          <td style="font-weight:600; color:var(--dark);">${p.name}<br/><span style="font-size:11px; color:var(--text-light);">${p.email}</span></td>
+          <td>${p.specialty}</td>
+          <td style="font-weight:600; color:var(--primary);">${p.price} / ${p.duration}</td>
+          <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span> (${p.reviewCount || 15})</td>
+          <td><span class="badge badge-${p.status}">${p.status}</span></td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="openPipelineReview('${p.id}')">View Details</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function renderRSTable() {
+      const providers = getProviders().filter(p => p.type === 'RS');
+      const tbody = document.getElementById('rs-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      providers.forEach(p => {
+        const regions = (p.regionsCovered && p.regionsCovered.length > 0) ? p.regionsCovered.join(', ') : 'None assigned';
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
+          <td style="font-weight:600; color:var(--dark);">${p.name}<br/><span style="font-size:11px; color:var(--text-light);">${p.email}</span></td>
+          <td>${p.specialty}</td>
+          <td style="max-width:180px; font-size:11px; color:var(--primary); font-weight:600;">${regions}</td>
+          <td style="font-weight:600; color:var(--primary);">${p.price} / ${p.duration}</td>
+          <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span> (${p.reviewCount || 15})</td>
+          <td><span class="badge badge-${p.status}">${p.status}</span></td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="openPipelineReview('${p.id}')">View Details</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function renderDoctorsReportTable() {
+      const providers = getProviders().filter(p => p.type === 'Doctor');
+      const appointments = getAppointments();
+      const tbody = document.getElementById('report-doctors-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      providers.forEach(p => {
+        const docApts = appointments.filter(a => a.providerId === p.id && a.status === 'Finished');
+        const totalGross = docApts.reduce((sum, a) => sum + (a.price || 450), 0);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
+          <td style="font-weight:600; color:var(--dark);">${p.name}</td>
+          <td>${p.specialty}</td>
+          <td style="font-weight:700; color:var(--primary);">${docApts.length} consultations</td>
+          <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span></td>
+          <td style="font-weight:700; color:var(--dark);">${totalGross} EGP</td>
+          <td style="font-size:11px; color:var(--text-light);">${p.payoutDetails || 'Bank: CIB'}</td>
+          <td><span class="badge badge-${p.status}">${p.status}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function renderRSReportTable() {
+      const providers = getProviders().filter(p => p.type === 'RS');
+      const appointments = getAppointments();
+      const tbody = document.getElementById('report-rs-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      providers.forEach(p => {
+        const rsApts = appointments.filter(a => a.providerId === p.id && a.status === 'Finished');
+        const totalGross = rsApts.reduce((sum, a) => sum + (a.price || 400), 0);
+        const regions = (p.regionsCovered && p.regionsCovered.length > 0) ? p.regionsCovered.join(', ') : 'All Subregions';
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
+          <td style="font-weight:600; color:var(--dark);">${p.name}</td>
+          <td>${p.specialty}</td>
+          <td style="max-width:180px; font-size:11px; color:var(--primary); font-weight:600;">${regions}</td>
+          <td style="font-weight:700; color:var(--primary);">${rsApts.length} visits</td>
+          <td><span style="color:#fbbf24; font-weight:700;">⭐ ${p.rating || 4.8}</span></td>
+          <td style="font-weight:700; color:var(--dark);">${totalGross} EGP</td>
+          <td><span class="badge badge-${p.status}">${p.status}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function renderPatientsReportTable() {
+      const patients = getPatients();
+      const tbody = document.getElementById('report-patients-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      patients.forEach(p => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="font-weight:700; color:var(--text-light);">${p.id}</td>
+          <td style="font-weight:600; color:var(--dark);">${p.name}</td>
+          <td style="font-size:12px;">${p.phone}<br/><span style="font-size:11px; color:var(--text-light);">${p.email}</span></td>
+          <td style="font-weight:700; color:var(--primary);">${p.walletBalance} EGP</td>
+          <td><span class="badge badge-active">${p.completedSessionsCount || 0} completed</span></td>
+          <td style="max-width:200px; font-size:11px; color:var(--text);">${p.history || 'No medical record'}</td>
         `;
         tbody.appendChild(row);
       });
@@ -1030,6 +1369,7 @@
       openModal('modal-view-patient');
     }
 
+    // Full Audit Log for All Bookings (Online Doctor, RS Home, RS Clinic)
     function renderSummariesTable() {
       const appointments = getAppointments();
       const summaries = getSummaries();
@@ -1044,37 +1384,37 @@
         const s = summaries.find(item => item.appointmentId === apt.id);
         const prov = providers.find(p => p.id === apt.providerId);
         const pat = patients.find(p => p.id === apt.patientId);
-        const provName = prov ? prov.name : 'Unknown Doctor';
-        const patName = pat ? pat.name : 'Unknown Patient';
+        const provName = prov ? prov.name : 'Clinical Specialist';
+        const patName = pat ? pat.name : 'Patient';
+
+        const feedbackHtml = apt.rating ? 
+          `<div style="font-size:11px;"><span style="color:#fbbf24; font-weight:700;">${'★'.repeat(apt.rating)}${'☆'.repeat(5-apt.rating)}</span> <br/><span style="color:var(--dark); font-style:italic;">"${apt.feedback || ''}"</span></div>` : 
+          `<span style="color:var(--text-light); font-size:11px; font-style:italic;">No feedback yet</span>`;
+
+        const summaryText = s ? 
+          `<div style="font-size:11px;"><strong>Diag:</strong> ${s.diagnosis}<br/><span style="color:var(--primary); font-weight:600;"><strong>Plan:</strong> ${s.treatmentPlan}</span></div>` : 
+          `<span style="color:var(--text-light); font-size:11px; font-style:italic;">Pending Clinical Log</span>`;
+
+        const typeBadge = apt.type.includes('Online') ? 
+          `<span class="badge badge-interview">Online Doctor</span>` : 
+          apt.type.includes('Home') ? 
+          `<span class="badge badge-contract">RS Home Care</span>` : 
+          `<span class="badge badge-active">RS Rehab Center</span>`;
 
         const row = document.createElement('tr');
-        if (s) {
-          row.innerHTML = `
-            <td style="font-weight:700; color:var(--text-light);">${s.id}</td>
-            <td style="font-weight:600; color:var(--dark);">${provName}</td>
-            <td>${patName}</td>
-            <td>${s.date}</td>
-            <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.diagnosis}</td>
-            <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:var(--primary);">${s.treatmentPlan}</td>
-            <td><span class="badge badge-${s.status.toLowerCase()}">${s.status}</span></td>
-            <td>
-              ${s.status === 'Pending' ? `<button class="btn btn-primary btn-sm" onclick="openReviewSummaryModal('${s.id}')">Audit Summary</button>` : `<button class="btn btn-secondary btn-sm" onclick="openReviewSummaryModal('${s.id}')">View Details</button>`}
-            </td>
-          `;
-        } else {
-          row.innerHTML = `
-            <td style="font-weight:700; color:var(--text-light); opacity:0.6;">(Pending)</td>
-            <td style="font-weight:600; color:var(--dark);">${provName}</td>
-            <td>${patName}</td>
-            <td>${apt.time}</td>
-            <td style="color:var(--text-light); font-style:italic;">No summary submitted yet</td>
-            <td style="color:var(--text-light); font-style:italic;">Pending</td>
-            <td><span class="badge badge-review" style="background:#fff7ed; color:#c2410c; border:1px solid #ffedd5;">Awaiting Submission</span></td>
-            <td>
-              <button class="btn btn-primary btn-sm" style="background:#c2410c; border-color:#c2410c;" onclick="openSimulateSubmissionModal('${apt.id}')">Simulate Submission</button>
-            </td>
-          `;
-        }
+        row.innerHTML = `
+          <td style="font-weight:700; color:var(--text-light);">${apt.id}</td>
+          <td>${typeBadge}</td>
+          <td style="font-weight:600; color:var(--dark);">${provName}</td>
+          <td>${patName}</td>
+          <td style="font-size:12px;">${apt.time}</td>
+          <td style="max-width:200px;">${summaryText}</td>
+          <td style="max-width:200px;">${feedbackHtml}</td>
+          <td><span class="badge ${apt.status === 'Finished' ? 'badge-active' : 'badge-review'}">${apt.status}</span></td>
+          <td>
+            ${s ? `<button class="btn btn-secondary btn-sm" onclick="openReviewSummaryModal('${s.id}')">Audit Details</button>` : `<button class="btn btn-primary btn-sm" style="background:var(--primary); border-color:var(--primary);" onclick="openSimulateSubmissionModal('${apt.id}')">Simulate Doctor Log</button>`}
+          </td>
+        `;
         tbody.appendChild(row);
       });
     }
@@ -1111,22 +1451,27 @@
           <strong style="font-size:11px; color:var(--text-light); text-transform:uppercase; display:block;">Prescribed Rehab Treatment Plan</strong>
           <p style="font-size:13px; color:var(--primary); font-weight:600; margin-top:4px;">${s.treatmentPlan}</p>
         </div>
+        ${(() => {
+          const apts = getAppointments();
+          const apt = apts.find(a => a.id === s.appointmentId);
+          if (apt && apt.rating) {
+            const stars = '★'.repeat(apt.rating) + '☆'.repeat(5 - apt.rating);
+            const fbText = apt.feedback || '';
+            return `
+              <div style="margin-top:16px; background:rgba(251, 191, 36, 0.1); border:1px solid #fde68a; padding:12px; border-radius:8px;">
+                <strong style="font-size:11px; color:#b45309; text-transform:uppercase; display:block;">Patient Feedback</strong>
+                <div style="margin-top:4px; font-size:16px; color:#fbbf24;">${stars}</div>
+                <div style="margin-top:4px; font-size:12px; font-style:italic; color:#92400e;">"${fbText}"</div>
+              </div>
+            `;
+          }
+          return '';
+        })()}
       `;
 
-      // Always show Approve & Reject buttons inside modal for re-audits/action changes
-      document.getElementById('summary-reject-btn').style.display = 'block';
-      document.getElementById('summary-approve-btn').style.display = 'block';
-
-      if (s.status !== 'Pending') {
-        document.getElementById('summary-approve-btn').innerText = `Re-Approve Audit`;
-        document.getElementById('summary-reject-btn').innerText = `Reject Summary`;
-      } else {
-        document.getElementById('summary-approve-btn').innerText = `Approve Summary`;
-        document.getElementById('summary-reject-btn').innerText = `Reject Summary`;
-      }
-
-      document.getElementById('summary-approve-btn').onclick = () => auditSummary(s.id, 'Approved');
-      document.getElementById('summary-reject-btn').onclick = () => auditSummary(s.id, 'Rejected');
+      // Operations team should not approve or reject doctor treatment plans; it is logging only
+      document.getElementById('summary-reject-btn').style.display = 'none';
+      document.getElementById('summary-approve-btn').style.display = 'none';
 
       openModal('modal-review-summary');
     }
