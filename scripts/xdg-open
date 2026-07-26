@@ -1,0 +1,4 @@
+#!/bin/sh
+# No-op xdg-open for headless Replit environment
+# Expo tries to open a browser after starting; we silently ignore it.
+exit 0

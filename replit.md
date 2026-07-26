@@ -1,123 +1,74 @@
-# Ahilney Platform
+# Ahilney
 
-A home physical therapy and telehealth consulting platform for Egypt — three apps sharing a real PostgreSQL backend.
+Home healthcare and physical therapy platform for Egypt — connects patients with doctors (online consultations) and Rehabilitation Specialists (home visits).
 
-## Architecture
+## Project Structure
 
-| Layer | Stack | Port |
-|---|---|---|
-| **Backend API** | Node.js + Express + PostgreSQL | 3000 |
-| **Admin Dashboard** | Vite + React + Tailwind CSS | 5173 |
-| **Prototype (reference only)** | Static HTML/JS served by Python | 5000 |
+This is a monorepo with four apps and a shared API:
 
-## Running
+| Directory | What it is | Port |
+|-----------|-----------|------|
+| `api/` | Node.js + Express REST API | 3000 |
+| `admin-app/` | React + Vite admin dashboard | 5173 |
+| `patient-app/` | Expo (React Native) patient app — web mode | 8080 |
+| `provider-app/` | Expo (React Native) provider app — web mode | 8099 |
+| `ahilney-prototype/` | Static HTML/CSS prototype (legacy reference) | 5000 |
 
-All three workflows start automatically:
-- **"Admin Dashboard"** — Vite + React admin app on port 5173 (main production UI)
-- **"Ahilney API"** — Express API on port 3000
-- **"Start application"** — serves the prototype HTML files on port 5000 (reference only)
+## Running the Project
 
-### Admin login
-Open port 5173 in preview. Log in with `sherif@ahilney.com` / `admin123`.
+All five services start automatically via Replit workflows. Use the port switcher in the preview pane to view each one:
 
-## API
+- **Port 5000** — Static prototype (default preview)
+- **Port 5173** — Admin dashboard
+- **Port 8080** — Patient mobile app (web)
+- **Port 8099** — Provider mobile app (web)
 
-Base URL: `http://localhost:3000/api/v1`
+## Dev Credentials
 
-Route manifest: `GET /api/v1`  
-Health check: `GET /health`
+### Admin Dashboard (port 5173)
+- `ops@ahilney.com` / `password123`
 
-### Auth endpoints
-| Method | Path | Who |
-|---|---|---|
-| POST | `/auth/send-otp` | Patient — phone OTP (console-logged in dev) |
-| POST | `/auth/verify-otp` | Patient — returns JWT |
-| POST | `/auth/provider/login` | Provider — email + password |
-| POST | `/auth/admin/login` | Admin — email + password |
+### Provider App (port 8099)
+- `amira.k@ahilney.com` / `password123`
+- `karim.a@ahilney.com` / `password123`
 
-### Seed credentials (dev)
-| Role | Email | Password |
-|---|---|---|
-| Admin | `sherif@ahilney.com` | `admin123` |
-| Doctor | `sarah.j@ahilney.com` | `password` |
-| Doctor | `marcus.v@ahilney.com` | `password` |
-| RS | `amira.k@ahilney.com` | `password` |
-| RS | `karim.a@ahilney.com` | `password` |
-| RS | `hassan.s@ahilney.com` | `password` |
-| Patient (OTP) | phone: `+201211098465` | any 6-digit code logged to console |
+### Patient App (port 8080)
+- Uses OTP login — phone number `+20 100 000 0001` in development (SMS logged to console)
 
 ## Database
 
-Replit built-in PostgreSQL. Tables: `users`, `patients`, `patient_prescriptions`, `patient_treatment_plans`, `providers`, `provider_documents`, `provider_regions`, `shifts`, `admins`, `appointments`, `summaries`, `transactions`, `notifications`, `otp_requests`, `promo_codes`, `regions`, `subregions`.
-
-Re-run migrations (safe — uses IF NOT EXISTS):
+Uses Replit's built-in PostgreSQL. Schema is set up via:
 ```
-node api/migrate.js
+cd api && node migrate.js
 ```
-
-Re-seed dev data:
+Seed data via:
 ```
-node api/seed.js
+cd api && node seed.js
 ```
 
-## Business Logic
+## Environment Variables
 
-- **Commission**: 15% platform / 85% provider
-- **Payout trigger**: admin approves session summary → payout transaction written + provider wallet credited
-- **Appointment state machine**: `Pending RS Acceptance` → `Confirmed` → `Finished` (provider submits summary) → admin audits
-- **OTP**: SMS adapter in `api/src/sms.js` — console-logs in dev, swap to Twilio/Unifonic by setting `SMS_PROVIDER=twilio` and adding credentials (owner must approve before wiring)
-- **Hetzner-portable**: only `DATABASE_URL` and `JWT_SECRET` env vars need changing to deploy elsewhere
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Auto-provided by Replit |
+| `JWT_SECRET` | Token signing (set in Replit env) |
+| `NODE_ENV` | `development` (set in Replit env) |
+| `EXPO_PUBLIC_API_URL` | API base URL for Expo apps (empty = relative, proxied) |
 
-## API source layout
+## API
 
-```
-api/
-├── migrate.js          # Schema migrations (run once)
-├── seed.js             # Dev seed data
-└── src/
-    ├── index.js        # Express entry point
-    ├── db.js           # pg Pool
-    ├── sms.js          # SMS adapter (pluggable)
-    ├── middleware/
-    │   └── auth.js     # JWT verify + requireRole helpers
-    └── routes/
-        ├── auth.js     # OTP + login endpoints
-        ├── patients.js # Patient endpoints
-        ├── providers.js# Provider endpoints
-        ├── admin.js    # Admin endpoints
-        └── shared.js   # Public: providers list, regions, services, promos
-```
+- Health check: `GET /health`
+- Route list: `GET /api/v1`
+- Auth: OTP for patients, email/password for providers and admins
 
-## Admin Dashboard source layout
+## Tech Stack
 
-```
-admin-app/
-├── vite.config.js        # Proxy /api → localhost:3000
-├── src/
-│   ├── api/client.js     # Fetch wrapper, auth token, all API methods
-│   ├── hooks/useAuth.js  # JWT login/logout, localStorage
-│   ├── components/
-│   │   ├── Layout.jsx    # Shell: dark sidebar + topbar + <Outlet />
-│   │   ├── Badge.jsx     # Status badge (color per status string)
-│   │   ├── Modal.jsx     # Reusable overlay modal
-│   │   ├── Toast.jsx     # Toast notification item
-│   │   └── ToastContext.jsx # Global toast provider (useToast hook)
-│   └── pages/
-│       ├── Login.jsx         # Admin email + password auth
-│       ├── Dashboard.jsx     # Stat cards + recent feeds, 30s polling
-│       ├── SessionAudit.jsx  # Approve/reject session summaries + payout
-│       ├── Appointments.jsx  # Full table with filters + manual status override
-│       ├── Providers.jsx     # Search/filter table + provider modal
-│       ├── Patients.jsx      # Patient table + detail modal + refund
-│       ├── Financials.jsx    # Revenue bar + transaction table + CSV export
-│       ├── Promotions.jsx    # Promo code CRUD
-│       └── Regions.jsx       # Subregion add/remove
-```
+- **API**: Node.js, Express, PostgreSQL (`pg`), JWT, bcrypt
+- **Admin**: Vite, React 19, Tailwind CSS 4, TanStack Query
+- **Mobile**: Expo SDK 57, React Native 0.86, Expo Router, TanStack Query
 
-## Prototype (legacy reference)
+## Notes
 
-The original localStorage prototype lives in `ahilney-prototype/`. It is kept as a design reference for the mobile apps being built (Tasks #12, #13).
-
-## User preferences
-
-_None recorded yet._
+- The Expo apps run in **web mode** in Replit (not native). The `src/api/client.js` in both uses `localStorage` on web and `expo-secure-store` on native for token storage.
+- SMS in development logs OTP codes to the API console instead of sending real SMS.
+- `scripts/xdg-open` is a no-op shim that prevents Expo from crashing when trying to open a browser in the headless Replit container.

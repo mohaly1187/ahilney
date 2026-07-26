@@ -1,17 +1,35 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 const TOKEN_KEY = 'ahilney_provider_token';
 
+// ─── Web-safe token storage ───────────────────────────────────────────────────
+// expo-secure-store is native-only; fall back to localStorage on web.
+const storage = {
+  getItem: (key) =>
+    Platform.OS === 'web'
+      ? Promise.resolve(localStorage.getItem(key))
+      : SecureStore.getItemAsync(key),
+  setItem: (key, value) =>
+    Platform.OS === 'web'
+      ? Promise.resolve(localStorage.setItem(key, value))
+      : SecureStore.setItemAsync(key, value),
+  removeItem: (key) =>
+    Platform.OS === 'web'
+      ? Promise.resolve(localStorage.removeItem(key))
+      : SecureStore.deleteItemAsync(key),
+};
+
 // ─── Token helpers ────────────────────────────────────────────────────────────
 export async function getToken() {
-  return SecureStore.getItemAsync(TOKEN_KEY);
+  return storage.getItem(TOKEN_KEY);
 }
 export async function setToken(token) {
-  return SecureStore.setItemAsync(TOKEN_KEY, token);
+  return storage.setItem(TOKEN_KEY, token);
 }
 export async function clearToken() {
-  return SecureStore.deleteItemAsync(TOKEN_KEY);
+  return storage.removeItem(TOKEN_KEY);
 }
 
 // ─── Core fetch ───────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-modules = ["python-3.12", "nodejs-20", "web", "bash"]
+modules = ["python-3.12", "nodejs-20", "web", "bash", "postgresql-16"]
 
 [nix]
 channel = "stable-25_05"
@@ -25,6 +25,14 @@ args = "Ahilney API"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Admin Dashboard"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Patient App"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Provider App"
 
 [[workflows.workflow]]
 name = "Start application"
@@ -62,6 +70,30 @@ task = "shell.exec"
 args = "cd admin-app && npm run dev"
 waitForPort = 5173
 
+[[workflows.workflow]]
+name = "Patient App"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd patient-app && EXPO_NO_DASHBOARD=1 BROWSER=none PATH=\"$PWD/../scripts:$PATH\" node_modules/.bin/expo start --web --port 8080"
+waitForPort = 8080
+
+[[workflows.workflow]]
+name = "Provider App"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd provider-app && EXPO_NO_DASHBOARD=1 BROWSER=none PATH=\"$PWD/../scripts:$PATH\" node_modules/.bin/expo start --web --port 8099"
+waitForPort = 8099
+
 [[ports]]
 localPort = 3000
 externalPort = 3000
@@ -78,9 +110,18 @@ externalPort = 5173
 localPort = 8000
 externalPort = 8000
 
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 8099
+externalPort = 8099
+
 [userenv]
 
 [userenv.shared]
 API_PORT = "3000"
 JWT_SECRET = "ahilney-jwt-secret-2026-change-in-prod"
 NODE_ENV = "development"
+EXPO_PUBLIC_API_URL = ""
