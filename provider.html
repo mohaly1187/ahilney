@@ -3,1398 +3,1529 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ahilney Provider App Prototype</title>
+  <title>Ahilney – Provider App</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ═══════════════════════════════════════════════════
+       PROVIDER APP – STYLES
+    ═══════════════════════════════════════════════════ */
+    .simulator-page { max-width: 1100px; margin: 32px auto; padding: 0 24px; font-family: var(--font); }
+    .simulator-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+    .simulator-title h2 { font-weight: 800; color: var(--dark); font-size: 22px; }
+    .simulator-title p { font-size: 13px; color: var(--text-light); margin-top: 3px; }
+    .sim-controls { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; box-shadow: var(--shadow-sm); display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; }
+    .sim-controls label { font-size: 10px; font-weight: 700; color: var(--text-light); text-transform: uppercase; display: block; margin-bottom: 5px; letter-spacing: 0.5px; }
+    .simulator-layout { display: grid; grid-template-columns: 1fr 390px; gap: 40px; align-items: start; }
+    .info-panel { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-sm); }
+    .info-panel h3 { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .scenario-card { background: var(--light); border-radius: 12px; padding: 14px; margin-bottom: 12px; border-left: 4px solid var(--primary); }
+    .scenario-card:last-child { margin-bottom: 0; }
+    .scenario-tag { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; text-transform: uppercase; }
+    .scenario-card p { font-size: 12px; color: var(--text); line-height: 1.5; }
+    .scenario-card strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+
+    /* ── Status pills ── */
+    .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
+    .status-pill.pending  { background:#fef3c7; color:#d97706; }
+    .status-pill.confirmed{ background:#dcfce7; color:#15803d; }
+    .status-pill.finished { background:#dbeafe; color:#1d4ed8; }
+    .status-pill.rejected { background:#fee2e2; color:#b91c1c; }
+    .status-pill.summary  { background:#f3e8ff; color:#6d28d9; }
+    .status-pill.active-badge { background:#dcfce7; color:#15803d; }
+
+    /* ── Request cards ── */
+    .request-card { background: #fffdf5; border: 1px solid #fde68a; border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+    .request-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .patient-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .patient-avatar { width: 38px; height: 38px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; }
+    .patient-name { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .patient-sub { font-size: 10px; color: var(--text-light); }
+    .request-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .meta-chip { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 8px; background: var(--light); color: var(--text); border: 1px solid var(--border); }
+    .action-row { display: flex; gap: 8px; border-top: 1px solid #fef3c7; padding-top: 10px; }
+    .btn-accept { flex: 1; height: 36px; border-radius: 10px; border: none; background: #dcfce7; color: #15803d; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .btn-accept:hover { background: #bbf7d0; }
+    .btn-accept:active { transform: scale(0.96); }
+    .btn-reject { flex: 1; height: 36px; border-radius: 10px; border: none; background: #fee2e2; color: #b91c1c; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .btn-reject:hover { background: #fecaca; }
+    .btn-reject:active { transform: scale(0.96); }
+
+    /* ── Visit cards ── */
+    .visit-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 10px; transition: border-color 0.2s; }
+    .visit-card:hover { border-color: var(--primary); }
+    .visit-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .visit-time { font-size: 13px; font-weight: 800; color: var(--primary); }
+    .visit-meta { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 10px; }
+
+    /* ── Wallet hero ── */
+    .wallet-hero { background: linear-gradient(135deg, #0f766e 0%, var(--primary) 100%); border-radius: 16px; padding: 18px; color: #fff; position: relative; overflow: hidden; margin-bottom: 16px; }
+    .wallet-hero::before { content: ''; position: absolute; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.07); top: -30px; right: -20px; }
+    .wallet-label { font-size: 10px; font-weight: 600; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.8px; }
+    .wallet-amount { font-size: 28px; font-weight: 800; line-height: 1.2; margin: 4px 0 12px; }
+    .wallet-actions { display: flex; gap: 8px; position: relative; z-index: 1; }
+    .wallet-action-btn { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+    /* ── Section heading ── */
+    .section-heading { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .section-heading a { font-size: 11px; font-weight: 600; color: var(--primary); cursor: pointer; }
+
+    /* ── Profile ── */
+    .profile-hero { background: linear-gradient(135deg, var(--primary) 0%, #0f766e 100%); border-radius: 16px; padding: 20px 16px; color: #fff; text-align: center; margin-bottom: 12px; }
+    .profile-avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; margin: 0 auto 10px; }
+    .info-block { background: var(--white); border-radius: 12px; padding: 12px 14px; border: 1px solid var(--border); margin-bottom: 10px; }
+    .info-block h4 { font-size: 11px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .info-row { display: flex; justify-content: space-between; font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+    .info-row:last-child { border-bottom: none; }
+    .info-row span:first-child { color: var(--text-light); }
+    .info-row span:last-child { font-weight: 600; color: var(--dark); }
+
+    /* ── Schedule ── */
+    .day-row { border-bottom: 1px solid var(--border); padding: 10px 0; }
+    .day-row:last-child { border-bottom: none; }
+    .day-label { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .shift-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .shift-chip { font-size: 10px; font-weight: 600; padding: 4px 9px; border-radius: 8px; background: var(--primary-light); color: var(--primary); border: 1px solid #99f6e4; }
+    .shift-chip.empty { background: var(--light); color: var(--text-light); border-color: var(--border); }
+    .add-shift-btn { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: none; border: 1px dashed var(--primary); color: var(--primary); cursor: pointer; }
+
+    /* ── Patients tab ── */
+    .patient-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.2s; }
+    .patient-card:hover { border-color: var(--primary); }
+    .patient-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .patient-card-avatar { width: 42px; height: 42px; border-radius: 12px; background: var(--secondary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+    .patient-card-name { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .patient-card-sub { font-size: 10px; color: var(--text-light); }
+
+    /* ── Clinical Room ── */
+    .clinical-room { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #0f172a; z-index: 500; display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32,0.72,0,1); }
+    .clinical-room.open { transform: translateY(0); }
+    .cr-header { padding: 14px 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; }
+    .cr-header h3 { font-size: 14px; font-weight: 700; color: #fff; }
+    .cr-badge { background: #dc2626; color: #fff; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; display: flex; align-items: center; gap: 4px; }
+    .cr-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .cr-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
+    .cr-timer { text-align: center; padding: 20px 0; }
+    .cr-time-display { font-size: 48px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+    .cr-time-label { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .cr-patient-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    .cr-patient-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .cr-patient-meta { font-size: 11px; color: rgba(255,255,255,0.6); }
+    .cr-notes-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .cr-notes { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px; color: #fff; font-size: 12px; font-family: var(--font); resize: none; min-height: 80px; }
+    .cr-notes:focus { outline: none; border-color: var(--primary); }
+    .cr-notes::placeholder { color: rgba(255,255,255,0.35); }
+    .cr-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .btn-end-session { width: 100%; height: 46px; border-radius: 12px; border: none; background: #dc2626; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-end-session:hover { background: #b91c1c; }
+    .btn-end-session:active { transform: scale(0.98); }
+
+    /* ── Summary form overlay ── */
+    .summary-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--white); z-index: 600; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); }
+    .summary-overlay.open { transform: translateY(0); }
+    .summary-header { background: var(--primary); color: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+    .summary-header h3 { font-size: 15px; font-weight: 800; }
+    .summary-body { flex: 1; overflow-y: auto; padding: 16px; }
+    .summary-footer { padding: 12px 16px; border-top: 1px solid var(--border); }
+    .form-label-sm { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 5px; display: block; }
+    .form-textarea { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-size: 12px; font-family: var(--font); color: var(--dark); resize: none; min-height: 70px; transition: border-color 0.2s; }
+    .form-textarea:focus { outline: none; border-color: var(--primary); }
+    .form-textarea::placeholder { color: var(--text-light); }
+    .form-group-sm { margin-bottom: 12px; }
+
+    /* ── Reject reason overlay ── */
+    .reject-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: var(--white); border-radius: 20px 20px 0 0; z-index: 700; padding: 16px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); box-shadow: 0 -8px 30px rgba(0,0,0,0.15); }
+    .reject-overlay.open { transform: translateY(0); }
+    .reject-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 14px; }
+    .reject-backdrop { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.4); z-index: 699; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .reject-backdrop.visible { opacity: 1; pointer-events: auto; }
+
+    /* ── Toast ── */
+    .toast { position: absolute; bottom: 75px; left: 12px; right: 12px; background: var(--dark); color: #fff; border-radius: 12px; padding: 10px 14px; font-size: 12px; font-weight: 600; z-index: 999; display: flex; align-items: center; gap: 8px; transform: translateY(20px); opacity: 0; transition: all 0.3s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: #15803d; }
+    .toast.error { background: #dc2626; }
+
+    /* ── Bottom nav ── */
+    .btn-full { width: 100%; height: 44px; border-radius: 12px; border: none; background: var(--primary); color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-full:hover { background: var(--primary-hover); }
+    .btn-full:active { transform: scale(0.98); }
+    .btn-full:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-full.secondary { background: var(--light); color: var(--dark); border: 1px solid var(--border); }
+    .btn-full.secondary:hover { background: var(--border); }
+    .btn-full.danger { background: #dc2626; }
+    .btn-full.danger:hover { background: #b91c1c; }
+
+    /* ── Tab pills ── */
+    .tab-pills { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+    .tab-pill { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--white); font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0; color: var(--text); }
+    .tab-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 32px 16px; color: var(--text-light); }
+    .empty-state .empty-icon { font-size: 36px; margin-bottom: 10px; }
+    .empty-state p { font-size: 12px; line-height: 1.5; }
+
+    /* ── Onboarding stages ── */
+    .stage-progress { display: flex; flex-direction: column; gap: 0; }
+    .stage-item { display: flex; gap: 12px; align-items: flex-start; padding-bottom: 16px; position: relative; }
+    .stage-item:last-child { padding-bottom: 0; }
+    .stage-item::before { content: ''; position: absolute; left: 16px; top: 36px; bottom: 0; width: 2px; background: var(--border); }
+    .stage-item:last-child::before { display: none; }
+    .stage-dot { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; border: 2px solid var(--border); background: var(--white); color: var(--text-light); z-index: 1; }
+    .stage-dot.done { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .stage-dot.current { background: var(--white); border-color: var(--primary); color: var(--primary); }
+    .stage-dot.pending { background: var(--light); border-color: var(--border); color: var(--text-light); }
+    .stage-content h5 { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .stage-content p { font-size: 11px; color: var(--text-light); margin-top: 2px; line-height: 1.4; }
+
+    /* ── Txn item ── */
+    .txn-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .txn-item:last-child { border-bottom: none; }
+    .txn-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .txn-icon.credit { background: #dcfce7; }
+    .txn-icon.pending { background: #fef3c7; }
+    .txn-info { flex: 1; }
+    .txn-name { font-size: 12px; font-weight: 600; color: var(--dark); }
+    .txn-date { font-size: 10px; color: var(--text-light); }
+    .txn-amount { font-size: 13px; font-weight: 700; }
+    .txn-amount.credit { color: #15803d; }
+    .txn-amount.pending { color: #d97706; }
+
+    /* ── Notification badge on nav ── */
+    .nav-badge { position: absolute; top: 2px; right: 2px; background: #ef4444; color: #fff; font-size: 8px; font-weight: 800; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Login ── */
+    .login-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 20px; text-align: center; }
+    .login-logo { width: 56px; height: 56px; border-radius: 16px; background: var(--primary-light); border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary); margin: 0 auto 14px; }
+    .login-title { font-size: 17px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+    .login-sub { font-size: 11px; color: var(--text-light); margin-bottom: 20px; }
+    .form-input { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-size: 12px; font-family: var(--font); color: var(--dark); margin-bottom: 8px; }
+    .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(13,148,136,0.15); }
+    .hint-box { background: var(--light); border: 1px dashed var(--border); border-radius: 10px; padding: 8px 12px; margin-bottom: 16px; text-align: left; }
+    .hint-box p { font-size: 10px; color: var(--text-light); line-height: 1.5; }
+    .hint-box strong { font-size: 10px; color: var(--primary); display: block; margin-bottom: 3px; }
+  </style>
 </head>
 <body>
-  
-  <div style="max-width: 1200px; margin: 40px auto; padding: 0 20px; font-family: var(--font);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-      <div>
-        <h2 style="font-weight: 800; color: var(--dark);">Ahilney Provider App Simulator</h2>
-        <p style="font-size: 14px; color: var(--text-light); margin-top: 4px;">Interact with the mobile app interface of Doctors & Rehab Specialists (RS).</p>
-      </div>
-      
-      <!-- Simulator controls -->
-      <div style="display: flex; gap: 16px; align-items: center; background: var(--white); padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-        <!-- Active Provider Profile Selector -->
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: var(--text-light); display: block; margin-bottom: 4px; text-transform: uppercase;">Simulate Provider Profile</label>
-          <select id="sim-provider-select" class="select-filter" style="height: 36px;" onchange="selectProviderProfile()">
-            <!-- Populated dynamically -->
-          </select>
-        </div>
+<div class="simulator-page">
 
-        <!-- Simulation Tool Trigger -->
-        <div>
-          <label style="font-size: 11px; font-weight: 700; color: var(--text-light); display: block; margin-bottom: 4px; text-transform: uppercase;">Simulation Events</label>
-          <button class="btn btn-secondary btn-sm" onclick="simulatePatientBooking()" style="font-size:11px; font-weight:700;">Simulate Patient Booking</button>
+  <!-- Top header -->
+  <div class="simulator-header">
+    <div class="simulator-title">
+      <h2>Ahilney – Provider App</h2>
+      <p>Rehab Specialist homecare request management, sessions & wallet</p>
+    </div>
+    <div class="sim-controls">
+      <div>
+        <label>Simulated Provider</label>
+        <select id="sim-provider-select" class="select-filter" style="height:36px; min-width:200px;" onchange="switchProvider()"></select>
+      </div>
+      <div>
+        <label>Simulate Events</label>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="simulateIncomingBooking()">New Patient Booking</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetAllData()">Reset Data</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Main Container -->
-    <div style="display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; max-width: 900px; margin: 0 auto;">
-      
-      <!-- LEFT INFO: Workflow Walkthrough -->
-      <div style="background: var(--white); border-radius: 20px; border: 1px solid var(--border); padding: 24px; box-shadow: var(--shadow-sm);">
-        <h3 style="font-weight: 700; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 113.536 0V21h2v-2.243a8.013 8.013 0 01-1.077-.323z"/></svg>
-          Interactive Prototype Scenarios
-        </h3>
-        
-        <div style="display: flex; flex-direction: column; gap: 16px; font-size: 13px; color: var(--text);">
-          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--primary); box-shadow: var(--shadow-sm);">
-            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
-              <span style="background:var(--primary-light); color:var(--primary); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">SYNC</span>
-              Real-time Admin/Provider State Sync
-            </strong>
-            Try opening the <strong>Admin Dashboard (`admin.html`)</strong> in a second tab. Select the same doctor/RS (e.g. <em>Dr. Marcus Vance</em>) on both tabs, change their verification status in the Admin Panel (e.g., mark as "Active"), and watch this app simulator instantly update!
+  <div class="simulator-layout">
+
+    <!-- LEFT: Scenario walkthrough -->
+    <div class="info-panel">
+      <h3>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        How to test the Provider App
+      </h3>
+
+      <div class="scenario-card">
+        <span class="scenario-tag">Login</span>
+        <strong>Provider Authentication</strong>
+        <p>Switch providers in the dropdown above. The phone resets to the login screen. Use the pre-filled credentials (or any RS email + password "password") to log in.</p>
+      </div>
+
+      <div class="scenario-card" style="border-left-color:#f59e0b;">
+        <span class="scenario-tag" style="background:#fffbeb; color:#d97706;">Requests</span>
+        <strong>Accept or Reject Homecare Bookings</strong>
+        <p>Tap "New Patient Booking" above to inject a pending request. Then on the <strong>Home</strong> tab, review the request details and tap <strong>Accept</strong> or <strong>Reject</strong>. The patient app reflects the change instantly via localStorage.</p>
+      </div>
+
+      <div class="scenario-card" style="border-left-color:#dc2626;">
+        <span class="scenario-tag" style="background:#fee2e2; color:#b91c1c;">Session</span>
+        <strong>Conduct a Home Visit Session</strong>
+        <p>On a Confirmed visit card, tap <strong>Start Session</strong>. A clinical room opens with a live timer. Add notes, then tap <strong>End Session</strong> to open the mandatory post-session summary form.</p>
+      </div>
+
+      <div class="scenario-card" style="border-left-color:#6d28d9;">
+        <span class="scenario-tag" style="background:#f5f3ff; color:#6d28d9;">Summary</span>
+        <strong>Submit Clinical Summary</strong>
+        <p>Fill in Complaint, Diagnosis, and Treatment Plan fields. Submit creates a summary record with status "Pending" for the Admin to audit. Your wallet shows "Pending Audit" for the session fee.</p>
+      </div>
+
+      <div class="scenario-card" style="border-left-color:#0ea5e9;">
+        <span class="scenario-tag" style="background:#f0f9ff; color:#0369a1;">Sync</span>
+        <strong>Real-time Cross-Tab Sync</strong>
+        <p>Open admin.html in a second tab. When the admin approves your session summary, your Wallet tab immediately shows the payout as credited — no refresh needed.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT: Phone mockup -->
+    <div class="phone-simulation-container" style="padding:0; align-items:flex-start;">
+      <div class="phone-mockup">
+        <div class="phone-notch">
+          <div class="phone-camera"></div>
+          <div class="phone-speaker"></div>
+        </div>
+
+        <div class="phone-screen" id="phone-screen">
+
+          <!-- Status bar -->
+          <div class="phone-status-bar">
+            <span class="status-bar-time" id="status-time">09:41</span>
+            <div class="status-bar-icons">
+              <svg width="12" height="12" viewBox="0 0 24 24"><path d="M1 6l11 11L23 6"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+              <svg width="14" height="10" viewBox="0 0 24 16"><rect x="0" y="2" width="20" height="12" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="1.5" y="3.5" width="15" height="9" rx="2" fill="currentColor"/><path d="M21 6v4a2 2 0 0 0 0-4z" fill="currentColor"/></svg>
+            </div>
           </div>
 
-          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--secondary); box-shadow: var(--shadow-sm);">
-            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
-              <span style="background:var(--secondary-light); color:var(--secondary); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">CLINICAL</span>
-              Rehab Specialist (RS) Prescription Rule
-            </strong>
-            Switch the simulated profile to <strong>Karim Abdel-Hadi (RS)</strong>. Under the Appointments list, click on a <strong>Home Visit</strong> appointment (e.g. <em>Ahmed Wael</em>). You will inspect the mandatory doctor's prescription and treatment plan uploaded by the patient.
+          <!-- App main area -->
+          <div id="app-main" style="flex:1; overflow:hidden; display:flex; flex-direction:column;"></div>
+
+          <!-- Bottom nav (hidden until logged in) -->
+          <nav class="mobile-nav" id="bottom-nav" style="display:none; position:relative;">
+            <div class="mobile-nav-item active" id="nav-home" onclick="navigate('home')" style="position:relative;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+              <span>Home</span>
+              <span id="req-badge" style="display:none;" class="nav-badge">0</span>
+            </div>
+            <div class="mobile-nav-item" id="nav-schedule" onclick="navigate('schedule')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <span>Schedule</span>
+            </div>
+            <div class="mobile-nav-item" id="nav-patients" onclick="navigate('patients')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>Patients</span>
+            </div>
+            <div class="mobile-nav-item" id="nav-wallet" onclick="navigate('wallet')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+              <span>Wallet</span>
+            </div>
+            <div class="mobile-nav-item" id="nav-profile" onclick="navigate('profile')">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              <span>Profile</span>
+            </div>
+          </nav>
+
+          <!-- Toast -->
+          <div id="toast" class="toast"></div>
+
+          <!-- Reject reason overlay -->
+          <div id="reject-backdrop" class="reject-backdrop" onclick="closeRejectOverlay()"></div>
+          <div id="reject-overlay" class="reject-overlay">
+            <div class="reject-handle"></div>
+            <h4 style="font-size:14px; font-weight:700; color:var(--dark); margin-bottom:4px;">Reject Booking</h4>
+            <p style="font-size:11px; color:var(--text-light); margin-bottom:12px;">Please provide a brief reason for rejecting this request.</p>
+            <textarea id="reject-reason" class="form-textarea" placeholder="e.g. Unavailable on that date / outside coverage area…" style="margin-bottom:12px;"></textarea>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-full secondary" style="flex:1; height:38px; font-size:12px;" onclick="closeRejectOverlay()">Cancel</button>
+              <button class="btn-full danger" style="flex:1; height:38px; font-size:12px;" onclick="confirmReject()">Reject Booking</button>
+            </div>
           </div>
 
-          <div style="background: var(--light); padding: 14px; border-radius: 12px; border-left: 4px solid var(--info); box-shadow: var(--shadow-sm);">
-            <strong style="display:flex; align-items:center; gap:8px; margin-bottom: 6px; color: var(--dark); font-weight:700;">
-              <span style="background:rgba(14, 165, 233, 0.1); color:var(--info); padding:2px 8px; border-radius:12px; font-size:10px; font-weight:800;">SCHEDULING</span>
-              Work Scheduling
-            </strong>
-            Click the calendar tab (middle item on the phone navigation bar). Toggle different time slots for work availability, then click <strong>"Confirm"</strong> to save.
+          <!-- Clinical Room overlay -->
+          <div id="clinical-room" class="clinical-room">
+            <div class="cr-header">
+              <div>
+                <h3>Home Visit Session</h3>
+                <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-top:2px;" id="cr-patient-label">Patient</div>
+              </div>
+              <div class="cr-badge">
+                <div class="dot"></div>
+                LIVE
+              </div>
+            </div>
+            <div class="cr-body">
+              <div class="cr-timer">
+                <div class="cr-time-display" id="cr-timer">00:00</div>
+                <div class="cr-time-label">Session Duration</div>
+              </div>
+              <div class="cr-patient-card" id="cr-patient-card">
+                <div class="cr-patient-name" id="cr-patient-name">Patient</div>
+                <div class="cr-patient-meta" id="cr-patient-meta">Loading…</div>
+              </div>
+              <div style="margin-top:12px;">
+                <div class="cr-notes-label">Session Notes</div>
+                <textarea class="cr-notes" id="cr-notes" placeholder="Add clinical observations, exercises performed, patient response…"></textarea>
+              </div>
+            </div>
+            <div class="cr-footer">
+              <button class="btn-end-session" onclick="endSession()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9 10a1 1 0 00-1 1v2a1 1 0 001 1h6a1 1 0 001-1v-2a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                End Session
+              </button>
+            </div>
           </div>
+
+          <!-- Post-session summary overlay -->
+          <div id="summary-overlay" class="summary-overlay">
+            <div class="summary-header">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <h3>Post-Session Summary</h3>
+            </div>
+            <div class="summary-body" id="summary-body"></div>
+            <div class="summary-footer">
+              <button class="btn-full" id="submit-summary-btn" onclick="submitSummary()">Submit for Admin Review</button>
+            </div>
+          </div>
+
+        </div><!-- end phone-screen -->
+      </div><!-- end phone-mockup -->
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let currentProvider = null;
+let isLoggedIn = false;
+let currentTab = 'home';
+let patientsFilter = 'all';
+
+// Session state
+let activeSessionAptId = null;
+let sessionTimerInterval = null;
+let sessionSeconds = 0;
+
+// Reject state
+let rejectAptId = null;
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  updateClock();
+  setInterval(updateClock, 30000);
+
+  const providers = getProviders().filter(p => p.type === 'RS');
+  const sel = document.getElementById('sim-provider-select');
+  providers.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.name} (${p.type})`;
+    sel.appendChild(opt);
+  });
+
+  currentProvider = providers[0];
+  renderLogin();
+});
+
+window.addEventListener('storage', () => {
+  if (!isLoggedIn || !currentProvider) return;
+  const providers = getProviders();
+  currentProvider = providers.find(p => p.id === currentProvider.id) || currentProvider;
+  updateBadge();
+  // Only re-render if not in session
+  const cr = document.getElementById('clinical-room');
+  if (!cr.classList.contains('open')) {
+    renderTab(currentTab);
+  }
+});
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('status-time').textContent =
+    `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROVIDER SWITCH
+// ═══════════════════════════════════════════════════════
+function switchProvider() {
+  const id = document.getElementById('sim-provider-select').value;
+  currentProvider = getProviders().find(p => p.id === id) || currentProvider;
+  isLoggedIn = false;
+  stopTimer();
+  closeAll();
+  renderLogin();
+  document.getElementById('bottom-nav').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOGIN
+// ═══════════════════════════════════════════════════════
+function renderLogin() {
+  const main = document.getElementById('app-main');
+  const p = currentProvider;
+  main.innerHTML = `
+    <div class="login-screen">
+      <div class="login-logo">
+        <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <div class="login-title">Provider Login</div>
+      <div class="login-sub">Ahilney Clinical Network – RS Portal</div>
+
+      <div class="hint-box" style="width:100%;">
+        <strong>🔑 Quick demo credentials</strong>
+        <p>Email: <strong>${p.email}</strong><br>Password: <strong>password</strong></p>
+      </div>
+
+      <input id="login-email" class="form-input" type="email" placeholder="Professional email" value="${p.email}">
+      <input id="login-pass" class="form-input" type="password" placeholder="Password" value="password" onkeydown="if(event.key==='Enter')doLogin()">
+      <div id="login-error" style="color:#dc2626; font-size:11px; font-weight:600; margin-bottom:8px; display:none; text-align:center;"></div>
+      <button class="btn-full" onclick="doLogin()" style="max-width:100%;">Log In to Provider App</button>
+
+      <div style="margin-top:16px; display:flex; gap:8px; width:100%;">
+        <button class="btn-full secondary" style="flex:1; height:36px; font-size:11px;" onclick="ssoLogin('Google')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google
+        </button>
+        <button class="btn-full secondary" style="flex:1; height:36px; font-size:11px;" onclick="ssoLogin('Microsoft')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z" fill="#0078D4"/></svg>
+          Microsoft
+        </button>
+      </div>
+    </div>
+  `;
+  document.getElementById('bottom-nav').style.display = 'none';
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  const providers = getProviders();
+  const match = providers.find(p => p.email === email && (p.password || 'password') === pass);
+  if (!match) {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-error').textContent = 'Invalid credentials. Try the pre-filled values.';
+    return;
+  }
+  currentProvider = match;
+  const sel = document.getElementById('sim-provider-select');
+  sel.value = match.id;
+  isLoggedIn = true;
+  document.getElementById('bottom-nav').style.display = 'flex';
+  navigate('home');
+}
+
+function ssoLogin(provider) {
+  // SSO mock: just log in as the currently selected provider
+  isLoggedIn = true;
+  document.getElementById('bottom-nav').style.display = 'flex';
+  showToast(`Logged in via ${provider} SSO`, 'success');
+  navigate('home');
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+function navigate(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById(`nav-${tab}`);
+  if (el) el.classList.add('active');
+  renderTab(tab);
+}
+
+function renderTab(tab) {
+  const main = document.getElementById('app-main');
+  if (tab === 'home')     renderHome(main);
+  else if (tab === 'schedule')  renderSchedule(main);
+  else if (tab === 'patients')  renderPatients(main);
+  else if (tab === 'wallet')    renderWallet(main);
+  else if (tab === 'profile')   renderProfile(main);
+}
+
+function updateBadge() {
+  if (!currentProvider) return;
+  const pending = getAppointments().filter(a => a.providerId === currentProvider.id && a.status === 'Pending RS Acceptance');
+  const badge = document.getElementById('req-badge');
+  if (!badge) return;
+  if (pending.length > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = pending.length;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  HOME SCREEN
+// ═══════════════════════════════════════════════════════
+function renderHome(main) {
+  const prov = currentProvider;
+  const initials = prov.name.replace('Dr. ','').split(' ').map(n=>n[0]).join('').slice(0,2);
+  const allApts = getAppointments().filter(a => a.providerId === prov.id);
+  const pending = allApts.filter(a => a.status === 'Pending RS Acceptance');
+  const confirmed = allApts.filter(a => ['Confirmed','Upcoming'].includes(a.status));
+  const needSummary = allApts.filter(a => a.status === 'Need Summary');
+  const isActive = prov.status === 'active';
+
+  updateBadge();
+
+  main.innerHTML = `
+    <header style="background:var(--primary); color:#fff; padding:14px 16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:10px; opacity:0.75;">Good ${tod()}, specialist</div>
+          <div style="font-size:15px; font-weight:800;">${prov.name.split(' ')[0]} ${prov.name.split(' ')[1] || ''}</div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button style="background:rgba(255,255,255,0.15); border:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer; position:relative;" onclick="toggleNotifications()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+            ${getNotifications(prov.id).length > 0 ? `<span style="position:absolute;top:-2px;right:-2px;background:#ef4444;width:8px;height:8px;border-radius:50%;"></span>` : ''}
+          </button>
+          <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;">${initials}</div>
+        </div>
+      </div>
+      ${isActive ? `
+      <div style="margin-top:10px; background:rgba(255,255,255,0.12); border-radius:8px; padding:6px 10px; display:flex; align-items:center; gap:6px; font-size:11px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0;"></span>
+        <span>Profile live · Accepting homecare visits</span>
+      </div>` : `
+      <div style="margin-top:10px; background:rgba(245,158,11,0.2); border-radius:8px; padding:6px 10px; display:flex; align-items:center; gap:6px; font-size:11px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#fbbf24;flex-shrink:0;"></span>
+        <span>Onboarding in progress · Status: ${prov.status}</span>
+      </div>`}
+    </header>
+    <div class="app-body">
+
+      <!-- Stats row -->
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:4px;">
+        <div style="background:var(--white); border-radius:12px; padding:10px; text-align:center; border:1px solid var(--border);">
+          <div style="font-size:20px; font-weight:800; color:${pending.length>0 ? '#d97706' : 'var(--dark)'};">${pending.length}</div>
+          <div style="font-size:9px; color:var(--text-light); font-weight:600;">Pending</div>
+        </div>
+        <div style="background:var(--white); border-radius:12px; padding:10px; text-align:center; border:1px solid var(--border);">
+          <div style="font-size:20px; font-weight:800; color:var(--primary);">${confirmed.length}</div>
+          <div style="font-size:9px; color:var(--text-light); font-weight:600;">Confirmed</div>
+        </div>
+        <div style="background:var(--white); border-radius:12px; padding:10px; text-align:center; border:1px solid var(--border);">
+          <div style="font-size:20px; font-weight:800; color:#6d28d9;">${needSummary.length}</div>
+          <div style="font-size:9px; color:var(--text-light); font-weight:600;">Need Summary</div>
         </div>
       </div>
 
-      <!-- CENTER: Interactive Phone Simulator -->
-      <div class="phone-simulation-container">
-        <div class="phone-mockup">
-          <div class="phone-notch">
-            <div class="phone-camera"></div>
-            <div class="phone-speaker"></div>
-          </div>
-          <div class="phone-screen">
-            <!-- Phone Status Bar -->
-            <div class="phone-status-bar">
-              <span class="status-bar-time">09:41</span>
-              <div class="status-bar-icons">
-                <svg width="15" height="11" viewBox="0 0 17 11">
-                  <rect x="0" y="8" width="2" height="3" rx="0.5" fill="currentColor" />
-                  <rect x="3" y="6" width="2" height="5" rx="0.5" fill="currentColor" />
-                  <rect x="6" y="4" width="2" height="7" rx="0.5" fill="currentColor" />
-                  <rect x="9" y="2" width="2" height="9" rx="0.5" fill="currentColor" />
-                  <rect x="12" y="0" width="2" height="11" rx="0.5" fill="currentColor" />
-                </svg>
-                <svg width="14" height="11" viewBox="0 0 15 11">
-                  <path d="M7.5 11a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-3.5-3.5a5 5 0 0 1 7 0 .5.5 0 0 0 .7-.7 6 6 0 0 0-8.4 0 .5.5 0 0 0 .7.7zm-2.8-2.8a9 9 0 0 1 12.6 0 .5.5 0 0 0 .7-.7 10 10 0 0 0-14 0 .5.5 0 0 0 .7.7z" fill="currentColor" />
-                </svg>
-                <svg width="18" height="11" viewBox="0 0 22 11">
-                  <rect x="0" y="0" width="20" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1" />
-                  <rect x="2" y="2" width="13" height="7" rx="1.5" fill="currentColor" />
-                  <path d="M21 3.5v4" stroke="currentColor" stroke-linecap="round" stroke-width="1" />
-                </svg>
+      ${needSummary.length > 0 ? `
+      <div style="background:#fdf4ff; border:1px solid #e9d5ff; border-radius:12px; padding:10px 12px; margin-top:4px;">
+        <div style="font-size:11px; font-weight:700; color:#6d28d9; margin-bottom:8px;">📝 Sessions Awaiting Summary</div>
+        ${needSummary.map(a => {
+          const pat = PATIENTS_DATA[a.patientId] || { name: 'Patient' };
+          return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #e9d5ff;">
+              <div>
+                <div style="font-size:12px; font-weight:700; color:var(--dark);">${pat.name}</div>
+                <div style="font-size:10px; color:var(--text-light);">${a.time}</div>
               </div>
-            </div>
-            
-            <!-- Mobile App Header -->
-            <header class="app-header" style="padding: 12px 20px 16px 20px;">
-              <span class="app-header-title" id="app-header-title">Ahilney Provider</span>
-              <div class="app-header-icons">
-                <button class="app-header-icon-btn" onclick="toggleMobileNotifications()">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                  <span style="position:absolute; top:-2px; right:-2px; background:var(--danger); width:8px; height:8px; border-radius:50%; display:none;" id="mobile-notif-dot"></span>
-                </button>
-              </div>
-            </header>
-
-            <!-- Phone Screen Dynamic Viewports -->
-            <div class="app-body" id="app-body-content">
-              <!-- Content populated dynamically based on active tab & profile state -->
-            </div>
-
-            <!-- Mobile Notification Drawer Panel inside device -->
-            <div class="notification-panel-overlay" id="mobile-notif-overlay" onclick="toggleMobileNotifications()">
-              <div class="notification-panel" onclick="event.stopPropagation()">
-                <div class="notification-panel-header">
-                  <span class="notification-panel-title">Notifications</span>
-                  <span class="clear-all-notifications" onclick="clearMobileNotifications()">Clear All</span>
-                </div>
-                <div id="mobile-notifications-list">
-                  <!-- Dynamic Notifications -->
-                </div>
-              </div>
-            </div>
-
-            <!-- Mobile App Bottom Navigation -->
-            <nav class="mobile-nav" id="mobile-app-nav">
-              <div class="mobile-nav-item active" id="nav-home" onclick="setMobileTab('home')">
-                <svg viewBox="0 0 24 24"><path d="M10 20H5a1 1 0 0 1-1-1v-6.586l8-8 8 8V19a1 1 0 0 1-1 1h-5v-6H10v6zm2-14.414l-6 6V18h3v-6h6v6h3v-6.414l-6-6z"/></svg>
-                <span>Sessions</span>
-              </div>
-              <div class="mobile-nav-item" id="nav-schedule" onclick="setMobileTab('schedule')">
-                <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-                <span>Schedule</span>
-              </div>
-              <div class="mobile-nav-item" id="nav-wallet" onclick="setMobileTab('wallet')">
-                <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                <span>Wallet</span>
-              </div>
-              <div class="mobile-nav-item" id="nav-profile" onclick="setMobileTab('profile')">
-                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span>Profile</span>
-              </div>
-            </nav>
-
-            <!-- RIGHT PANEL: Interactive Patient Profile Card Detail (Nested in phone screen) -->
-            <div id="details-panel" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999; background: var(--white); padding: 42px 16px 16px 16px; overflow-y: auto; display: none;">
-              <!-- Filled dynamically on card click -->
-            </div>
-
-            <!-- ================= OVERLAY: SESSION ROOM (Nested in phone screen) ================= -->
-            <div id="session-room-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:var(--white); z-index:1000; flex-direction:column; overflow:hidden; font-family:var(--font);">
-              <div style="background:var(--white); width:100%; height:100%; display:flex; flex-direction:column; overflow:hidden; position:relative;">
-                <!-- Video Screen area -->
-                <div style="height:45%; background:#1a1a1a; position:relative; display:flex; align-items:center; justify-content:center; color:white;">
-                  <div style="text-align:center;">
-                    <div style="width:70px; height:70px; border-radius:50%; background:var(--primary); display:flex; align-items:center; justify-content:center; margin:0 auto 12px auto; font-weight:700; font-size:24px;" id="sess-avatar">AW</div>
-                    <h4 style="font-weight:700; margin:0;" id="sess-patient-name">Ahmed Wael</h4>
-                    <span style="font-size:11px; opacity:0.8;" id="sess-timer">00:00</span>
-                  </div>
-                  <button onclick="endActiveSession()" style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); background:var(--danger); border:none; color:white; padding:10px 20px; border-radius:30px; font-weight:700; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:8px;">
-                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle;"><path d="M6 19h12V5H6v14z"/></svg>
-                    End Session & Review
-                  </button>
-                </div>
-                <!-- Live Chat window -->
-                <div style="flex:1; display:flex; flex-direction:column; background:var(--light);">
-                  <div style="padding:10px; border-bottom:1px solid var(--border); font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">Live Session Chat Log</div>
-                  <div style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;" id="sess-chat-log">
-                    <!-- Chat logs dynamically populated -->
-                  </div>
-                  <div style="padding:10px; border-top:1px solid var(--border); background:white; display:flex; gap:10px;">
-                    <input type="text" id="sess-chat-input" placeholder="Type a message..." style="flex:1; border:1px solid var(--border); border-radius:20px; padding:6px 12px; font-size:13px;" onkeypress="if(event.key==='Enter') sendSessChatMsg()">
-                    <button onclick="sendSessChatMsg()" style="background:var(--primary); border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; color:white; cursor:pointer;">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- ================= OVERLAY: POST-SESSION SUMMARY FORM (Nested in phone screen) ================= -->
-            <div id="session-summary-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:var(--white); z-index:1001; flex-direction:column; padding:42px 16px 16px 16px; overflow-y:auto; font-family:var(--font);">
-              <div style="background:var(--white); width:100%; display:flex; flex-direction:column; gap:16px;">
-                <h3 style="font-weight:800; color:var(--dark); margin:0;">Create Session Summary</h3>
-                <p style="font-size:12px; color:var(--text-light); margin:0;">Clinical review submission is required. The medical panel reviews summaries before release.</p>
-                <form id="form-sess-summary" onsubmit="submitSessSummary(event)" style="display:flex; flex-direction:column; gap:12px;">
-                  <input type="hidden" id="sum-apt-id">
-                  <input type="hidden" id="sum-patient-id">
-                  <div class="form-group">
-                    <label class="form-label" style="font-size:11px;">Patient Chief Complaint</label>
-                    <input type="text" class="form-control" id="sum-complaint" required placeholder="e.g. Knee extension limitation and swelling">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label" style="font-size:11px;">Clinical Diagnosis</label>
-                    <input type="text" class="form-control" id="sum-diagnosis" required placeholder="e.g. Post-ACL surgical joint stiffness">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label" style="font-size:11px;">Rehab Plan & Prescription Details</label>
-                    <textarea class="form-control" id="sum-plan" required rows="3" placeholder="e.g. Daily range extension exercises, patellar glides, quad strengthening" style="resize:none; padding:8px;"></textarea>
-                  </div>
-                  <div style="display:flex; gap:10px; margin-top:8px;">
-                    <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="closeSummaryOverlay()">Cancel</button>
-                    <button type="submit" class="btn btn-primary btn-sm" style="flex:1;">Submit Summary</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            <!-- ================= OVERLAY: WITHDRAWAL REQUEST FORM (Nested inside phone screen container) ================= -->
-            <div id="withdrawal-modal-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1001; justify-content:center; align-items:center; font-family:var(--font);">
-              <div style="background:var(--white); width:90%; max-width:320px; border-radius:24px; padding:20px; box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:16px;">
-                <h3 style="font-weight:800; color:var(--dark); margin:0; font-size:16px;">Request Balance Withdrawal</h3>
-                <p style="font-size:11px; color:var(--text-light); margin:0;">Choose your payout method and provide destination details for review.</p>
-                <form id="form-withdrawal" onsubmit="submitWithdrawalRequest(event)" style="display:flex; flex-direction:column; gap:12px;">
-                  <div class="form-group">
-                    <label class="form-label" style="font-size:11px;">Amount (EGP)</label>
-                    <input type="number" class="form-control" id="withdraw-amount" required placeholder="e.g. 500" min="1">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label" style="font-size:11px;">Payout Method</label>
-                    <select class="form-control" id="withdraw-method" required onchange="updateWithdrawDetailsPlaceholder(this.value)">
-                      <option value="Instapay">Instapay Address</option>
-                      <option value="Bank Transfer">Bank Account Transfer</option>
-                      <option value="Digital Wallet">Mobile Cash Wallet (e.g. Vodafone Cash)</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label" style="font-size:11px;" id="withdraw-details-label">Instapay Username / Link</label>
-                    <input type="text" class="form-control" id="withdraw-details" required placeholder="e.g. name@instapay">
-                  </div>
-                  <div style="display:flex; gap:10px; margin-top:8px;">
-                    <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="closeWithdrawModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary btn-sm" style="flex:1;">Submit Payout Request</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-  <script src="app.js"></script>
-  <script>
-    let activeMobileTab = 'home';
-    let selectedProvider = null;
-    let selectedPatientId = null;
-    let providerLoggedIn = true; // Auto-logged in by default for demonstration
-
-    function logOutProvider() {
-      providerLoggedIn = false;
-      renderScreenContent();
-    }
-
-    function handleProviderLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value.trim();
-      const pass = document.getElementById('login-pass').value.trim();
-      const errorDiv = document.getElementById('login-error-msg');
-      
-      const providers = getProviders();
-      const found = providers.find(p => p.email.toLowerCase() === email.toLowerCase());
-      
-      if (found && found.password === pass) {
-        providerLoggedIn = true;
-        selectedProvider = found;
-        document.getElementById('sim-provider-select').value = found.id;
-        renderScreenContent();
-      } else {
-        errorDiv.style.display = 'block';
-        errorDiv.innerText = "Invalid credentials. Try: sarah.j@ahilney.com / password";
-      }
-    }
-
-    function mockSSOLogin(providerName) {
-      const providers = getProviders();
-      // Auto login as corresponding provider or default to Dr. Sarah
-      const found = providers.find(p => p.id === 'PROV-001');
-      providerLoggedIn = true;
-      selectedProvider = found;
-      document.getElementById('sim-provider-select').value = found.id;
-      alert(`Simulated SSO Login via ${providerName} Successful!`);
-      renderScreenContent();
-    }
-
-    function uploadCredentialsFromApp() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === selectedProvider.id);
-      if (p) {
-        p.documents = [
-          { name: "National_ID.pdf", status: "Uploaded" },
-          { name: "Medical_License.pdf", status: "Uploaded" }
-        ];
-        p.status = 'review';
-        saveProviders(providers);
-        selectedProvider = p;
-        alert("Credentials uploaded successfully! Awaiting Operational Team Audit.");
-        renderScreenContent();
-      }
-    }
-
-    function signContractFromApp() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === selectedProvider.id);
-      if (p) {
-        p.status = 'active';
-        p.contractSigned = true;
-        saveProviders(providers);
-        selectedProvider = p;
-        alert("Contract Signed! Your listing is now live in the Patient app.");
-        renderScreenContent();
-      }
-    }
-
-    // Load simulator dropdown profiles
-    function renderProfileSelector() {
-      const providers = getProviders();
-      const selectEl = document.getElementById('sim-provider-select');
-      
-      selectEl.innerHTML = '';
-      providers.forEach(p => {
-        const option = document.createElement('option');
-        option.value = p.id;
-        option.innerText = `${p.name} (${p.status.toUpperCase()} - ${p.type})`;
-        selectEl.appendChild(option);
-      });
-      
-      if (!selectedProvider) {
-        selectedProvider = providers[0];
-      } else {
-        selectedProvider = providers.find(item => item.id === selectedProvider.id) || providers[0];
-      }
-      selectEl.value = selectedProvider.id;
-    }
-
-    function selectProviderProfile() {
-      const providers = getProviders();
-      const selectVal = document.getElementById('sim-provider-select').value;
-      selectedProvider = providers.find(item => item.id === selectVal);
-      selectedPatientId = null;
-      providerLoggedIn = true; // Auto login when simulator dropdown is toggled
-      document.getElementById('details-panel').style.display = 'none';
-      renderScreenContent();
-    }
-
-    // Tab switcher inside phone layout
-    function setMobileTab(tabId) {
-      activeMobileTab = tabId;
-      document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById(`nav-${tabId}`).classList.add('active');
-      renderScreenContent();
-    }
-
-    // Render Phone Screens
-    function renderScreenContent() {
-      if (!selectedProvider) return;
-      const appBody = document.getElementById('app-body-content');
-      const mobileNav = document.getElementById('mobile-app-nav');
-      appBody.innerHTML = '';
-
-      // 1. Authentication Screening
-      if (!providerLoggedIn) {
-        mobileNav.style.display = 'none';
-        
-        const loginEl = document.createElement('div');
-        loginEl.style.padding = '20px 14px';
-        loginEl.style.display = 'flex';
-        loginEl.style.flexDirection = 'column';
-        loginEl.style.justifyContent = 'center';
-        loginEl.style.height = '100%';
-        loginEl.style.fontFamily = 'var(--font)';
-        
-        loginEl.innerHTML = `
-          <div style="text-align:center; margin-bottom:20px;">
-            <div style="background:var(--primary-light); color:var(--primary); width:48px; height:48px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:8px; font-weight:800; font-size:20px;">A</div>
-            <h3 style="font-size:18px; font-weight:800; color:var(--dark); margin:0 0 2px 0;">Ahilney Portal</h3>
-            <p style="font-size:11px; color:var(--text-light); margin:0;">Access your clinical portal & schedule</p>
-          </div>
-
-          <form id="provider-login-form" onsubmit="handleProviderLogin(event)" style="display:flex; flex-direction:column; gap:10px;">
-            <div class="form-group">
-              <label class="form-label" style="font-size:10px; margin-bottom:4px;">Professional Email</label>
-              <input type="email" id="login-email" class="form-control" placeholder="e.g. sarah.j@ahilney.com" required style="height:34px; border-radius:8px; font-size:12px;">
-            </div>
-            <div class="form-group">
-              <label class="form-label" style="font-size:10px; margin-bottom:4px;">Password</label>
-              <input type="password" id="login-pass" class="form-control" placeholder="••••••••" required style="height:34px; border-radius:8px; font-size:12px;">
-            </div>
-            
-            <div id="login-error-msg" style="display:none; color:var(--danger); font-size:10px; font-weight:600; text-align:center; margin-top:2px;"></div>
-
-            <button type="submit" class="btn btn-primary" style="width:100%; height:36px; margin-top:6px; font-weight:700; border-radius:8px; font-size:12px;">Log In</button>
-          </form>
-
-          <div style="display:flex; align-items:center; margin:16px 0; gap:8px;">
-            <hr style="flex:1; border:none; border-top:1px solid var(--border);">
-            <span style="font-size:10px; color:var(--text-light); font-weight:500;">or login with</span>
-            <hr style="flex:1; border:none; border-top:1px solid var(--border);">
-          </div>
-
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-secondary" onclick="mockSSOLogin('Google')" style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; height:34px; border-radius:8px; font-size:11px; font-weight:600;">
-              <svg width="12" height="12" viewBox="0 0 24 24"><path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114A5.99 5.99 0 0 1 8 12.5a5.99 5.99 0 0 1 5.99-6c1.517 0 2.9.569 3.96 1.502l3.1-3.1A10.15 10.15 0 0 0 13.99 2C8.47 2 4 6.47 4 12s4.47 10 9.99 10c5.38 0 9.77-3.95 9.99-9.286v-2.43H12.24Z"/></svg>
-              Google
-            </button>
-            <button class="btn btn-secondary" onclick="mockSSOLogin('Microsoft')" style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; height:34px; border-radius:8px; font-size:11px; font-weight:600;">
-              <svg width="12" height="12" viewBox="0 0 23 23"><path fill="#f35325" d="M0 0h11v11H0z"/><path fill="#81bc06" d="M12 0h11v11H12z"/><path fill="#05a6f0" d="M0 12h11v11H0z"/><path fill="#ffba08" d="M12 12h11v11H12z"/></svg>
-              Microsoft
-            </button>
-          </div>
-        `;
-        appBody.appendChild(loginEl);
-        return;
-      }
-
-      // 2. Onboarding Restriction check
-      if (selectedProvider.status !== 'active') {
-        mobileNav.style.display = 'none';
-
-        const onboardingEl = document.createElement('div');
-        onboardingEl.style.padding = '16px';
-        onboardingEl.style.fontFamily = 'var(--font)';
-        
-        let docsStatus = selectedProvider.documents.length === 0 ? 'Pending' : 'Uploaded';
-        if (selectedProvider.status !== 'pending') docsStatus = 'Approved';
-
-        let s1Icon = docsStatus === 'Approved' ? '✓' : 'ℹ';
-        let s2Icon = ['pending', 'review'].includes(selectedProvider.status) ? 'ℹ' : '✓';
-        let s3Icon = ['pending', 'review', 'interview'].includes(selectedProvider.status) ? 'ℹ' : '✓';
-        let s4Icon = selectedProvider.status === 'active' ? '✓' : 'ℹ';
-
-        onboardingEl.innerHTML = `
-          <div style="text-align:center; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:12px;">
-            <h3 style="font-size:16px; font-weight:800; color:var(--dark); margin:0 0 2px 0;">Onboarding Pipeline</h3>
-            <p style="font-size:11px; color:var(--text-light); margin:0;">Complete all stages to activate your doctor listing.</p>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:12px;">
-            <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; gap:10px; align-items:center;">
-              <span class="badge ${docsStatus === 'Approved' ? 'badge-active' : 'badge-pending'}" style="width:20px; height:20px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; font-weight:700;">${s1Icon}</span>
-              <div style="flex:1;">
-                <h4 style="font-size:12px; font-weight:700; color:var(--dark);">Stage 1: Documents Upload</h4>
-                <p style="font-size:10px; color:var(--text-light); margin:0;">Credentials & medical practice permit.</p>
-                ${selectedProvider.documents.length === 0 ? `
-                  <button class="btn btn-primary btn-sm" style="margin-top:6px; height:26px; font-size:10px; padding:0 8px;" onclick="uploadCredentialsFromApp()">Simulate Credentials Upload</button>
-                ` : `<span style="font-size:10px; font-weight:700; color:var(--primary); display:block; margin-top:4px;">${selectedProvider.documents.length} files uploaded</span>`}
-              </div>
-            </div>
-
-            <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; gap:10px; align-items:center;">
-              <span class="badge ${selectedProvider.status === 'pending' ? 'badge-pending' : 'badge-active'}" style="width:20px; height:20px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; font-weight:700;">${s2Icon}</span>
-              <div style="flex:1;">
-                <h4 style="font-size:12px; font-weight:700; color:var(--dark);">Stage 2: Operations Audit</h4>
-                <p style="font-size:10px; color:var(--text-light); margin:0;">Documents validity & board checks.</p>
-              </div>
-            </div>
-
-            <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; gap:10px; align-items:center;">
-              <span class="badge ${['pending', 'review', 'interview'].includes(selectedProvider.status) ? 'badge-pending' : 'badge-active'}" style="width:20px; height:20px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; font-weight:700;">${s3Icon}</span>
-              <div style="flex:1;">
-                <h4 style="font-size:12px; font-weight:700; color:var(--dark);">Stage 3: Medical Interview</h4>
-                <p style="font-size:10px; color:var(--text-light); margin:0;">
-                  ${selectedProvider.status === 'interview' ? `Scheduled for: <strong>${selectedProvider.interviewDate}</strong>` : 'Clinical panel review.'}
-                </p>
-              </div>
-            </div>
-
-            <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); display:flex; gap:10px; align-items:center;">
-              <span class="badge ${selectedProvider.status === 'contract' ? 'badge-interview' : selectedProvider.status === 'active' ? 'badge-active' : 'badge-pending'}" style="width:20px; height:20px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center; font-weight:700;">${s4Icon}</span>
-              <div style="flex:1;">
-                <h4 style="font-size:12px; font-weight:700; color:var(--dark);">Stage 4: Contract Signing</h4>
-                <p style="font-size:10px; color:var(--text-light); margin:0;">Agree to service commissions & terms.</p>
-                ${selectedProvider.status === 'contract' ? `
-                  <button class="btn btn-primary btn-sm" style="margin-top:6px; height:26px; font-size:10px; padding:0 8px;" onclick="signContractFromApp()">Sign Agreement & Launch</button>
-                ` : ''}
-              </div>
-            </div>
-          </div>
-          
-          <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:20px;" onclick="logOutProvider()">Log Out</button>
-        `;
-        appBody.appendChild(onboardingEl);
-        return;
-      }
-
-      // 3. Normal Active App tabs
-      mobileNav.style.display = 'flex';
-
-      // Render verification status banner
-      const banner = document.createElement('div');
-      banner.className = 'verification-banner verification-banner-active';
-      banner.innerHTML = `<span class="verification-banner-icon" style="display:flex; align-items:center;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span><div class="verification-banner-text"><h4>Listed & Active</h4><p>Your profile is live in the Patient app.</p></div>`;
-      appBody.appendChild(banner);
-
-      if (activeMobileTab === 'home') {
-        // Welcome Card
-        const welcome = document.createElement('div');
-        welcome.className = 'provider-welcome-card';
-        const initials = selectedProvider.name.split(' ').map(n => n[0]).join('').substring(0, 2);
-        welcome.innerHTML = `
-          <div class="provider-welcome-avatar">${initials}</div>
-          <div class="provider-welcome-details">
-            <h3>Good Afternoon, ${selectedProvider.name}</h3>
-            <p>${selectedProvider.specialty}</p>
-          </div>
-        `;
-        appBody.appendChild(welcome);
-
-        // REQUIREMENT 10: RS Incoming Booking Requests Section
-        const allApts = getAppointments().filter(apt => apt.providerId === selectedProvider.id);
-        const pendingRequests = allApts.filter(apt => apt.status === 'Pending RS Acceptance');
-
-        if (pendingRequests.length > 0) {
-          const reqHeader = document.createElement('div');
-          reqHeader.innerHTML = `
-            <div style="background:#fffbeb; border:1px solid #fef3c7; border-radius:10px; padding:10px 12px; margin-top:8px; margin-bottom:12px;">
-              <h4 style="font-weight:800; font-size:12px; color:#b45309; margin:0 0 2px 0;">🔔 Incoming Booking Requests (${pendingRequests.length})</h4>
-              <p style="font-size:10px; color:#92400e; margin:0;">Please review patient details and choose Accept or Reject.</p>
+              <button style="background:var(--primary); border:none; border-radius:8px; color:#fff; font-size:10px; font-weight:700; padding:4px 10px; cursor:pointer; font-family:var(--font);" onclick="openSummaryForm('${a.id}')">Write Summary</button>
             </div>
           `;
-          appBody.appendChild(reqHeader);
+        }).join('')}
+      </div>` : ''}
 
-          const reqListContainer = document.createElement('div');
-          reqListContainer.style.display = 'flex';
-          reqListContainer.style.flexDirection = 'column';
-          reqListContainer.style.gap = '10px';
-          reqListContainer.style.marginBottom = '16px';
+      <!-- Incoming Requests -->
+      <div class="section-heading" style="margin-top:4px;">
+        New Homecare Requests
+        ${pending.length > 0 ? `<span style="background:#fef3c7; color:#d97706; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px;">${pending.length} new</span>` : ''}
+      </div>
+      ${pending.length === 0 ? `
+        <div style="background:var(--white); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center;">
+          <div style="font-size:24px; margin-bottom:6px;">✅</div>
+          <p style="font-size:12px; color:var(--text-light);">No pending requests</p>
+        </div>
+      ` : pending.map(a => renderRequestCard(a)).join('')}
 
-          pendingRequests.forEach(apt => {
-            const patient = PATIENTS_DATA[apt.patientId] || { name: 'Patient', age: '30' };
-            const reqCard = document.createElement('div');
-            reqCard.className = 'mobile-card';
-            reqCard.style.border = '1px solid #fde68a';
-            reqCard.style.background = '#fffdf5';
-            
-            reqCard.innerHTML = `
-              <div class="mobile-card-header">
-                <span class="badge badge-pending" style="font-size:9px;">Pending Acceptance</span>
-                <span style="font-size:11px; font-weight:700; color:var(--primary);">${apt.time}</span>
-              </div>
-              <div class="patient-info-row">
-                <div class="patient-img-placeholder">${patient.name.split(' ').map(n => n[0]).join('')}</div>
-                <div class="patient-name-wrapper">
-                  <h4>${patient.name}</h4>
-                  <p style="margin:0;">${apt.type} • Fee: ${apt.price} EGP</p>
-                  <p style="font-size:10px; color:var(--text-light); margin-top:2px;">Plan: ${apt.treatmentPlanText || 'External/Doctor Plan'}</p>
+      <!-- Upcoming Visits -->
+      <div class="section-heading" style="margin-top:4px;">Upcoming Home Visits</div>
+      ${confirmed.length === 0 ? `
+        <div style="background:var(--white); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center;">
+          <div style="font-size:24px; margin-bottom:6px;">📅</div>
+          <p style="font-size:12px; color:var(--text-light);">No confirmed visits yet</p>
+        </div>
+      ` : confirmed.map(a => renderVisitCard(a)).join('')}
+
+    </div>
+  `;
+}
+
+function tod() {
+  const h = new Date().getHours();
+  return h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening';
+}
+
+function renderRequestCard(apt) {
+  const pat = PATIENTS_DATA[apt.patientId] || { name: 'Patient', address: '' };
+  const patInitials = pat.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+  return `
+    <div class="request-card" id="req-${apt.id}">
+      <div class="request-card-header">
+        <span class="status-pill pending">⏳ Awaiting Response</span>
+        <span style="font-size:10px; font-weight:700; color:var(--primary);">${apt.price} EGP</span>
+      </div>
+      <div class="patient-row">
+        <div class="patient-avatar">${patInitials}</div>
+        <div>
+          <div class="patient-name">${pat.name}</div>
+          <div class="patient-sub">${apt.time} · ${apt.type}</div>
+        </div>
+      </div>
+      <div class="request-meta">
+        ${apt.district ? `<span class="meta-chip">📍 ${apt.district}</span>` : pat.address ? `<span class="meta-chip">📍 ${pat.address.split('-').pop().trim()}</span>` : ''}
+        ${apt.packageSize > 1 ? `<span class="meta-chip">📦 ${apt.packageSize} sessions</span>` : ''}
+        ${apt.serviceName ? `<span class="meta-chip">🩺 ${apt.serviceName}</span>` : ''}
+        ${apt.paymentMethod === 'Cash' ? `<span class="meta-chip" style="color:#d97706; background:#fef3c7; border-color:#fde68a;">💵 Cash on Visit</span>` : `<span class="meta-chip" style="color:#15803d; background:#dcfce7; border-color:#bbf7d0;">💳 Wallet</span>`}
+      </div>
+      ${pat.prescription && pat.prescription.text ? `
+      <div style="background:var(--primary-light); border-left:3px solid var(--primary); border-radius:0 8px 8px 0; padding:8px 10px; margin-bottom:10px; font-size:10px; color:var(--primary);">
+        <strong>Rx:</strong> ${pat.prescription.text.slice(0,100)}…
+      </div>` : apt.prescriptionFile ? `
+      <div style="background:#f0fdf4; border-left:3px solid #16a34a; border-radius:0 8px 8px 0; padding:8px 10px; margin-bottom:10px; font-size:10px; color:#15803d;">
+        📄 Prescription uploaded: ${apt.prescriptionFile}
+      </div>` : ''}
+      <div class="action-row">
+        <button class="btn-accept" onclick="acceptRequest('${apt.id}')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Accept
+        </button>
+        <button class="btn-reject" onclick="openRejectOverlay('${apt.id}')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          Reject
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderVisitCard(apt) {
+  const pat = PATIENTS_DATA[apt.patientId] || { name: 'Patient' };
+  const patInitials = pat.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+  const pkgProgress = apt.packageSize > 1
+    ? `Session ${(apt.completedSessions || 0) + 1} of ${apt.packageSize}`
+    : '1 session';
+  return `
+    <div class="visit-card">
+      <div class="visit-card-header">
+        <div class="patient-row" style="margin-bottom:0; flex:1;">
+          <div class="patient-avatar" style="background:#f0fdf4; color:#15803d;">${patInitials}</div>
+          <div>
+            <div class="patient-name">${pat.name}</div>
+            <div class="patient-sub">${apt.serviceName || apt.type}</div>
+          </div>
+        </div>
+        <span class="status-pill confirmed">✓ Confirmed</span>
+      </div>
+      <div class="visit-meta">
+        <span class="meta-chip">⏰ ${apt.time}</span>
+        ${apt.district ? `<span class="meta-chip">📍 ${apt.district}</span>` : ''}
+        <span class="meta-chip" style="color:var(--primary);">📦 ${pkgProgress}</span>
+        <span class="meta-chip" style="color:#15803d;">💰 ${apt.price} EGP</span>
+      </div>
+      ${pat.address ? `<div style="font-size:10px; color:var(--text-light); margin-bottom:10px;">🏠 ${pat.address}</div>` : ''}
+      <button class="btn-full" style="height:38px; font-size:12px;" onclick="startSession('${apt.id}')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Start Session
+      </button>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+//  ACCEPT / REJECT
+// ═══════════════════════════════════════════════════════
+function acceptRequest(aptId) {
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === aptId);
+  if (!apt) return;
+
+  apt.status = 'Confirmed';
+  saveAppointments(apts);
+
+  // Notify patient
+  const patients = getPatients();
+  const pat = patients.find(p => p.id === apt.patientId);
+  if (pat) {
+    // We can't store patient notifications separately, but we store it in a general way
+    const pNotifs = JSON.parse(localStorage.getItem(`ahilney_patient_notifs_${apt.patientId}`) || '[]');
+    pNotifs.unshift({ id: Date.now(), text: `${currentProvider.name} confirmed your homecare session for ${apt.time}.`, time: 'Just now' });
+    localStorage.setItem(`ahilney_patient_notifs_${apt.patientId}`, JSON.stringify(pNotifs));
+  }
+
+  showToast('Booking accepted! Patient has been notified.', 'success');
+  renderHome(document.getElementById('app-main'));
+}
+
+function openRejectOverlay(aptId) {
+  rejectAptId = aptId;
+  document.getElementById('reject-reason').value = '';
+  document.getElementById('reject-overlay').classList.add('open');
+  document.getElementById('reject-backdrop').classList.add('visible');
+}
+
+function closeRejectOverlay() {
+  document.getElementById('reject-overlay').classList.remove('open');
+  document.getElementById('reject-backdrop').classList.remove('visible');
+  rejectAptId = null;
+}
+
+function confirmReject() {
+  if (!rejectAptId) return;
+  const reason = document.getElementById('reject-reason').value.trim() || 'Unable to accommodate this booking.';
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === rejectAptId);
+  if (!apt) return;
+
+  apt.status = 'Rejected';
+  apt.rejectionReason = reason;
+  saveAppointments(apts);
+
+  // Notify patient (mirrors acceptRequest notification pattern)
+  const pNotifs = JSON.parse(localStorage.getItem(`ahilney_patient_notifs_${apt.patientId}`) || '[]');
+  pNotifs.unshift({ id: Date.now(), text: `${currentProvider.name} could not accept your homecare request for ${apt.time}. Reason: ${reason}`, time: 'Just now' });
+  localStorage.setItem(`ahilney_patient_notifs_${apt.patientId}`, JSON.stringify(pNotifs));
+
+  closeRejectOverlay();
+  showToast('Booking rejected. Patient has been notified.', '');
+  renderHome(document.getElementById('app-main'));
+}
+
+// ═══════════════════════════════════════════════════════
+//  SESSION
+// ═══════════════════════════════════════════════════════
+function startSession(aptId) {
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === aptId);
+  if (!apt) return;
+
+  activeSessionAptId = aptId;
+  sessionSeconds = 0;
+
+  const pat = PATIENTS_DATA[apt.patientId] || { name: 'Patient', address: '', history: '' };
+
+  document.getElementById('cr-patient-label').textContent = pat.name;
+  document.getElementById('cr-patient-name').textContent = pat.name;
+  document.getElementById('cr-patient-meta').textContent = `${apt.type} · ${apt.time}${apt.district ? ' · ' + apt.district : ''}`;
+  document.getElementById('cr-notes').value = '';
+
+  // Pre-fill notes with patient history
+  if (pat.history) {
+    document.getElementById('cr-notes').placeholder = `Known history: "${pat.history.slice(0,80)}…"\n\nAdd today's observations…`;
+  }
+
+  document.getElementById('clinical-room').classList.add('open');
+  startTimer();
+}
+
+function startTimer() {
+  stopTimer();
+  sessionTimerInterval = setInterval(() => {
+    sessionSeconds++;
+    const m = Math.floor(sessionSeconds / 60).toString().padStart(2,'0');
+    const s = (sessionSeconds % 60).toString().padStart(2,'0');
+    const timerEl = document.getElementById('cr-timer');
+    if (timerEl) timerEl.textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (sessionTimerInterval) {
+    clearInterval(sessionTimerInterval);
+    sessionTimerInterval = null;
+  }
+}
+
+function endSession() {
+  if (!activeSessionAptId) return;
+  stopTimer();
+
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === activeSessionAptId);
+  if (apt) {
+    apt.status = 'Need Summary';
+    apt.sessionNotes = document.getElementById('cr-notes').value;
+    saveAppointments(apts);
+  }
+
+  document.getElementById('clinical-room').classList.remove('open');
+  openSummaryForm(activeSessionAptId);
+}
+
+// ═══════════════════════════════════════════════════════
+//  POST-SESSION SUMMARY
+// ═══════════════════════════════════════════════════════
+function openSummaryForm(aptId) {
+  activeSessionAptId = aptId;
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === aptId);
+  const pat = apt ? (PATIENTS_DATA[apt.patientId] || {}) : {};
+  const prefill = pat.prescription ? pat.prescription.text : (apt ? apt.treatmentPlanText || '' : '');
+
+  document.getElementById('summary-body').innerHTML = `
+    <div style="background:var(--primary-light); border:1px solid #99f6e4; border-radius:10px; padding:10px 12px; margin-bottom:14px; font-size:11px; color:var(--primary);">
+      <strong>📋 Session with ${pat.name || 'Patient'}</strong>
+      <div style="color:var(--text); margin-top:2px;">${apt ? apt.time : ''} · ${apt ? apt.type : ''}</div>
+    </div>
+    <div class="form-group-sm">
+      <label class="form-label-sm">Chief Complaint *</label>
+      <textarea id="sum-complaint" class="form-textarea" placeholder="What the patient reported at the start of the session…"></textarea>
+    </div>
+    <div class="form-group-sm">
+      <label class="form-label-sm">Clinical Findings / Diagnosis *</label>
+      <textarea id="sum-diagnosis" class="form-textarea" placeholder="Your clinical assessment after examination…"></textarea>
+    </div>
+    <div class="form-group-sm">
+      <label class="form-label-sm">Treatment Plan for Next Visit *</label>
+      <textarea id="sum-plan" class="form-textarea" placeholder="Exercises, techniques, or goals for the next session…">${prefill ? prefill.slice(0,200) : ''}</textarea>
+    </div>
+    ${apt && apt.sessionNotes ? `
+    <div class="form-group-sm">
+      <label class="form-label-sm">Session Notes (from Clinical Room)</label>
+      <div style="background:var(--light); border-radius:8px; padding:8px 10px; font-size:11px; color:var(--text);">${apt.sessionNotes}</div>
+    </div>` : ''}
+  `;
+
+  document.getElementById('summary-overlay').classList.add('open');
+}
+
+function closeSummaryForm() {
+  document.getElementById('summary-overlay').classList.remove('open');
+  activeSessionAptId = null;
+}
+
+function submitSummary() {
+  const complaint = document.getElementById('sum-complaint')?.value.trim();
+  const diagnosis = document.getElementById('sum-diagnosis')?.value.trim();
+  const plan = document.getElementById('sum-plan')?.value.trim();
+
+  if (!complaint) { showToast('Please enter the chief complaint', 'error'); return; }
+  if (!diagnosis) { showToast('Please enter the clinical findings', 'error'); return; }
+  if (!plan) { showToast('Please enter the treatment plan', 'error'); return; }
+
+  const apts = getAppointments();
+  const apt = apts.find(a => a.id === activeSessionAptId);
+  if (apt) {
+    apt.status = 'Finished';
+    // completedSessions is incremented by admin on payout approval, not here,
+    // to prevent double-counting in multi-session package progress.
+    saveAppointments(apts);
+  }
+
+  const summaries = getSummaries();
+  const newSummary = {
+    id: `SUM-${Date.now().toString().slice(-4)}`,
+    appointmentId: activeSessionAptId,
+    providerId: currentProvider.id,
+    patientId: apt ? apt.patientId : '',
+    date: new Date().toISOString().split('T')[0],
+    complaint,
+    diagnosis,
+    treatmentPlan: plan,
+    status: 'Pending',
+    price: apt ? apt.price : 0,
+  };
+  summaries.unshift(newSummary);
+  saveSummaries(summaries);
+
+  // Update provider's rating/sessions count
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === currentProvider.id);
+  if (prov) {
+    prov.completedSessionsCount = (prov.completedSessionsCount || 0) + 1;
+    saveProviders(providers);
+    currentProvider = prov;
+  }
+
+  document.getElementById('summary-overlay').classList.remove('open');
+  activeSessionAptId = null;
+  showToast('Summary submitted! Awaiting admin audit.', 'success');
+  navigate('home');
+}
+
+// ═══════════════════════════════════════════════════════
+//  SCHEDULE TAB
+// ═══════════════════════════════════════════════════════
+function renderSchedule(main) {
+  const prov = currentProvider;
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  main.innerHTML = `
+    <header style="background:var(--primary); color:#fff; padding:14px 16px;">
+      <div style="font-size:15px; font-weight:800;">Availability Schedule</div>
+      <div style="font-size:11px; opacity:0.75; margin-top:2px;">Set your weekly home-visit time blocks</div>
+    </header>
+    <div class="app-body">
+      <div style="background:var(--primary-light); border:1px solid #99f6e4; border-radius:12px; padding:10px 12px; font-size:11px; color:var(--primary); margin-bottom:4px; font-weight:600;">
+        ⏱ Session duration: ${prov.duration} per appointment. Slots are auto-generated from your shift windows.
+      </div>
+
+      <div class="info-block">
+        <h4>Weekly Shifts</h4>
+        <div class="stage-progress" style="gap:0;">
+          ${days.map(day => {
+            const shifts = (prov.shifts || {})[day] || [];
+            return `
+              <div class="day-row">
+                <div class="day-label">
+                  <span>${day}</span>
+                  <button class="add-shift-btn" onclick="addShiftMock('${day}')">+ Add shift</button>
                 </div>
-              </div>
-              <div style="display:flex; gap:8px; border-top:1px solid #fef3c7; padding-top:10px; margin-top:8px;">
-                <button class="btn btn-primary btn-sm" style="flex:1; height:32px; font-size:11px; font-weight:700;" onclick="acceptRSBooking('${apt.id}')">✓ Accept Booking</button>
-                <button class="btn btn-danger btn-sm" style="flex:1; height:32px; font-size:11px; font-weight:700;" onclick="rejectRSBooking('${apt.id}')">✗ Reject</button>
+                <div class="shift-chips">
+                  ${shifts.length === 0
+                    ? `<span class="shift-chip empty">Day off</span>`
+                    : shifts.map((s,i) => `
+                      <span class="shift-chip" id="shift-${day}-${i}">
+                        ${s.start} – ${s.end}
+                        <span style="cursor:pointer; margin-left:4px; opacity:0.6;" onclick="removeShift('${day}',${i})">✕</span>
+                      </span>
+                    `).join('')
+                  }
+                </div>
               </div>
             `;
-            reqListContainer.appendChild(reqCard);
-          });
-          appBody.appendChild(reqListContainer);
-        }
+          }).join('')}
+        </div>
+      </div>
 
-        // Header for Confirmed / Upcoming Sessions
-        const sessHeader = document.createElement('div');
-        sessHeader.innerHTML = `<h4 style="font-weight:700; font-size:13px; color:var(--dark); margin-top:8px;">Confirmed Appointments</h4>`;
-        appBody.appendChild(sessHeader);
-
-        // Dynamic Appointments List
-        const listContainer = document.createElement('div');
-        listContainer.style.display = 'flex';
-        listContainer.style.flexDirection = 'column';
-        listContainer.style.gap = '12px';
-
-        const list = getAppointments().filter(apt => apt.providerId === selectedProvider.id && (apt.status === 'Confirmed' || apt.status === 'Upcoming' || apt.status === 'Need Summary' || apt.status === 'Awaiting Audit' || apt.status === 'Finished'));
-        list.forEach(apt => {
-          const patient = PATIENTS_DATA[apt.patientId] || { name: 'Patient', age: '30' };
-          const card = document.createElement('div');
-          card.className = 'mobile-card';
-          card.style.cursor = 'pointer';
-          card.onclick = () => viewPatientCard(apt.patientId, apt);
-          
-          let actionLabel = selectedProvider.type === 'Doctor' 
-            ? (apt.type === 'Online Consultation' ? 'Start Video Call' : 'Clinic Visit')
-            : (apt.type.includes('Home') ? 'View Map & Address' : 'Clinic Visit');
-          
-          const isPkg = apt.packageSize && apt.packageSize > 1;
-          const progressLabelHtml = isPkg ? `
-            <span style="font-size:9px; font-weight:700; color:var(--primary); background:rgba(76, 175, 80, 0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(76, 175, 80, 0.2); display:inline-block; margin-top:2px;">
-              Session Progress: ${apt.completedSessions || 0} of ${apt.packageSize} Completed
+      <div class="info-block">
+        <h4>Coverage Districts</h4>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+          ${(prov.regionsCovered || []).map(r => `
+            <span style="background:var(--primary-light); color:var(--primary); font-size:10px; font-weight:700; padding:4px 10px; border-radius:8px; border:1px solid #99f6e4;">
+              📍 ${r}
             </span>
-          ` : '';
+          `).join('')}
+          ${(prov.regionsCovered || []).length === 0 ? `<span style="font-size:11px; color:var(--text-light);">No districts configured</span>` : ''}
+        </div>
+      </div>
 
-          card.innerHTML = `
-            <div class="mobile-card-header">
-              <span class="badge ${apt.type.includes('Online') ? 'badge-interview' : apt.type.includes('Home') ? 'badge-contract' : 'badge-active'}">${apt.type}</span>
-              <span style="font-size:11px; font-weight:700; color:var(--primary);">${apt.time}</span>
+      <button class="btn-full secondary" onclick="showToast('Schedule saved successfully!','success')">Save Schedule</button>
+    </div>
+  `;
+}
+
+function addShiftMock(day) {
+  const shifts = ['08:00 AM – 10:00 AM', '10:00 AM – 12:00 PM', '02:00 PM – 04:00 PM', '05:00 PM – 07:00 PM', '08:00 PM – 10:00 PM'];
+  const idx = Math.floor(Math.random() * shifts.length);
+  const [start, end] = shifts[idx].split(' – ');
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === currentProvider.id);
+  if (prov) {
+    if (!prov.shifts) prov.shifts = {};
+    if (!prov.shifts[day]) prov.shifts[day] = [];
+    prov.shifts[day].push({ start, end });
+    saveProviders(providers);
+    currentProvider = prov;
+    renderSchedule(document.getElementById('app-main'));
+    showToast(`Shift added for ${day}`, 'success');
+  }
+}
+
+function removeShift(day, index) {
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === currentProvider.id);
+  if (prov && prov.shifts && prov.shifts[day]) {
+    prov.shifts[day].splice(index, 1);
+    saveProviders(providers);
+    currentProvider = prov;
+    renderSchedule(document.getElementById('app-main'));
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  PATIENTS TAB
+// ═══════════════════════════════════════════════════════
+function renderPatients(main) {
+  const allApts = getAppointments().filter(a => a.providerId === currentProvider.id);
+  const patientIds = [...new Set(allApts.map(a => a.patientId))];
+  const allPatients = getPatients();
+
+  const filters = [
+    { id: 'all', label: 'All' },
+    { id: 'active', label: 'Active' },
+    { id: 'finished', label: 'Completed' },
+  ];
+
+  let displayPatients = patientIds.map(id => allPatients.find(p => p.id === id)).filter(Boolean);
+  if (patientsFilter === 'active') {
+    const activeIds = allApts.filter(a => ['Confirmed','Upcoming','Pending RS Acceptance'].includes(a.status)).map(a=>a.patientId);
+    displayPatients = displayPatients.filter(p => activeIds.includes(p.id));
+  }
+  if (patientsFilter === 'finished') {
+    const doneIds = allApts.filter(a => a.status === 'Finished').map(a=>a.patientId);
+    displayPatients = displayPatients.filter(p => doneIds.includes(p.id));
+  }
+
+  main.innerHTML = `
+    <header style="background:var(--primary); color:#fff; padding:14px 16px;">
+      <div style="font-size:15px; font-weight:800;">My Patients</div>
+      <div style="font-size:11px; opacity:0.75; margin-top:2px;">${patientIds.length} patients in your care</div>
+    </header>
+    <div class="app-body">
+      <div class="tab-pills">
+        ${filters.map(f => `<div class="tab-pill ${patientsFilter === f.id ? 'active' : ''}" onclick="setPatientsFilter('${f.id}')">${f.label}</div>`).join('')}
+      </div>
+      ${displayPatients.length === 0 ? `
+        <div class="empty-state"><div class="empty-icon">👥</div><p>No patients found in this category</p></div>
+      ` : displayPatients.map(p => renderPatientCard(p, allApts)).join('')}
+    </div>
+  `;
+}
+
+function setPatientsFilter(f) {
+  patientsFilter = f;
+  renderPatients(document.getElementById('app-main'));
+}
+
+function renderPatientCard(pat, allApts) {
+  const myApts = allApts.filter(a => a.patientId === pat.id);
+  const lastApt = myApts[0];
+  const initials = pat.name.split(' ').map(n=>n[0]).join('').slice(0,2);
+  const finished = myApts.filter(a => a.status === 'Finished').length;
+
+  return `
+    <div class="patient-card" onclick="showPatientDetail('${pat.id}')">
+      <div class="patient-card-header">
+        <div class="patient-card-avatar">${initials}</div>
+        <div style="flex:1;">
+          <div class="patient-card-name">${pat.name}</div>
+          <div class="patient-card-sub">${pat.age} · ${pat.phone}</div>
+        </div>
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--text-light);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        ${lastApt ? `<span class="meta-chip">Last: ${lastApt.time}</span>` : ''}
+        <span class="meta-chip">${finished} completed</span>
+        ${myApts.some(a=>a.status==='Pending RS Acceptance') ? `<span class="meta-chip" style="color:#d97706; background:#fef3c7;">⏳ Pending request</span>` : ''}
+      </div>
+      ${pat.history ? `<div style="font-size:10px; color:var(--text-light); margin-top:6px; line-height:1.4;">${pat.history.slice(0,80)}…</div>` : ''}
+    </div>
+  `;
+}
+
+function showPatientDetail(patId) {
+  const pat = PATIENTS_DATA[patId] || {};
+  const main = document.getElementById('app-main');
+  main.innerHTML = `
+    <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:var(--white); z-index:50; overflow-y:auto; display:flex; flex-direction:column;">
+      <div style="background:var(--primary); color:#fff; padding:14px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0;">
+        <button style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;" onclick="navigate('patients')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div>
+          <div style="font-size:14px; font-weight:800;">${pat.name}</div>
+          <div style="font-size:10px; opacity:0.75;">${pat.age} · ${pat.phone}</div>
+        </div>
+      </div>
+      <div style="padding:14px 16px; flex:1;">
+        <div class="info-block" style="margin-bottom:10px;">
+          <h4>Contact & Address</h4>
+          <div class="info-row"><span>Email</span><span style="font-size:10px;">${pat.email || '—'}</span></div>
+          <div class="info-row"><span>Address</span><span style="font-size:10px; text-align:right; max-width:55%;">${pat.address || '—'}</span></div>
+        </div>
+        ${pat.history ? `
+        <div class="info-block" style="margin-bottom:10px;">
+          <h4>Medical History</h4>
+          <p style="font-size:12px; color:var(--text); line-height:1.5;">${pat.history}</p>
+        </div>` : ''}
+        ${pat.prescription && pat.prescription.text ? `
+        <div style="background:var(--primary-light); border-left:3px solid var(--primary); padding:10px 12px; border-radius:0 10px 10px 0; margin-bottom:10px;">
+          <div style="font-size:10px; font-weight:700; color:var(--primary); margin-bottom:4px;">📋 Prescription by ${pat.prescription.doctor}</div>
+          <p style="font-size:11px; color:var(--text); line-height:1.5;">${pat.prescription.text}</p>
+        </div>` : ''}
+        ${(pat.treatmentPlans || []).length > 0 ? `
+        <div class="info-block">
+          <h4>Treatment Plans</h4>
+          ${pat.treatmentPlans.map(tp => `
+            <div style="padding:8px 0; border-bottom:1px solid var(--border);">
+              <div style="font-size:11px; font-weight:700; color:var(--dark);">${tp.doctorName} · ${tp.date}</div>
+              <div style="font-size:10px; color:var(--text-light); font-style:italic; margin-bottom:3px;">${tp.diagnosis}</div>
+              <div style="font-size:11px; color:var(--text);">${tp.text}</div>
             </div>
-            <div class="patient-info-row">
-              <div class="patient-img-placeholder">${patient.name.split(' ').map(n => n[0]).join('')}</div>
-              <div class="patient-name-wrapper">
-                <h4>${patient.name}</h4>
-                <p style="margin:0;">${patient.age || '30'} years</p>
-                ${progressLabelHtml}
+          `).join('')}
+        </div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+//  WALLET TAB
+// ═══════════════════════════════════════════════════════
+function renderWallet(main) {
+  const providers = getProviders();
+  currentProvider = providers.find(p => p.id === currentProvider.id) || currentProvider;
+
+  const summaries = getSummaries().filter(s => s.providerId === currentProvider.id);
+  const pendingAudit = summaries.filter(s => s.status === 'Pending');
+  const approved = summaries.filter(s => s.status === 'Approved');
+  const txns = getTransactions().filter(t => t.entityName && t.entityName.includes(currentProvider.name));
+
+  // Compute available balance as stored walletBalance (credited by admin on approval)
+  // plus any approved-summary payouts not yet reflected in walletBalance
+  // (guards against admin implementations that write summaries but forget to update walletBalance).
+  const approvedPayoutsTotal = approved.reduce((sum, s) => sum + Math.round((s.price || 0) * 0.85), 0);
+  const storedBalance = currentProvider.walletBalance || 0;
+  // Use whichever is larger: the stored balance or the sum of approved payouts,
+  // so the UI is correct both when admin credits walletBalance and when it doesn't yet.
+  const balance = Math.max(storedBalance, approvedPayoutsTotal);
+
+  main.innerHTML = `
+    <header style="background:var(--primary); color:#fff; padding:14px 16px;">
+      <div style="font-size:15px; font-weight:800;">My Wallet</div>
+    </header>
+    <div class="app-body">
+      <div class="wallet-hero">
+        <div class="wallet-label">Available Balance</div>
+        <div class="wallet-amount">${balance.toLocaleString()} EGP</div>
+        <div class="wallet-actions">
+          <div class="wallet-action-btn" onclick="showWithdrawForm()">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+            Withdraw
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending audit -->
+      ${pendingAudit.length > 0 ? `
+      <div class="info-block" style="border:1px solid #e9d5ff; background:#fdf4ff; margin-bottom:10px;">
+        <h4 style="color:#6d28d9;">⏳ Pending Admin Audit</h4>
+        ${pendingAudit.map(s => {
+          const apts = getAppointments();
+          const apt = apts.find(a => a.id === s.appointmentId);
+          const pat = PATIENTS_DATA[s.patientId] || {};
+          const payout = Math.round((apt ? apt.price : s.price || 0) * 0.85);
+          return `
+            <div class="txn-item">
+              <div class="txn-icon pending">📋</div>
+              <div class="txn-info">
+                <div class="txn-name">${pat.name || 'Patient'} – Session</div>
+                <div class="txn-date">${s.date} · Audit pending</div>
               </div>
-            </div>
-            <div style="border-top:1px solid var(--border); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:11px; font-weight:700; color:var(--text-light);">Status: ${apt.status}</span>
-              <span style="font-size:11px; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:4px;">
-                ${actionLabel}
-              </span>
+              <div class="txn-amount pending">~${payout} EGP</div>
             </div>
           `;
-          listContainer.appendChild(card);
-        });
+        }).join('')}
+      </div>` : ''}
 
-        appBody.appendChild(listContainer);
-
-      } else if (activeMobileTab === 'schedule') {
-        if (!window.tempShifts || window.lastScheduleDayLoaded !== currentScheduleDay || window.lastProviderLoaded !== selectedProvider.id) {
-          window.tempShifts = JSON.parse(JSON.stringify(selectedProvider.shifts[currentScheduleDay] || []));
-          window.lastScheduleDayLoaded = currentScheduleDay;
-          window.lastProviderLoaded = selectedProvider.id;
+      <!-- Approved payouts -->
+      <div class="section-heading">Payout History</div>
+      <div class="info-block">
+        ${[...txns, ...approved.map(s => {
+          const payout = Math.round((s.price || 0) * 0.85);
+          return { id: s.id, entityName: `Session payout – ${s.date}`, date: s.date, amount: payout, method: 'Auto' };
+        })].length === 0 ? `<p style="font-size:12px; color:var(--text-light); text-align:center; padding:16px 0;">No payouts yet</p>` :
+          [...txns, ...approved.map(s => {
+            const payout = Math.round((s.price || 0) * 0.85);
+            return { id: s.id, entityName: `Session payout · ${s.date}`, date: s.date, amount: payout, method: 'Approved' };
+          })].map(t => `
+            <div class="txn-item">
+              <div class="txn-icon credit">💰</div>
+              <div class="txn-info">
+                <div class="txn-name">${t.entityName}</div>
+                <div class="txn-date">${t.date} · ${t.method}</div>
+              </div>
+              <div class="txn-amount credit">+${t.amount} EGP</div>
+            </div>
+          `).join('')
         }
+      </div>
 
-        // Scheduler View
-        const scheduler = document.createElement('div');
-        scheduler.className = 'slots-container';
-        scheduler.style.padding = '12px';
-        scheduler.style.fontFamily = 'var(--font)';
-        
-        let daysHtml = '<div class="days-tabs" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:12px;">';
-        ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].forEach((day) => {
-          const isAct = day === currentScheduleDay;
-          daysHtml += `<div class="day-tab ${isAct ? 'active' : ''}" onclick="selectScheduleDay('${day}')" style="flex:1; text-align:center; padding:6px; font-size:11px; border-radius:6px; cursor:pointer; background:${isAct ? 'var(--primary)' : 'var(--light)'}; color:${isAct ? 'white' : 'var(--dark)'}; font-weight:700; border:1px solid ${isAct ? 'var(--primary)' : 'var(--border)'};">${day}</div>`;
-        });
-        daysHtml += '</div>';
+      <!-- Payout method -->
+      <div class="info-block">
+        <h4>Payout Method</h4>
+        <div class="info-row"><span>Method</span><span style="font-size:11px;">${currentProvider.payoutDetails || '—'}</span></div>
+      </div>
 
-        scheduler.innerHTML = `
-          <h4 class="slots-title" style="font-size:13px; font-weight:700; color:var(--dark); margin-bottom:12px;">Work Schedule Shift Builder</h4>
-          ${daysHtml}
-          
-          <div id="dynamic-shifts-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
-            <!-- Rendered by renderDynamicShiftsList() -->
-          </div>
-          
-          <button class="btn btn-secondary btn-sm" style="width:100%; border:1px dashed var(--primary); color:var(--primary); background:white; font-weight:700; height:34px; margin-bottom:15px; border-radius:8px;" onclick="addTempShiftSlot()">+ Add Work Shift Slot</button>
+      <div id="withdraw-form" style="display:none;">
+        <div class="info-block">
+          <h4>Request Withdrawal</h4>
+          <input id="withdraw-amount" type="number" class="form-input" placeholder="Amount in EGP" min="1" max="${balance}" style="margin-bottom:8px;">
+          <div style="font-size:10px; color:var(--text-light); margin-bottom:10px;">Will be transferred to: ${currentProvider.payoutDetails || '—'}</div>
+          <button class="btn-full" style="height:38px; font-size:12px;" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
-          <div style="background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border); margin-bottom:15px;">
-            <p style="font-weight:700; font-size:11px; color:var(--text-light); text-transform:uppercase; margin-bottom:8px;">Fees & Slot Settings</p>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                <label style="font-size:11px; font-weight:700; color:var(--dark); margin:0;">Fee per Session (EGP)</label>
-                <input type="number" id="provider-fee-input" class="form-control" style="font-size:11px; height:28px; width:110px; padding:2px;" value="${parseInt(selectedProvider.price) || 300}" min="1">
-              </div>
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                <label style="font-size:11px; font-weight:700; color:var(--dark); margin:0;">Slot Duration</label>
-                <select id="slot-duration-select" class="form-control" style="font-size:11px; height:28px; width:110px; padding:2px;">
-                  <option value="30" ${selectedProvider.sessionDuration === 30 ? 'selected' : ''}>30 minutes</option>
-                  <option value="45" ${selectedProvider.sessionDuration === 45 ? 'selected' : ''}>45 minutes</option>
-                  <option value="60" ${selectedProvider.sessionDuration === 60 ? 'selected' : ''}>60 minutes</option>
-                </select>
-              </div>
-            </div>
-          </div>
+function showWithdrawForm() {
+  const form = document.getElementById('withdraw-form');
+  if (form) { form.style.display = form.style.display === 'none' ? 'block' : 'none'; }
+}
 
-          <button class="btn btn-primary" style="width:100%; height:36px; font-size:12px;" onclick="confirmShiftsUpdate()">Confirm Shifts Schedule</button>
-        `;
-        appBody.appendChild(scheduler);
-        renderDynamicShiftsList();
+function submitWithdrawal() {
+  const amt = parseInt(document.getElementById('withdraw-amount')?.value) || 0;
+  if (amt <= 0) { showToast('Enter a valid amount', 'error'); return; }
+  const bal = currentProvider.walletBalance || 0;
+  if (amt > bal) { showToast('Insufficient balance', 'error'); return; }
 
-      } else if (activeMobileTab === 'wallet') {
-        const appointments = getAppointments().filter(a => a.providerId === selectedProvider.id && a.status === 'Finished');
-        const txns = getTransactions().filter(t => t.entityName === selectedProvider.name);
-        
-        const grossEarnings = appointments.reduce((acc, curr) => acc + (curr.price || 400), 0);
-        const commissionDeducted = Math.round(grossEarnings * 0.15);
-        const netEarnings = grossEarnings - commissionDeducted;
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === currentProvider.id);
+  if (prov) {
+    prov.walletBalance = (prov.walletBalance || 0) - amt;
+    saveProviders(providers);
+    currentProvider = prov;
+  }
+  showToast(`Withdrawal of ${amt} EGP requested!`, 'success');
+  renderWallet(document.getElementById('app-main'));
+}
 
-        const withdrawnAmount = txns.reduce((acc, curr) => {
-          if (curr.type === 'Withdrawal' && (curr.status === 'Completed' || curr.status === 'Pending')) {
-            return acc + curr.amount;
-          }
-          return acc;
-        }, 0);
-        const availableBalance = Math.max(0, netEarnings - withdrawnAmount);
+// ═══════════════════════════════════════════════════════
+//  PROFILE TAB
+// ═══════════════════════════════════════════════════════
+function renderProfile(main) {
+  const prov = currentProvider;
+  const initials = prov.name.replace('Dr. ','').split(' ').map(n=>n[0]).join('').slice(0,2);
+  const rating = prov.rating || 4.8;
+  const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5-Math.round(rating));
 
-        const walletDiv = document.createElement('div');
-        walletDiv.style.padding = '12px';
-        walletDiv.style.fontFamily = 'var(--font)';
-        walletDiv.innerHTML = `
-          <div style="background:var(--primary); color:white; border-radius:15px; padding:16px; margin-bottom:15px; box-shadow:var(--shadow-sm);">
-            <p style="font-size:10px; font-weight:700; text-transform:uppercase; opacity:0.8; margin-bottom:4px;">Available Balance</p>
-            <h2 style="font-size:28px; font-weight:800; margin:0;">${availableBalance} EGP</h2>
-            <button class="btn btn-secondary btn-sm" style="margin-top:12px; width:100%; border:none; background:white; color:var(--primary); font-weight:700; height:32px; border-radius:8px;" onclick="openWithdrawModal()">Request Withdrawal</button>
-          </div>
+  const stages = [
+    { key: 'pending',   label: 'Application Submitted',   desc: 'Profile created, awaiting admin review.' },
+    { key: 'review',    label: 'Document Review',          desc: 'Admin reviewing your uploaded credentials.' },
+    { key: 'interview', label: 'Interview Scheduled',      desc: `Interview date: ${prov.interviewDate || 'TBD'}` },
+    { key: 'contract',  label: 'Contract Signing',         desc: 'Review and sign the provider agreement.' },
+    { key: 'active',    label: 'Active & Listed',          desc: 'Your profile is live in the Patient app.' },
+  ];
 
-          <div style="background:var(--light); padding:10px; border-radius:10px; border:1px solid var(--border); margin-bottom:15px; display:flex; justify-content:space-between; text-align:center;">
-            <div>
-              <span style="font-size:9px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Gross</span>
-              <p style="font-size:13px; font-weight:700; color:var(--dark); margin:2px 0 0 0;">${grossEarnings} EGP</p>
-            </div>
-            <div style="border-right:1px solid var(--border);"></div>
-            <div>
-              <span style="font-size:9px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Fee (15%)</span>
-              <p style="font-size:13px; font-weight:700; color:var(--danger); margin:2px 0 0 0;">-${commissionDeducted} EGP</p>
-            </div>
-            <div style="border-right:1px solid var(--border);"></div>
-            <div>
-              <span style="font-size:9px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Net Revenue</span>
-              <p style="font-size:13px; font-weight:700; color:var(--primary); margin:2px 0 0 0;">${netEarnings} EGP</p>
-            </div>
-          </div>
+  const stageOrder = ['pending','review','interview','contract','active'];
+  const currentIdx = stageOrder.indexOf(prov.status);
 
-          <h4 style="font-weight:700; font-size:12px; color:var(--dark); margin-bottom:8px;">Payout & Earnings Breakdown</h4>
-          <div style="display:flex; flex-direction:column; gap:8px;" id="provider-txns-list">
-            <!-- completed sessions list or withdrawals list -->
-          </div>
-        `;
-        appBody.appendChild(walletDiv);
+  main.innerHTML = `
+    <header style="background:var(--primary); color:#fff; padding:14px 16px;">
+      <div style="font-size:15px; font-weight:800;">My Profile</div>
+    </header>
+    <div class="app-body">
+      <div class="profile-hero">
+        <div class="profile-avatar-lg">${initials}</div>
+        <div style="font-size:16px; font-weight:800;">${prov.name}</div>
+        <div style="font-size:12px; opacity:0.85; margin-top:3px;">${prov.specialty}</div>
+        <div style="font-size:13px; color:#fbbf24; margin-top:6px;">${stars} <span style="font-size:11px; opacity:0.8;">${parseFloat(rating).toFixed(1)} · ${prov.reviewCount || 0} reviews</span></div>
+      </div>
 
-        const txnsList = document.getElementById('provider-txns-list');
-        if (txnsList) {
-          if (appointments.length === 0 && txns.length === 0) {
-            txnsList.innerHTML = `<p style="font-size:11px; color:var(--text-light); text-align:center; padding:16px 0;">No history yet</p>`;
-          } else {
-            appointments.forEach(apt => {
-              const item = document.createElement('div');
-              item.style.background = 'var(--white)';
-              item.style.padding = '8px 10px';
-              item.style.borderRadius = '8px';
-              item.style.border = '1px solid var(--border)';
-              item.style.display = 'flex';
-              item.style.justifyContent = 'space-between';
-              item.style.alignItems = 'center';
-              item.style.fontSize = '11px';
+      <div class="info-block">
+        <h4>Provider Details</h4>
+        <div class="info-row"><span>Type</span><span>${prov.type === 'RS' ? 'Rehab Specialist' : 'Doctor'}</span></div>
+        <div class="info-row"><span>Specialty</span><span>${prov.specialty}</span></div>
+        <div class="info-row"><span>Price</span><span style="color:var(--primary);">${prov.price} / session</span></div>
+        <div class="info-row"><span>Duration</span><span>${prov.duration}</span></div>
+        <div class="info-row"><span>Email</span><span style="font-size:10px;">${prov.email}</span></div>
+        <div class="info-row"><span>Phone</span><span>${prov.phone}</span></div>
+      </div>
 
-              item.innerHTML = `
-                <div>
-                  <span style="font-weight:700; color:var(--dark);">Session Credit (${apt.id})</span>
-                  <p style="font-size:9px; color:var(--text-light); margin-top:2px;">Finished • Gross: ${apt.price} EGP ${apt.rating ? ' • ⭐ ' + apt.rating : ''}</p>
+      <div class="info-block">
+        <h4>Districts Covered</h4>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; padding-bottom:4px;">
+          ${(prov.regionsCovered || []).map(r => `<span style="background:var(--primary-light); color:var(--primary); font-size:10px; font-weight:700; padding:4px 10px; border-radius:8px;">📍 ${r}</span>`).join('')}
+          ${!(prov.regionsCovered || []).length ? '<span style="font-size:11px; color:var(--text-light);">None configured</span>' : ''}
+        </div>
+      </div>
+
+      <!-- Onboarding status -->
+      <div class="section-heading">Verification Status</div>
+      <div class="info-block">
+        <div class="stage-progress">
+          ${stages.map((s,i) => {
+            const stageIdx = stageOrder.indexOf(s.key);
+            const cls = stageIdx < currentIdx ? 'done' : stageIdx === currentIdx ? 'current' : 'pending';
+            const icon = cls === 'done' ? '✓' : cls === 'current' ? '●' : String(i+1);
+            return `
+              <div class="stage-item">
+                <div class="stage-dot ${cls}">${icon}</div>
+                <div class="stage-content">
+                  <h5>${s.label}</h5>
+                  <p>${s.desc}</p>
+                  ${s.key === 'review' && cls === 'current' ? `<button style="margin-top:6px; background:var(--primary); border:none; border-radius:8px; color:#fff; font-size:10px; font-weight:700; padding:4px 10px; cursor:pointer; font-family:var(--font);" onclick="simulateDocUpload()">Upload Documents</button>` : ''}
+                  ${s.key === 'contract' && cls === 'current' ? `<button style="margin-top:6px; background:var(--primary); border:none; border-radius:8px; color:#fff; font-size:10px; font-weight:700; padding:4px 10px; cursor:pointer; font-family:var(--font);" onclick="signContract()">Sign Agreement</button>` : ''}
                 </div>
-                <span style="font-weight:700; color:var(--primary);">+${apt.price - Math.round(apt.price * 0.15)} EGP</span>
-              `;
-              txnsList.appendChild(item);
-            });
-
-            txns.forEach(t => {
-              const item = document.createElement('div');
-              item.style.background = 'var(--white)';
-              item.style.padding = '8px 10px';
-              item.style.borderRadius = '8px';
-              item.style.border = '1px solid var(--border)';
-              item.style.display = 'flex';
-              item.style.justifyContent = 'space-between';
-              item.style.alignItems = 'center';
-              item.style.fontSize = '11px';
-
-              let statusColor = t.status === 'Completed' ? 'var(--primary)' : t.status === 'Pending' ? 'var(--warning)' : 'var(--danger)';
-              item.innerHTML = `
-                <div>
-                  <span style="font-weight:700; color:var(--dark);">${t.type} (${t.method})</span>
-                  <p style="font-size:9px; color:${statusColor}; margin-top:2px; font-weight:700;">${t.status}</p>
-                </div>
-                <span style="font-weight:700; color:var(--danger);">${t.status === 'Rejected' ? '(Cancelled)' : `-${t.amount} EGP`}</span>
-              `;
-              txnsList.appendChild(item);
-            });
-          }
-        }
-
-      } else if (activeMobileTab === 'profile') {
-        const initials = selectedProvider.name.split(' ').map(n => n[0]).join('').substring(0, 2);
-        const profileDiv = document.createElement('div');
-        profileDiv.style.padding = '12px';
-        profileDiv.innerHTML = `
-          <div style="text-align:center; margin-bottom:16px;">
-            <div class="provider-welcome-avatar" style="width:56px; height:56px; font-size:20px; margin:0 auto 8px auto; display:flex; align-items:center; justify-content:center; background:var(--light); border-radius:50%; font-weight:700; color:var(--primary);">${initials}</div>
-            <h3 style="font-weight:800; color:var(--dark); margin:0;">${selectedProvider.name}</h3>
-            <p style="font-size:11px; color:var(--text-light); margin-top:2px;">${selectedProvider.specialty}</p>
-            <div style="margin-top:6px; display:inline-block; background:rgba(251, 191, 36, 0.15); border:1px solid #fde68a; color:#b45309; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">
-              ⭐ ${selectedProvider.rating || 4.8} (${selectedProvider.reviewCount || 15} reviews)
-            </div>
-          </div>
-
-          <div style="background:var(--white); border-radius:12px; border:1px solid var(--border); padding:12px; display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
-            <div>
-              <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Email & Phone</span>
-              <p style="font-size:12px; font-weight:600; color:var(--dark); margin-top:2px;">${selectedProvider.email} • ${selectedProvider.phone}</p>
-            </div>
-            <div>
-              <span style="font-size:10px; color:var(--text-light); text-transform:uppercase; font-weight:700;">Session Price</span>
-              <p style="font-size:12px; font-weight:600; color:var(--primary); margin-top:2px;">${selectedProvider.price} per ${selectedProvider.duration}</p>
-            </div>
-          </div>
-
-          <!-- REQUIREMENT 7: Multi-Select & Interactive Map for RS Regions -->
-          ${selectedProvider.type === 'RS' ? `
-            <div style="background:var(--light); border-radius:12px; border:1px solid var(--border); padding:12px; margin-bottom:14px;">
-              <h4 style="font-weight:700; font-size:12px; color:var(--dark); margin-bottom:4px;">🇪🇬 Egypt Work Regions & Map Coverage</h4>
-              <p style="font-size:10px; color:var(--text-light); margin-bottom:10px;">Select the governorates and subregions you cover for Home Care visits.</p>
-              
-              <div class="region-chips-grid">
-                ${EGYPT_SUBREGIONS.map(reg => {
-                  const isChecked = selectedProvider.regionsCovered && selectedProvider.regionsCovered.includes(reg.name);
-                  return `
-                    <button class="region-chip-btn ${isChecked ? 'active' : ''}" onclick="toggleRSCoverageRegion('${reg.name}')">
-                      ${isChecked ? '✓ ' : '+ '}${reg.name}
-                    </button>
-                  `;
-                }).join('')}
               </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
 
-              <!-- Interactive Visual Map Display -->
-              <div style="margin-top:12px; background:var(--white); border:1px solid var(--border); border-radius:10px; padding:10px; text-align:center;">
-                <span style="font-size:10px; font-weight:700; color:var(--text-light); text-transform:uppercase; display:block; margin-bottom:6px;">Interactive Region Coverage Preview</span>
-                <svg width="100%" height="80" viewBox="0 0 300 80" style="background:#f0fdfa; border-radius:8px;">
-                  <circle cx="150" cy="40" r="35" fill="rgba(13,148,136,0.15)" stroke="var(--primary)" stroke-dasharray="3,3" />
-                  <circle cx="150" cy="40" r="6" fill="var(--primary)" />
-                  <text x="150" y="60" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--primary)">${selectedProvider.name} Coverage Zone</text>
-                </svg>
-                <span style="font-size:10px; color:var(--primary); font-weight:700; display:block; margin-top:6px;">Active Districts: ${(selectedProvider.regionsCovered || []).join(', ') || 'None'}</span>
-              </div>
-
-              <button class="btn btn-primary btn-sm" style="width:100%; height:32px; margin-top:10px; font-size:11px; font-weight:700;" onclick="saveRSCoverageRegions()">Save Region Coverage</button>
+      ${(prov.documents || []).length > 0 ? `
+      <div class="info-block">
+        <h4>Uploaded Documents</h4>
+        ${prov.documents.map(doc => `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
+            <div>
+              <div style="font-size:12px; font-weight:600; color:var(--dark);">📄 ${doc.name}</div>
             </div>
-          ` : ''}
-        `;
-        appBody.appendChild(profileDiv);
-      }
+            <span class="status-pill ${doc.status === 'Approved' ? 'confirmed' : 'pending'}">${doc.status}</span>
+          </div>
+        `).join('')}
+      </div>` : ''}
 
-      // Check for notifications unread dot
-      const notifs = getNotifications(selectedProvider.id);
-      document.getElementById('mobile-notif-dot').style.display = notifs.length > 0 ? 'block' : 'none';
-    }
+      <button class="btn-full secondary" onclick="logout()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Log Out
+      </button>
+    </div>
+  `;
+}
 
-    // Render Available Slots in Grid
-    function renderSlotsGrid() {
-      const grid = document.getElementById('sim-slots-grid');
-      if (!grid) return;
-      grid.innerHTML = '';
-      
-      const slots = getSlots(selectedProvider.id);
-      slots.forEach((s, idx) => {
-        const item = document.createElement('div');
-        item.className = `slot-item ${s.selected ? 'selected' : ''}`;
-        item.innerText = s.time;
-        item.onclick = () => {
-          s.selected = !s.selected;
-          item.classList.toggle('selected');
-        };
-        grid.appendChild(item);
-      });
-    }
+function simulateDocUpload() {
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === currentProvider.id);
+  if (prov) {
+    if (!prov.documents) prov.documents = [];
+    prov.documents.push({ name: `Credential_${Date.now().toString().slice(-4)}.pdf`, status: 'Uploaded' });
+    saveProviders(providers);
+    currentProvider = prov;
+    showToast('Documents uploaded. Awaiting admin review.', 'success');
+    renderProfile(document.getElementById('app-main'));
+  }
+}
 
-    function confirmSlotsUpdate() {
-      const grid = document.getElementById('sim-slots-grid');
-      const slots = [];
-      grid.childNodes.forEach(node => {
-        slots.push({
-          time: node.innerText,
-          selected: node.classList.contains('selected')
-        });
-      });
-      saveSlots(selectedProvider.id, slots);
-      alert('Availability saved successfully!');
-    }
+function signContract() {
+  const providers = getProviders();
+  const prov = providers.find(p => p.id === currentProvider.id);
+  if (prov) {
+    prov.contractSigned = true;
+    prov.status = 'active';
+    saveProviders(providers);
+    currentProvider = prov;
+    showToast('Contract signed! Your profile is now live.', 'success');
+    renderProfile(document.getElementById('app-main'));
+  }
+}
 
-    // Toggle Notifications Drawer Panel inside device
-    function toggleMobileNotifications() {
-      const overlay = document.getElementById('mobile-notif-overlay');
-      overlay.classList.toggle('open');
-      if (overlay.classList.contains('open')) {
-        renderMobileNotificationsList();
-      }
-    }
+function logout() {
+  isLoggedIn = false;
+  closeAll();
+  stopTimer();
+  renderLogin();
+  document.getElementById('bottom-nav').style.display = 'none';
+}
 
-    function renderMobileNotificationsList() {
-      const listEl = document.getElementById('mobile-notifications-list');
-      listEl.innerHTML = '';
-      const list = getNotifications(selectedProvider.id);
-      
-      if (list.length === 0) {
-        listEl.innerHTML = `<p style="text-align:center; padding:24px 0; color:var(--text-light); font-size:12px;">No notifications found</p>`;
-        return;
-      }
-      
-      list.forEach(n => {
-        const item = document.createElement('div');
-        item.className = 'mobile-notification-item';
-        item.innerHTML = `
-          <div class="mobile-notification-dot"></div>
+// ═══════════════════════════════════════════════════════
+//  NOTIFICATIONS
+// ═══════════════════════════════════════════════════════
+function toggleNotifications() {
+  const notifs = getNotifications(currentProvider.id);
+  if (notifs.length === 0) { showToast('No new notifications', ''); return; }
+
+  // Simple inline modal
+  const existing = document.getElementById('notif-modal');
+  if (existing) { existing.remove(); return; }
+
+  const modal = document.createElement('div');
+  modal.id = 'notif-modal';
+  modal.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.5);z-index:400;display:flex;flex-direction:column;justify-content:flex-end;';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div style="background:var(--white);border-radius:20px 20px 0 0;padding:16px;max-height:70%;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--dark);">Notifications</div>
+        <button style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--primary);font-weight:700;" onclick="clearAllNotifs()">Clear all</button>
+      </div>
+      ${notifs.map(n => `
+        <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:4px;"></div>
           <div>
-            <p>${n.text}</p>
-            <span style="font-size:10px; color:var(--text-light); margin-top:2px; display:block;">${n.time}</span>
-          </div>
-        `;
-        listEl.appendChild(item);
-      });
-    }
-
-    function clearMobileNotifications() {
-      saveNotifications(selectedProvider.id, []);
-      renderMobileNotificationsList();
-      renderScreenContent();
-    }
-
-    // Simulate booking push notification
-    function simulatePatientBooking() {
-      const notifs = getNotifications(selectedProvider.id);
-      notifs.unshift({
-        id: Date.now(),
-        text: "New Appointment: Patient Hanaa Mansour booked a slot with you.",
-        time: "Just Now"
-      });
-      saveNotifications(selectedProvider.id, notifs);
-      renderScreenContent();
-      alert("Notification triggered on simulated device!");
-    }
-
-    // View Patient Detail Panel
-    function viewPatientCard(patientId, appointment) {
-      selectedPatientId = patientId;
-      const patient = PATIENTS_DATA[patientId];
-      const panel = document.getElementById('details-panel');
-      panel.style.display = 'block';
-
-      let prescriptionHtml = '';
-      if (selectedProvider.type === 'RS') {
-        prescriptionHtml = `
-          <div class="prescription-alert-box" style="margin-top: 16px;">
-            <div class="prescription-alert-title" style="display:flex; align-items:center; gap:6px;">
-              <span style="background:var(--primary-light); color:var(--primary); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:800;">RX</span>
-              Verified Treatment Plan (Prescription)
-            </div>
-            <p style="color: var(--dark); font-weight: 500; font-style: italic; margin-top: 6px;">"${patient.prescription.text}"</p>
-            <p style="font-size: 11px; margin-top: 6px; color: var(--text-light);">Prescribed by: <strong>${patient.prescription.doctor} (Ahilney Network)</strong></p>
-          </div>
-        `;
-      }
-
-      let appointmentDetails = '';
-      if (appointment.type === 'Home Visit') {
-        appointmentDetails = `
-          <div style="margin-top:16px; background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border);">
-            <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase; display:flex; align-items:center; gap:4px;">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-              Visit Location & Address
-            </p>
-            <p style="font-size:13px; font-weight:600; color:var(--dark); margin-top:4px;">${patient.address}</p>
-            <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:8px; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="alert('Simulating Google Maps Navigation...')">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
-              Open Navigation Map
-            </button>
-          </div>
-        `;
-      } else {
-        appointmentDetails = `
-          <div style="margin-top:16px; background:var(--light); padding:12px; border-radius:10px; border:1px solid var(--border);">
-            <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase; display:flex; align-items:center; gap:4px;">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-              Clinic Details
-            </p>
-            <p style="font-size:13px; font-weight:600; color:var(--dark); margin-top:4px;">Ahilney Central Rehab Hub, New Cairo</p>
-          </div>
-        `;
-      }
-
-      let progressHtml = '';
-      if (appointment.packageSize && appointment.packageSize > 1) {
-        progressHtml = `
-          <div style="margin-top:16px; background:rgba(76, 175, 80, 0.05); padding:12px; border-radius:10px; border:1px solid rgba(76, 175, 80, 0.15);">
-            <p style="font-size:11px; font-weight:700; color:var(--primary); text-transform:uppercase; margin:0 0 4px 0; display:flex; align-items:center; gap:4px;">
-              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              Session Package Progress
-            </p>
-            <p style="font-size:13px; font-weight:700; color:var(--dark); margin:0;">
-              ${appointment.completedSessions || 0} of ${appointment.packageSize} Sessions Completed
-            </p>
-          </div>
-        `;
-      }
-
-      panel.innerHTML = `
-        <h3 style="font-weight:700; color:var(--dark); border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:16px;">Patient Card Summary</h3>
-        <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
-          <div class="patient-img-placeholder" style="width:54px; height:54px; font-size:18px;">${patient.name.split(' ').map(n => n[0]).join('')}</div>
-          <div>
-            <h4 style="font-size:16px; font-weight:700; color:var(--dark);">${patient.name}</h4>
-            <p style="font-size:12px; color:var(--text-light);">${patient.age} | ${patient.phone}</p>
+            <div style="font-size:12px;color:var(--dark);line-height:1.4;">${n.text}</div>
+            <div style="font-size:10px;color:var(--text-light);margin-top:2px;">${n.time}</div>
           </div>
         </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('phone-screen').appendChild(modal);
+}
 
-        <p style="font-size:11px; font-weight:700; color:var(--text-light); text-transform:uppercase;">Medical Case History</p>
-        <p style="font-size:13px; margin-top:4px; color:var(--text);">${patient.history}</p>
+function clearAllNotifs() {
+  saveNotifications(currentProvider.id, []);
+  const modal = document.getElementById('notif-modal');
+  if (modal) modal.remove();
+  renderTab(currentTab);
+}
 
-        ${progressHtml}
-        ${prescriptionHtml}
-        ${appointmentDetails}
+// ═══════════════════════════════════════════════════════
+//  SIM EVENTS
+// ═══════════════════════════════════════════════════════
+function simulateIncomingBooking() {
+  if (!isLoggedIn) { showToast('Log in first to see the booking appear', 'error'); return; }
+  const patientIds = ['P-001','P-002','P-003','P-004'];
+  const samplePatient = patientIds[Math.floor(Math.random() * patientIds.length)];
+  const sampleServices = ['Physical Therapy (PT)', 'Post-Injury Rehabilitation', 'Elderly Rehabilitation'];
+  const apts = getAppointments();
+  const newApt = {
+    id: `APT-SIM-${Date.now().toString().slice(-4)}`,
+    patientId: samplePatient,
+    providerId: currentProvider.id,
+    time: `10:00 AM on ${new Date(Date.now() + 86400000).toLocaleDateString('en-GB')}`,
+    type: 'Home Visit',
+    status: 'Pending RS Acceptance',
+    price: parseInt((currentProvider.price || '400 EGP').replace(/\D/g,'')) || 400,
+    packageSize: [1,5][Math.floor(Math.random()*2)],
+    serviceName: sampleServices[Math.floor(Math.random() * sampleServices.length)],
+    district: (currentProvider.regionsCovered || ['New Cairo'])[0],
+    paymentMethod: ['Online','Cash'][Math.floor(Math.random()*2)],
+  };
+  apts.unshift(newApt);
+  saveAppointments(apts);
 
-        <div style="margin-top: 24px; display:flex; gap:10px;">
-          ${
-            appointment.status === 'Upcoming' ? `<button class="btn btn-primary btn-sm" style="flex:1;" onclick="startSession('${appointment.id}')">Start Consultation Session</button>` :
-            appointment.status === 'Need Summary' ? `<button class="btn btn-primary btn-sm" style="flex:1; background:var(--warning); border-color:var(--warning);" onclick="startSession('${appointment.id}')">Submit Session Summary</button>` :
-            appointment.status === 'Awaiting Audit' ? `<button class="btn btn-secondary btn-sm" style="flex:1;" disabled>Awaiting Audit Payout</button>` :
-            `<button class="btn btn-secondary btn-sm" style="flex:1;" disabled>Session Completed ✓</button>`
-          }
-          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('details-panel').style.display='none'">Close</button>
-        </div>
-      `;
-    }
+  const notifs = getNotifications(currentProvider.id);
+  notifs.unshift({ id: Date.now(), text: `New homecare request from ${PATIENTS_DATA[samplePatient]?.name || 'a patient'} for ${newApt.time}.`, time: 'Just now' });
+  saveNotifications(currentProvider.id, notifs);
 
-    let sessionTimerInterval = null;
-    let sessionSeconds = 0;
-    let currentSessAptId = null;
-    let currentSessPatientId = null;
+  showToast('New patient booking received!', 'success');
+  if (currentTab === 'home') renderHome(document.getElementById('app-main'));
+  updateBadge();
+}
 
-    function startSession(aptId) {
-      const allApts = getAppointments();
-      const apt = allApts.find(a => a.id === aptId);
-      if (!apt) return;
+function resetAllData() {
+  if (!confirm('Reset all prototype data to defaults?')) return;
+  ['ahilney_appointments','ahilney_patients','ahilney_providers','ahilney_transactions','ahilney_summaries'].forEach(k => localStorage.removeItem(k));
+  syncGlobals();
+  switchProvider();
+  showToast('Data reset to defaults', 'success');
+}
 
-      const patient = PATIENTS_DATA[apt.patientId];
-      if (!patient) return;
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+function closeAll() {
+  document.getElementById('clinical-room').classList.remove('open');
+  document.getElementById('summary-overlay').classList.remove('open');
+  closeRejectOverlay();
+  const nm = document.getElementById('notif-modal');
+  if (nm) nm.remove();
+}
 
-      currentSessAptId = aptId;
-      currentSessPatientId = apt.patientId;
+let toastTimer = null;
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = `toast show ${type || ''}`;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
 
-      document.getElementById('sess-patient-name').innerText = patient.name;
-      document.getElementById('sess-avatar').innerText = patient.name.split(' ').map(n=>n[0]).join('').substring(0, 2);
-      document.getElementById('sess-timer').innerText = "00:00";
-      
-      const chatLog = document.getElementById('sess-chat-log');
-      chatLog.innerHTML = `
-        <div style="text-align:center; font-size:11px; color:var(--text-light); margin:5px 0;">Patient and Doctor joined the call</div>
-      `;
+// Sync from other tabs
+let lastAptsStr = '', lastProvsStr = '';
+function silentSync() {
+  if (!isLoggedIn) return;
+  const a = JSON.stringify(getAppointments());
+  const p = JSON.stringify(getProviders());
+  if (a !== lastAptsStr || p !== lastProvsStr) {
+    lastAptsStr = a; lastProvsStr = p;
+    const providers = getProviders();
+    if (currentProvider) currentProvider = providers.find(pr => pr.id === currentProvider.id) || currentProvider;
+    syncGlobals();
+    updateBadge();
+    const cr = document.getElementById('clinical-room');
+    if (!cr.classList.contains('open')) renderTab(currentTab);
+  }
+}
 
-      sessionSeconds = 0;
-      clearInterval(sessionTimerInterval);
-      sessionTimerInterval = setInterval(() => {
-        sessionSeconds++;
-        const mins = String(Math.floor(sessionSeconds / 60)).padStart(2, '0');
-        const secs = String(sessionSeconds % 60).padStart(2, '0');
-        document.getElementById('sess-timer').innerText = `${mins}:${secs}`;
-        
-        if (sessionSeconds === 3) {
-          addSessChatMsg('patient', "Hello Doctor, I am ready.");
-        }
-      }, 1000);
-
-      document.getElementById('session-room-overlay').style.display = 'flex';
-      document.getElementById('details-panel').style.display = 'none';
-    }
-
-    function addSessChatMsg(sender, text) {
-      const chatLog = document.getElementById('sess-chat-log');
-      const isPat = sender === 'patient';
-      const msg = document.createElement('div');
-      msg.style.alignSelf = isPat ? 'flex-start' : 'flex-end';
-      msg.style.background = isPat ? 'var(--white)' : 'var(--primary)';
-      msg.style.color = isPat ? 'var(--dark)' : 'var(--white)';
-      msg.style.padding = '6px 12px';
-      msg.style.borderRadius = '10px';
-      msg.style.maxWidth = '75%';
-      msg.style.fontSize = '12px';
-      msg.style.boxShadow = 'var(--shadow-sm)';
-      msg.innerText = text;
-      chatLog.appendChild(msg);
-      chatLog.scrollTop = chatLog.scrollHeight;
-    }
-
-    function sendSessChatMsg() {
-      const input = document.getElementById('sess-chat-input');
-      const val = input.value.trim();
-      if (!val) return;
-      addSessChatMsg('doctor', val);
-      input.value = '';
-    }
-
-    function endActiveSession() {
-      clearInterval(sessionTimerInterval);
-      document.getElementById('session-room-overlay').style.display = 'none';
-
-      document.getElementById('sum-apt-id').value = currentSessAptId;
-      document.getElementById('sum-patient-id').value = currentSessPatientId;
-      document.getElementById('sum-complaint').value = "";
-      document.getElementById('sum-diagnosis').value = "";
-      document.getElementById('sum-plan').value = "";
-
-      document.getElementById('session-summary-overlay').style.display = 'flex';
-    }
-
-    function closeSummaryOverlay() {
-      document.getElementById('session-summary-overlay').style.display = 'none';
-    }
-
-    function submitSessSummary(e) {
-      e.preventDefault();
-      const aptId = document.getElementById('sum-apt-id').value;
-      const patientId = document.getElementById('sum-patient-id').value;
-      const complaint = document.getElementById('sum-complaint').value;
-      const diagnosis = document.getElementById('sum-diagnosis').value;
-      const treatmentPlan = document.getElementById('sum-plan').value;
-
-      const summaries = getSummaries();
-      const newId = `SUM-${String(summaries.length + 1).padStart(3, '0')}`;
-      summaries.unshift({
-        id: newId,
-        appointmentId: aptId,
-        providerId: selectedProvider.id,
-        patientId: patientId,
-        date: new Date().toISOString().split('T')[0],
-        complaint,
-        diagnosis,
-        treatmentPlan,
-        status: "Pending"
-      });
-      saveSummaries(summaries);
-
-      const appointments = getAppointments();
-      const apt = appointments.find(a => a.id === aptId);
-      if (apt) {
-        apt.status = "Awaiting Audit";
-        saveAppointments(appointments);
-      }
-
-      alert("Clinical summary submitted! Awaiting clinical panel audit in Admin Panel.");
-      document.getElementById('session-summary-overlay').style.display = 'none';
-      renderScreenContent();
-    }
-
-    let currentScheduleDay = 'Mon';
-
-    function selectScheduleDay(day) {
-      currentScheduleDay = day;
-      window.tempShifts = JSON.parse(JSON.stringify(selectedProvider.shifts[currentScheduleDay] || []));
-      window.lastScheduleDayLoaded = currentScheduleDay;
-      renderScreenContent();
-    }
-
-    const staticTimeOptions = [
-      "08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
-      "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",
-      "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM",
-      "08:00 PM", "08:30 PM", "09:00 PM", "09:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM",
-      "12:00 AM"
-    ];
-
-    function renderDynamicShiftsList() {
-      const container = document.getElementById('dynamic-shifts-list');
-      if (!container) return;
-      container.innerHTML = '';
-
-      if (!window.tempShifts || window.tempShifts.length === 0) {
-        container.innerHTML = `<p style="font-size:11px; color:var(--text-light); text-align:center; padding:12px 0; margin:0;">No work shifts configured for ${currentScheduleDay}.</p>`;
-        return;
-      }
-
-      window.tempShifts.forEach((shift, idx) => {
-        const row = document.createElement('div');
-        row.style.background = 'var(--white)';
-        row.style.padding = '8px 10px';
-        row.style.borderRadius = '10px';
-        row.style.border = '1px solid var(--border)';
-        row.style.display = 'flex';
-        row.style.gap = '8px';
-        row.style.alignItems = 'center';
-        row.style.justifyContent = 'space-between';
-
-        let startOptionsHtml = staticTimeOptions.map(opt => `<option value="${opt}" ${shift.start === opt ? 'selected' : ''}>${opt}</option>`).join('');
-        let endOptionsHtml = staticTimeOptions.map(opt => `<option value="${opt}" ${shift.end === opt ? 'selected' : ''}>${opt}</option>`).join('');
-
-        row.innerHTML = `
-          <div style="display:flex; gap:6px; align-items:center; flex:1;">
-            <select class="form-control" style="font-size:11px; height:28px; padding:2px; flex:1;" onchange="updateTempShift(${idx}, 'start', this.value)">
-              ${startOptionsHtml}
-            </select>
-            <span style="font-size:10px; color:var(--text-light);">to</span>
-            <select class="form-control" style="font-size:11px; height:28px; padding:2px; flex:1;" onchange="updateTempShift(${idx}, 'end', this.value)">
-              ${endOptionsHtml}
-            </select>
-          </div>
-          <button class="btn btn-danger btn-sm" style="padding:0; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px;" onclick="deleteTempShift(${idx})">
-            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    function addTempShiftSlot() {
-      let start = "09:00 AM";
-      let end = "11:00 AM";
-      if (window.tempShifts && window.tempShifts.length > 0) {
-        const last = window.tempShifts[window.tempShifts.length - 1];
-        start = last.end;
-        const lastIdx = staticTimeOptions.indexOf(start);
-        const nextIdx = Math.min(staticTimeOptions.length - 1, lastIdx + 4); 
-        end = staticTimeOptions[nextIdx];
-      }
-      if (!window.tempShifts) window.tempShifts = [];
-      window.tempShifts.push({ start, end });
-      renderDynamicShiftsList();
-    }
-
-    function deleteTempShift(idx) {
-      if (window.tempShifts) {
-        window.tempShifts.splice(idx, 1);
-        renderDynamicShiftsList();
-      }
-    }
-
-    function updateTempShift(idx, field, value) {
-      if (window.tempShifts && window.tempShifts[idx]) {
-        window.tempShifts[idx][field] = value;
-      }
-    }
-
-    function confirmShiftsUpdate() {
-      const providers = getProviders();
-      const p = providers.find(item => item.id === selectedProvider.id);
-      if (p) {
-        if (!p.shifts) p.shifts = {};
-        p.shifts[currentScheduleDay] = window.tempShifts || [];
-
-        // Save Custom Fees per Session
-        const feeVal = parseInt(document.getElementById('provider-fee-input').value);
-        if (!isNaN(feeVal) && feeVal > 0) {
-          p.price = `${feeVal} EGP`;
-        }
-
-        // Save Slot Duration
-        const durationVal = parseInt(document.getElementById('slot-duration-select').value);
-        p.sessionDuration = durationVal;
-        p.duration = `${durationVal} min`;
-
-        saveProviders(providers);
-        selectedProvider = p;
-        alert(`Schedule and Fees for ${p.name} updated successfully!`);
-        renderScreenContent();
-      }
-    }
-
-    function openWithdrawModal() {
-      const appointments = getAppointments().filter(a => a.providerId === selectedProvider.id && a.status === 'Finished');
-      const txns = getTransactions().filter(t => t.entityName === selectedProvider.name);
-      const grossEarnings = appointments.reduce((acc, curr) => acc + (curr.price || 400), 0);
-      const netEarnings = grossEarnings - Math.round(grossEarnings * 0.15);
-      const withdrawnAmount = txns.reduce((acc, curr) => {
-        if (curr.type === 'Withdrawal' && (curr.status === 'Completed' || curr.status === 'Pending')) {
-          return acc + curr.amount;
-        }
-        return acc;
-      }, 0);
-      const availableBalance = Math.max(0, netEarnings - withdrawnAmount);
-
-      if (availableBalance <= 0) {
-        alert("Your balance is zero. Payouts require finished doctor/RS sessions.");
-        return;
-      }
-
-      document.getElementById('withdraw-amount').value = availableBalance;
-      document.getElementById('withdraw-amount').max = availableBalance;
-      document.getElementById('withdraw-details').value = selectedProvider.payoutDetails || '';
-      
-      document.getElementById('withdrawal-modal-overlay').style.display = 'flex';
-    }
-
-    function closeWithdrawModal() {
-      document.getElementById('withdrawal-modal-overlay').style.display = 'none';
-    }
-
-    function updateWithdrawDetailsPlaceholder(method) {
-      const label = document.getElementById('withdraw-details-label');
-      const input = document.getElementById('withdraw-details');
-      if (method === 'Instapay') {
-        label.innerText = 'Instapay Username / Link';
-        input.placeholder = 'e.g. name@instapay';
-      } else if (method === 'Bank Transfer') {
-        label.innerText = 'Bank IBAN & Account Number';
-        input.placeholder = 'e.g. CIB EG123456789...';
-      } else {
-        label.innerText = 'Mobile Phone Number';
-        input.placeholder = 'e.g. 010...';
-      }
-    }
-
-    function submitWithdrawalRequest(e) {
-      e.preventDefault();
-      const amt = parseInt(document.getElementById('withdraw-amount').value);
-      const method = document.getElementById('withdraw-method').value;
-      const details = document.getElementById('withdraw-details').value.trim();
-
-      const allTxns = getTransactions();
-      allTxns.unshift({
-        id: `TXN-${String(allTxns.length + 1).padStart(3, '0')}`,
-        date: new Date().toISOString().split('T')[0],
-        type: "Withdrawal",
-        entityName: selectedProvider.name,
-        amount: amt,
-        status: "Pending",
-        method: method,
-        payoutDetails: `${method}: ${details}`
-      });
-      saveTransactions(allTxns);
-      alert(`Withdrawal request for ${amt} EGP submitted to Ahilney clinical panel!`);
-      closeWithdrawModal();
-      renderScreenContent();
-    }
-
-    // REQUIREMENT 10: RS Booking Acceptance & Rejection Workflow
-    function acceptRSBooking(aptId) {
-      const appointments = getAppointments();
-      const apt = appointments.find(a => a.id === aptId);
-      if (!apt) return;
-
-      apt.status = 'Confirmed';
-      saveAppointments(appointments);
-      alert(`Booking ${aptId} ACCEPTED! Patient has been notified.`);
-      renderScreenContent();
-    }
-
-    function rejectRSBooking(aptId) {
-      const reason = prompt("Please provide a reason for rejecting this booking request:", "Schedule conflict / Out of range");
-      if (reason === null) return;
-
-      const appointments = getAppointments();
-      const apt = appointments.find(a => a.id === aptId);
-      if (!apt) return;
-
-      apt.status = 'Rejected by RS';
-      apt.rejectionReason = reason;
-      saveAppointments(appointments);
-
-      alert(`Booking ${aptId} REJECTED. Flagged for Ahilney Operations Team to process refund.`);
-      renderScreenContent();
-    }
-
-    // REQUIREMENT 7: RS Coverage Regions Toggle & Save
-    function toggleRSCoverageRegion(regionName) {
-      if (!selectedProvider.regionsCovered) selectedProvider.regionsCovered = [];
-      const idx = selectedProvider.regionsCovered.indexOf(regionName);
-      if (idx > -1) {
-        selectedProvider.regionsCovered.splice(idx, 1);
-      } else {
-        selectedProvider.regionsCovered.push(regionName);
-      }
-      renderScreenContent();
-    }
-
-    function saveRSCoverageRegions() {
-      const providers = getProviders();
-      const prov = providers.find(p => p.id === selectedProvider.id);
-      if (prov) {
-        prov.regionsCovered = selectedProvider.regionsCovered || [];
-        saveProviders(providers);
-        alert(`Updated coverage regions saved: ${(prov.regionsCovered).join(', ')}`);
-      }
-    }
-
-    let lastProvidersStr = "";
-    let lastAptsStr = "";
-    let lastSummariesStr = "";
-
-    function syncDataSilently() {
-      const providers = getProviders();
-      const appointments = getAppointments();
-      const summaries = getSummaries();
-      const provsStr = JSON.stringify(providers);
-      const aptsStr = JSON.stringify(appointments);
-      const summsStr = JSON.stringify(summaries);
-      
-      if (provsStr !== lastProvidersStr || aptsStr !== lastAptsStr || summsStr !== lastSummariesStr) {
-        lastProvidersStr = provsStr;
-        lastAptsStr = aptsStr;
-        lastSummariesStr = summsStr;
-        if (selectedProvider) {
-          selectedProvider = providers.find(p => p.id === selectedProvider.id);
-        }
-        renderProfileSelector();
-        renderScreenContent();
-      }
-    }
-
-    // Sync from localStorage if updated in admin tab
-    window.addEventListener('storage', syncDataSilently);
-
-    window.onload = function() {
-      renderProfileSelector();
-      renderScreenContent();
-      lastProvidersStr = JSON.stringify(getProviders());
-      lastAptsStr = JSON.stringify(getAppointments());
-      lastSummariesStr = JSON.stringify(getSummaries());
-      setInterval(syncDataSilently, 1500);
-    };
-  </script>
+window.addEventListener('storage', silentSync);
+setInterval(silentSync, 1500);
+</script>
 </body>
 </html>
